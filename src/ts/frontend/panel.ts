@@ -2,11 +2,10 @@ import type { FeatureLevel, KotlinskidevA11yConfig } from '../shared/types';
 import { createDialog, type Dialog } from './a11y-dialog';
 import { createElement } from './dom';
 import { FEATURE_GROUPS, FEATURE_LEVEL_LABELS, levelCountOf } from './feature-groups';
-import { findLandmarks, focusLandmark, type Landmark, type LandmarkKind } from './features/color-orientation';
+import { findLandmarks, focusLandmark, type Landmark, type LandmarkKind } from './features/color-orientation/landmarks';
 import { isLevelActive } from './feature-utils';
 import type { HideToolbar } from './hide-toolbar';
 import type { Profiles } from './profiles';
-import { injectShadowStyles } from './styles';
 import type { Store, StoreState } from './store';
 import { createTranslator, type Translator } from './translate';
 
@@ -59,9 +58,10 @@ const nextLevel = (key: string, current: FeatureLevel | undefined): FeatureLevel
 };
 
 const resolveLauncher = (host: HTMLElement, shadow: ShadowRoot, doc: Document, label: string): HTMLButtonElement => {
-  const existing = shadow.querySelector<HTMLButtonElement>(LAUNCHER_SELECTOR) ?? host.querySelector<HTMLButtonElement>(LAUNCHER_SELECTOR);
+  const inShadow = shadow.querySelector<HTMLButtonElement>(LAUNCHER_SELECTOR);
+  if (inShadow) return inShadow;
   const launcher =
-    existing ??
+    host.querySelector<HTMLButtonElement>(LAUNCHER_SELECTOR) ??
     createElement(doc, 'button', { type: 'button', class: 'ka11y-launcher', 'aria-label': label, 'aria-haspopup': 'dialog' });
   shadow.append(launcher);
   return launcher;
@@ -238,7 +238,6 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     else panel.dataset.vertical = 'middle';
   };
 
-  injectShadowStyles(shadow, doc, config.customCss);
   const launcher = resolveLauncher(host, shadow, doc, t('open'));
 
   const closeButton = createElement(doc, 'button', { type: 'button', class: 'ka11y-close', 'aria-label': t('close') }, [

@@ -14,6 +14,9 @@ final class LanguageResolverTest extends TestCase {
 		parent::setUp();
 		unset( $GLOBALS['TRP_LANGUAGE'], $GLOBALS['wp_locale'] );
 		Functions\when( 'pll_current_language' )->justReturn( false );
+		Functions\when( 'pll_languages_list' )->justReturn( array() );
+		Functions\when( 'get_available_languages' )->justReturn( array() );
+		Functions\when( 'get_option' )->justReturn( array() );
 		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
 	}
 
@@ -76,5 +79,29 @@ final class LanguageResolverTest extends TestCase {
 		$GLOBALS['wp_locale'] = (object) array( 'text_direction' => 'rtl' );
 
 		$this->assertTrue( ( new LanguageResolver() )->is_rtl_locale( 'xx_XX' ) );
+	}
+
+	public function test_known_locales_collect_every_source(): void {
+		Functions\when( 'pll_languages_list' )->justReturn( array( 'de_DE' ) );
+		Functions\when( 'get_available_languages' )->justReturn( array( 'pl_PL' ) );
+		Functions\when( 'get_option' )->justReturn( array( 'translation-languages' => array( 'fr_FR' ) ) );
+		Filters\expectApplied( 'wpml_active_languages' )->andReturn( array( 'es' => array( 'default_locale' => 'es_ES' ) ) );
+
+		$known = ( new LanguageResolver() )->known_locales();
+
+		foreach ( array( 'en_US', 'de_DE', 'pl_PL', 'es_ES' ) as $locale ) {
+			$this->assertContains( $locale, $known );
+		}
+	}
+
+	public function test_known_locales_reject_unlisted_and_non_strings(): void {
+		Functions\when( 'get_available_languages' )->justReturn( array( 'pl_PL', 5, '' ) );
+		Functions\when( 'get_option' )->justReturn( array() );
+
+		$known = ( new LanguageResolver() )->known_locales();
+
+		$this->assertNotContains( 'xx_XX', $known );
+		$this->assertNotContains( '', $known );
+		$this->assertSame( $known, array_values( array_unique( $known ) ) );
 	}
 }

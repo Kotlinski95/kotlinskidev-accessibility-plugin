@@ -1,0 +1,20 @@
+:host {
+  font-family: var(--ka11y-font-family, system-ui, -apple-system, 'Segoe UI', sans-serif);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--ka11y-w-text);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.ka11y-launcher {
+  transition: transform var(--ka11y-w-duration) ease;
+
+  &:hover {
+    transform: scale(1.06);
+  }
+}

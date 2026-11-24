@@ -77,7 +77,7 @@ final class SchemaTest extends TestCase {
 		$this->assertSame( array( 'enabled' => true, 'combo' => 'Alt+Shift+A' ), $defaults['shortcut'] );
 		$this->assertSame( array( 'allow' => true, 'days' => array( 1, 7, 30 ) ), $defaults['hideToolbar'] );
 		$this->assertSame( array(), $defaults['labels'] );
-		$this->assertSame( array( 'excludeSelectors' => '#wpadminbar', 'loadStrategy' => 'defer' ), $defaults['advanced'] );
+		$this->assertSame( array( 'excludeSelectors' => '#wpadminbar' ), $defaults['advanced'] );
 		$this->assertSame( Schema::VERSION, $defaults['schemaVersion'] );
 	}
 
@@ -88,9 +88,108 @@ final class SchemaTest extends TestCase {
 		$tree = array();
 		Schema::assign( $tree, 'a.b.c', 1 );
 		$this->assertSame( array( 'a' => array( 'b' => array( 'c' => 1 ) ) ), $tree );
+		$found = false;
 		$this->assertSame( 1, Schema::read( $tree, 'a.b.c', $found ) );
 		$this->assertTrue( $found );
 		$this->assertNull( Schema::read( $tree, 'a.x', $found ) );
 		$this->assertFalse( $found );
+	}
+
+	public function test_version_is_two_and_load_strategy_is_gone(): void {
+		$this->assertSame( 2, Schema::VERSION );
+		$this->assertNull( Schema::definition( 'advanced.loadStrategy' ) );
+		$this->assertArrayNotHasKey( 'loadStrategy', Schema::defaults()['advanced'] );
+	}
+
+	public function test_performance_and_visibility_additions_have_defaults_and_enums(): void {
+		$defaults = Schema::defaults();
+
+		$this->assertSame(
+			array(
+				'preset'        => 'recommended',
+				'strategy'      => 'interaction',
+				'position'      => 'footer',
+				'fetchPriority' => 'low',
+				'prefetch'      => 'hover',
+				'pageCss'       => 'lazy',
+				'deviceSkip'    => true,
+				'optOut'        => array(),
+			),
+			$defaults['performance']
+		);
+		$this->assertSame( array( 'recommended', 'compatibility', 'custom' ), Schema::definition( 'performance.preset' )['enum'] );
+		$this->assertSame( array( 'interaction', 'idle', 'defer', 'async', 'eager' ), Schema::definition( 'performance.strategy' )['enum'] );
+		$this->assertSame( array( 'head', 'footer' ), Schema::definition( 'performance.position' )['enum'] );
+		$this->assertSame( array( 'low', 'auto', 'high' ), Schema::definition( 'performance.fetchPriority' )['enum'] );
+		$this->assertSame( array( 'none', 'hover', 'idle' ), Schema::definition( 'performance.prefetch' )['enum'] );
+		$this->assertSame( array( 'lazy', 'linked', 'inline' ), Schema::definition( 'performance.pageCss' )['enum'] );
+		$this->assertSame( array( 'cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup' ), Schema::definition( 'performance.optOut' )['enum'] );
+		$this->assertSame( 'everywhere', $defaults['visibility']['mode'] );
+		$this->assertSame( array( 'everywhere', 'only_on', 'except_on' ), Schema::definition( 'visibility.mode' )['enum'] );
+		foreach ( array( 'includePostIds', 'includePostTypes', 'includeTemplates', 'includeRoles', 'includeUrlPatterns', 'excludeTemplates' ) as $key ) {
+			$this->assertSame( array(), $defaults['visibility'][ $key ], $key );
+		}
+		$this->assertSame( 'int_list', Schema::definition( 'visibility.includePostIds' )['sanitize'] );
+		$this->assertSame( 1, Schema::definition( 'visibility.includePostIds' )['min'] );
+	}
+
+	public function test_performance_presets_match_spec_rows(): void {
+		$presets = Schema::performance_presets();
+
+		$this->assertSame( array( 'recommended', 'compatibility' ), array_keys( $presets ) );
+		$this->assertSame(
+			array(
+				'strategy'      => 'interaction',
+				'position'      => 'footer',
+				'fetchPriority' => 'low',
+				'prefetch'      => 'hover',
+				'pageCss'       => 'lazy',
+				'deviceSkip'    => true,
+				'optOut'        => array(),
+			),
+			$presets['recommended']
+		);
+		$this->assertSame(
+			array(
+				'strategy'      => 'eager',
+				'position'      => 'footer',
+				'fetchPriority' => 'auto',
+				'prefetch'      => 'none',
+				'pageCss'       => 'linked',
+				'deviceSkip'    => false,
+				'optOut'        => array( 'cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup' ),
+			),
+			$presets['compatibility']
+		);
+	}
+
+	public function test_apply_performance_preset_overwrites_for_named_presets_and_keeps_custom(): void {
+		$tree = array(
+			'performance' => array(
+				'preset'        => 'compatibility',
+				'strategy'      => 'idle',
+				'position'      => 'head',
+				'fetchPriority' => 'high',
+				'prefetch'      => 'idle',
+				'pageCss'       => 'inline',
+				'deviceSkip'    => true,
+				'optOut'        => array(),
+			),
+		);
+
+		$compat = Schema::apply_performance_preset( $tree );
+		$this->assertSame( 'compatibility', $compat['performance']['preset'] );
+		foreach ( Schema::performance_presets()['compatibility'] as $key => $value ) {
+			$this->assertSame( $value, $compat['performance'][ $key ], $key );
+		}
+
+		$tree['performance']['preset'] = 'recommended';
+		$recommended                   = Schema::apply_performance_preset( $tree );
+		foreach ( Schema::performance_presets()['recommended'] as $key => $value ) {
+			$this->assertSame( $value, $recommended['performance'][ $key ], $key );
+		}
+
+		$tree['performance']['preset'] = 'custom';
+		$this->assertSame( $tree, Schema::apply_performance_preset( $tree ) );
 	}
 }

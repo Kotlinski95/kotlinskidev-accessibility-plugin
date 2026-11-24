@@ -1,8 +1,10 @@
 import { createHideToolbar } from '../../src/ts/frontend/hide-toolbar';
 import { createPanel, type Panel } from '../../src/ts/frontend/panel';
 import { createProfiles } from '../../src/ts/frontend/profiles';
+import { mount } from '../../src/ts/frontend/chunks/panel';
+import type { KernelApi } from '../../src/ts/frontend/kernel';
 import { createStore, type Store } from '../../src/ts/frontend/store';
-import type { KotlinskidevA11yConfig } from '../../src/ts/shared/types';
+import type { KotlinskidevA11yConfig, PanelData } from '../../src/ts/shared/types';
 import { createConfig } from './helpers';
 
 interface Setup {
@@ -30,6 +32,23 @@ const setup = (config: KotlinskidevA11yConfig = createConfig()): Setup => {
     panel,
     launcher: shadow.querySelector('.ka11y-launcher') as HTMLButtonElement,
     dialogEl: shadow.querySelector('[role="dialog"]') as HTMLElement,
+  };
+};
+
+const panelData = (customCss: string): PanelData => {
+  const config = createConfig();
+  return {
+    hash: 'abcdef012345',
+    locale: 'en_US',
+    features: config.features,
+    profiles: config.profiles,
+    widget: config.widget,
+    theme: config.theme,
+    tokens: config.tokens,
+    hideToolbar: config.hideToolbar,
+    statementUrl: config.statementUrl,
+    customCss,
+    strings: config.strings,
   };
 };
 
@@ -149,9 +168,45 @@ describe('panel', () => {
     expect(shadow.querySelector('.ka11y-hide')).toBeNull();
   });
 
-  it('injects widget and custom styles into the shadow root', () => {
-    const { shadow } = setup();
-    expect([...shadow.querySelectorAll('style')].some((style) => style.textContent === '.x{color:red}')).toBe(true);
+  it('mount injects widget and custom styles into the shadow root', () => {
+    const { store, host } = setup();
+    const fresh = document.createElement('div').attachShadow({ mode: 'open' });
+    const kernel = { store, profiles: () => createProfiles(store, {}), attachData: jest.fn() } as unknown as KernelApi;
+    mount({ kernel, config: createConfig(), data: panelData('.x{color:red}'), host, shadow: fresh });
+    expect([...fresh.querySelectorAll('style')].some((style) => style.textContent === '.x{color:red}')).toBe(true);
+  });
+
+  it('mount attaches the data when the kernel has no profiles yet and returns a dialog', () => {
+    const { store, host } = setup();
+    const fresh = document.createElement('div').attachShadow({ mode: 'open' });
+    let profiles: ReturnType<typeof createProfiles> | null = null;
+    const attachData = jest.fn((): void => {
+      profiles = createProfiles(store, {});
+    });
+    const kernel = { store, profiles: () => profiles, attachData } as unknown as KernelApi;
+    const { dialog } = mount({ kernel, config: createConfig(), data: panelData(''), host, shadow: fresh });
+    expect(attachData).toHaveBeenCalledTimes(1);
+    expect(typeof dialog.open).toBe('function');
+  });
+
+  it('reuses a launcher that is already in the shadow root without adding a second one', () => {
+    document.body.innerHTML = '<div id="ka11y-root"></div>';
+    const host = document.getElementById('ka11y-root') as HTMLElement;
+    const shadow = host.attachShadow({ mode: 'open' });
+    shadow.innerHTML = '<button type="button" class="ka11y-launcher" aria-haspopup="dialog"></button>';
+    const first = shadow.querySelector('.ka11y-launcher');
+    const config = createConfig();
+    const store = createStore();
+    createPanel({
+      config,
+      store,
+      profiles: createProfiles(store, config.profiles, config.features),
+      hideToolbar: createHideToolbar({ host, key: config.storage.key }),
+      host,
+      shadow,
+    });
+    expect(shadow.querySelectorAll('.ka11y-launcher')).toHaveLength(1);
+    expect(shadow.querySelector('.ka11y-launcher')).toBe(first);
   });
 
   it('is inert and aria-expanded=false when closed', () => {
@@ -175,6 +230,33 @@ describe('panel', () => {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     expect(dialogEl.hasAttribute('inert')).toBe(true);
     expect(store.getState().open).toBe(false);
+    expect(shadow.activeElement).toBe(launcher);
+  });
+
+  it('returns focus to the opener passed to open, then to the launcher by default', () => {
+    const { dialog, launcher } = (() => {
+      const result = setup();
+      return { dialog: result.panel.dialog, launcher: result.launcher };
+    })();
+    const opener = document.createElement('a');
+    opener.href = '#';
+    document.body.append(opener);
+    dialog.open(opener);
+    dialog.close();
+    expect(document.activeElement).toBe(opener);
+    dialog.open();
+    dialog.close();
+    expect(launcher.getRootNode()).toBeInstanceOf(ShadowRoot);
+    expect((launcher.getRootNode() as ShadowRoot).activeElement).toBe(launcher);
+  });
+
+  it('falls back to the launcher when the opener left the document', () => {
+    const { panel, launcher, shadow } = setup();
+    const opener = document.createElement('button');
+    document.body.append(opener);
+    panel.dialog.toggle(opener);
+    opener.remove();
+    panel.dialog.toggle();
     expect(shadow.activeElement).toBe(launcher);
   });
 

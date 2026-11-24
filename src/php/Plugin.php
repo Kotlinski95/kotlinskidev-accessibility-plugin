@@ -19,22 +19,25 @@ final class Plugin {
 
 	public static function init(): void {
 		( new Cache\VersionWatcher() )->register();
+		( new Frontend\PanelDataStore() )->register();
 
 		$counter = new Admin\AltTextCounter();
 
 		$counter->register();
 		add_action( 'rest_api_init', array( new Rest\SettingsController(), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\AltTextController( $counter ), 'register_routes' ) );
+		add_action( 'rest_api_init', array( new Rest\PanelDataController(), 'register_routes' ) );
 		( new Statement\Shortcode() )->register();
 
 		$visibility = new Frontend\Visibility();
 
+		( new Frontend\ScriptAttributes() )->register();
 		( new Frontend\Assets( $visibility ) )->register();
 		( new Frontend\Markup( $visibility ) )->register();
 
 		if ( is_admin() ) {
 			( new Admin\SettingsPage() )->register();
-			( new Admin\AltTextPage( $counter ) )->register();
+			( new Admin\AltTextPage() )->register();
 			( new Admin\DashboardWidget( $counter ) )->register();
 		}
 

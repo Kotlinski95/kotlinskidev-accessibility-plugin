@@ -8,7 +8,7 @@ final class Sanitizer {
 	private const COLOR_PATTERN      = '/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i';
 	private const LENGTH_PATTERN     = '/^-?\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|vmin|vmax|ch)?$/';
 	private const COMBO_PATTERN      = '/^(?:(?:Alt|Ctrl|Shift|Meta)\+)*[A-Za-z0-9]$/';
-	private const LOCALE_PATTERN     = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
+	public const LOCALE_PATTERN      = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
 	private const STRING_KEY_PATTERN = '/^[A-Za-z0-9_.-]{1,80}$/';
 
 	public function sanitize( array $input ): array {
@@ -16,12 +16,13 @@ final class Sanitizer {
 
 		Schema::walk(
 			function ( string $path, array $definition ) use ( $input, &$output ): void {
+				$found = false;
 				$value = Schema::read( $input, $path, $found );
 				Schema::assign( $output, $path, $found ? $this->sanitize_value( $value, $definition ) : $definition['default'] );
 			}
 		);
 
-		return $output;
+		return Schema::apply_performance_preset( $output );
 	}
 
 	public function sanitize_value( mixed $value, array $definition ): mixed {

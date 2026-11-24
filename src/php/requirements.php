@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 function kotlinskidev_a11y_required_files(): array {
-	return array( 'vendor/autoload.php', 'build/frontend.js' );
+	return array( 'vendor/autoload.php', 'build/loader.js', 'build/bootstrap.js', 'build/launcher.css', 'build/manifest.php' );
 }
 
 function kotlinskidev_a11y_missing_files( string $plugin_dir ): array {

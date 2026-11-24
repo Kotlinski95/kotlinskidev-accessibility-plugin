@@ -113,6 +113,7 @@ final class Strings {
 			'profiles.epilepsySafe'                   => __( 'Epilepsy safe', 'kotlinskidev-accessibility' ),
 			'panelTitle'                              => __( 'Accessibility settings', 'kotlinskidev-accessibility' ),
 			'open'                                    => __( 'Open accessibility settings', 'kotlinskidev-accessibility' ),
+			'loadError'                               => __( 'Accessibility tools could not load. Select the button to try again.', 'kotlinskidev-accessibility' ),
 			'close'                                   => __( 'Close', 'kotlinskidev-accessibility' ),
 			'reset'                                   => __( 'Reset all settings', 'kotlinskidev-accessibility' ),
 			'hideToolbar'                             => __( 'Hide toolbar', 'kotlinskidev-accessibility' ),

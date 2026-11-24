@@ -31,7 +31,7 @@ Admin: shortcode `[kotlinskidev_a11y_statement]` (per-language content); missing
 - `Settings/Schema.php`: `key => {type, default, sanitize, enum?}`; `Repository.php`: option `kotlinskidev_a11y_settings`, deep-merge defaults, `schemaVersion` migrations, per-request cache; `Sanitizer.php`: schema-driven, custom CSS via `wp_strip_all_tags` + `</style` strip.
 - `Rest/SettingsController.php`: namespace `kotlinskidev-a11y/v1`; `GET|POST /settings`, `GET /schema`, `GET /export`, `POST /import`, `POST /reset`; permission `current_user_can(apply_filters('kotlinskidev_a11y_capability','manage_options'))`.
 - `I18n/LanguageResolver.php`: `pll_current_language('locale')` > `wpml_current_language` mapped > `$GLOBALS['TRP_LANGUAGE']` > `determine_locale()`; filter `kotlinskidev_a11y_current_locale`. `I18n/Strings.php`: `switch_to_locale`, collect `__()` strings, merge `labels[locale]`, filter `kotlinskidev_a11y_strings`, restore.
-- `Frontend/Visibility.php` (excluded post IDs, types, roles, URL patterns; filter `kotlinskidev_a11y_should_render`), `Assets.php` (deferred `frontend.js/.css`, inline bootstrap `wp_head` priority 1, tokens CSS), `Markup.php` (launcher in `wp_footer` inside `#ka11y-root`).
+- `Frontend/Visibility.php` (excluded post IDs, types, roles, URL patterns; filter `kotlinskidev_a11y_should_render`), `Assets.php` (`loader.js` and eager chunks, inline bootstrap `wp_head` priority 1, tokens CSS), `InlineConfig.php`, `Manifest.php`, `ScriptAttributes.php`, `Markup.php` (launcher in `wp_footer` inside `#ka11y-root`).
 - `Statement/Shortcode.php`, `Admin/{SettingsPage,AltTextPage,DashboardWidget}.php`, `Update/Updater.php`.
 
 ## Option defaults
@@ -40,7 +40,7 @@ Admin: shortcode `[kotlinskidev_a11y_statement]` (per-language content); missing
 - `visibility`: `devices` all true, `breakpoints {tablet:1024, mobile:768}`, `excludePostIds/PostTypes/Roles/UrlPatterns` [].
 - `theme`: `mode` auto, `darkSelector` `html.dark-mode, body.dark-mode`, `lightSelector` `html.light-mode, body.light-mode`, `followPrefersColorScheme` true.
 - `tokens`: primary, onPrimary, surfaceLight, surfaceDark, textLight, textDark, radius, zIndex 2147483000, fontFamily. `customCss` ''.
-- `storage`: mode local|cookie|none, ttlDays 365, key `ka11y`. `statement {pageId:0,url:'',content:{locale:html}}`. `shortcut {enabled:true,combo:'Alt+Shift+A'}`. `hideToolbar {allow:true,days:[1,7,30]}`. `labels {locale:{stringKey:text}}`. `advanced {excludeSelectors:'#wpadminbar', loadStrategy:'defer'|'idle'}`.
+- `storage`: mode local|cookie|none, ttlDays 365, key `ka11y`. `statement {pageId:0,url:'',content:{locale:html}}`. `shortcut {enabled:true,combo:'Alt+Shift+A'}`. `hideToolbar {allow:true,days:[1,7,30]}`. `labels {locale:{stringKey:text}}`. `advanced {excludeSelectors:'#wpadminbar'}`, `performance {preset, strategy:'interaction'|'idle'|'defer'|'async'|'eager', position, fetchPriority, prefetch, pageCss, deviceSkip, optOut}`.
 
 ## Front-end contract
 `window.kotlinskidevA11y = {v, features, profiles, widget, theme, tokens, storage, shortcut, hideToolbar, statementUrl, strings, locale, rtl, customCss}`.

@@ -131,6 +131,8 @@ final class SettingsControllerTest extends TestCase {
 		$this->assertSame( Schema::definitions(), $data['definitions'] );
 		$this->assertSame( Schema::defaults(), $data['defaults'] );
 		$this->assertSame( Schema::VERSION, $data['version'] );
+		$this->assertSame( Schema::performance_presets(), $data['presets'] );
+		$this->assertArrayHasKey( 'performance.strategy', $data['definitions'] );
 	}
 
 	public function test_import_round_trips_export(): void {

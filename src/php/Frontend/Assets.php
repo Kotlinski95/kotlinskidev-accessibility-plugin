@@ -3,38 +3,37 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Frontend;
 
-use Kotlinskidev\A11y\I18n\LanguageResolver;
-use Kotlinskidev\A11y\I18n\Strings;
 use Kotlinskidev\A11y\Settings\Repository;
+use Kotlinskidev\A11y\Support\Json;
 
 final class Assets {
 
-	private const SCRIPT_HANDLE = 'kotlinskidev-a11y-frontend';
+	private const LOADER_HANDLE = 'kotlinskidev-a11y-loader';
 	private const STYLE_HANDLE  = 'kotlinskidev-a11y-frontend';
 	private const TOKENS_HANDLE = 'kotlinskidev-a11y-tokens';
-	private const JSON_FLAGS    = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS;
+	private const CHUNKS        = array( 'kernel', 'panel', 'content', 'color', 'orientation' );
+	private const JSON_FLAGS    = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES;
 	private const SIZES         = array(
 		'sm' => 40,
 		'md' => 52,
 		'lg' => 64,
 	);
 	private const DEVICES       = array( 'desktop', 'tablet', 'mobile' );
+	private const HIDDEN_RULE   = 'html[data-ka11y-hidden] #ka11y-root{display:none!important}';
+	private const NOSCRIPT      = '<noscript><style>#ka11y-root{display:none!important}</style></noscript>';
 
 	private Visibility $visibility;
 	private Repository $repository;
-	private Strings $strings;
-	private LanguageResolver $resolver;
+	private InlineConfig $inline_config;
 
 	public function __construct(
 		?Visibility $visibility = null,
 		?Repository $repository = null,
-		?Strings $strings = null,
-		?LanguageResolver $resolver = null
+		?InlineConfig $inline_config = null
 	) {
-		$this->repository = $repository ?? new Repository();
-		$this->visibility = $visibility ?? new Visibility( $this->repository );
-		$this->strings    = $strings ?? new Strings( $this->repository );
-		$this->resolver   = $resolver ?? new LanguageResolver();
+		$this->repository    = $repository ?? new Repository();
+		$this->visibility    = $visibility ?? new Visibility( $this->repository );
+		$this->inline_config = $inline_config ?? new InlineConfig( $this->repository );
 	}
 
 	public function register(): void {
@@ -54,6 +53,14 @@ final class Assets {
 		wp_register_style( self::TOKENS_HANDLE, false, array(), KOTLINSKIDEV_A11Y_VERSION );
 		wp_enqueue_style( self::TOKENS_HANDLE );
 		wp_add_inline_style( self::TOKENS_HANDLE, $this->tokens_css( $settings ) );
+
+		echo wp_kses(
+			self::NOSCRIPT,
+			array(
+				'noscript' => array(),
+				'style'    => array(),
+			)
+		);
 	}
 
 	public function enqueue(): void {
@@ -61,84 +68,81 @@ final class Assets {
 			return;
 		}
 
-		$settings = $this->repository->get();
-		$idle     = 'idle' === ( $settings['advanced']['loadStrategy'] ?? 'defer' );
-		$version  = $this->asset_version( 'frontend' );
-		$source   = KOTLINSKIDEV_A11Y_URL . 'build/frontend.js';
+		$settings    = $this->repository->get();
+		$performance = $settings['performance'] ?? array();
+		$strategy    = (string) ( $performance['strategy'] ?? 'interaction' );
 
-		wp_enqueue_style(
-			self::STYLE_HANDLE,
-			KOTLINSKIDEV_A11Y_URL . 'build/frontend.css',
-			array(),
-			$version
-		);
+		if ( 'linked' === ( $performance['pageCss'] ?? 'lazy' ) ) {
+			$page = Manifest::style( 'page' );
 
-		if ( $idle ) {
-			wp_register_script( self::SCRIPT_HANDLE, false, array(), $version, array( 'in_footer' => true ) );
-		} else {
-			wp_register_script(
-				self::SCRIPT_HANDLE,
-				$source,
-				array(),
-				$version,
-				array(
-					'in_footer' => true,
-					'strategy'  => 'defer',
-				)
-			);
+			wp_enqueue_style( self::STYLE_HANDLE, KOTLINSKIDEV_A11Y_URL . 'build/' . $page['file'], array(), $page['ver'] );
 		}
 
-		wp_enqueue_script( self::SCRIPT_HANDLE );
-		wp_add_inline_script( self::SCRIPT_HANDLE, $this->config_script( $settings ), 'before' );
+		$this->register_script( 'loader', 'async' === $strategy, $performance );
+		wp_enqueue_script( self::LOADER_HANDLE );
+		wp_add_inline_script( self::LOADER_HANDLE, $this->inline_config->script( $settings ), 'before' );
 
-		if ( $idle ) {
-			wp_add_inline_script( self::SCRIPT_HANDLE, $this->idle_loader( add_query_arg( 'ver', $version, $source ) ) );
+		if ( 'eager' !== $strategy ) {
+			return;
 		}
-	}
 
-	public function config( array $settings ): array {
-		$locale = $this->resolver->current_locale();
-
-		return array(
-			'v'            => KOTLINSKIDEV_A11Y_VERSION,
-			'features'     => $settings['features'] ?? array(),
-			'profiles'     => $settings['profiles'] ?? array(),
-			'widget'       => $settings['widget'] ?? array(),
-			'theme'        => $settings['theme'] ?? array(),
-			'tokens'       => $settings['tokens'] ?? array(),
-			'storage'      => $settings['storage'] ?? array(),
-			'shortcut'     => $settings['shortcut'] ?? array(),
-			'hideToolbar'  => $settings['hideToolbar'] ?? array(),
-			'statementUrl' => $this->statement_url( $settings ),
-			'strings'      => $this->strings->for_locale( $locale ),
-			'locale'       => $locale,
-			'rtl'          => $this->resolver->is_rtl_locale( $locale ),
-			'customCss'    => (string) ( $settings['customCss'] ?? '' ),
-			'advanced'     => array(
-				'excludeSelectors' => (string) ( $settings['advanced']['excludeSelectors'] ?? '' ),
-			),
-			'assets'       => array(
-				'dyslexicFontUrl' => KOTLINSKIDEV_A11Y_URL . 'assets/fonts/opendyslexic-regular.woff2',
-			),
-		);
-	}
-
-	public function config_script( array $settings ): string {
-		return 'window.kotlinskidevA11y = ' . wp_json_encode( $this->config( $settings ), self::JSON_FLAGS ) . ';';
+		foreach ( self::CHUNKS as $chunk ) {
+			$this->register_script( $chunk, false, $performance );
+			wp_enqueue_script( 'kotlinskidev-a11y-' . $chunk );
+		}
 	}
 
 	public function tokens_css( array $settings ): string {
 		$css  = $this->root_variables( $settings );
 		$css .= $this->device_rules( $settings );
+		$css .= self::HIDDEN_RULE;
+		$css .= (string) ( $settings['customCss'] ?? '' );
+
+		if ( 'inline' === ( $settings['performance']['pageCss'] ?? 'lazy' ) ) {
+			$css .= $this->read_build_file( Manifest::style( 'page' )['file'] );
+		}
 
 		return str_replace( '<', '', $css );
 	}
 
-	private function bootstrap_script( array $settings ): string {
-		$storage = wp_json_encode( $settings['storage'] ?? array(), self::JSON_FLAGS );
-		$code    = $this->read_build_file( 'bootstrap.js' );
+	private function register_script( string $name, bool $async, array $performance ): void {
+		$entry    = Manifest::script( $name );
+		$args     = array(
+			'in_footer' => 'head' !== ( $performance['position'] ?? 'footer' ),
+			'strategy'  => $async ? 'async' : 'defer',
+		);
+		$priority = match ( $performance['fetchPriority'] ?? 'auto' ) {
+			'low'   => 'low',
+			'high'  => 'high',
+			default => 'auto',
+		};
 
-		return 'window.kotlinskidevA11y={storage:' . $storage . '};' . str_ireplace( '</script', '<\/script', $code );
+		if ( 'auto' !== $priority && ScriptAttributes::supports_native_fetch_priority() ) {
+			$args['fetchpriority'] = $priority;
+		}
+
+		wp_register_script( 'kotlinskidev-a11y-' . $name, KOTLINSKIDEV_A11Y_URL . 'build/' . $entry['file'], array(), $entry['ver'], $args );
+	}
+
+	private function bootstrap_script( array $settings ): string {
+		$storage = (array) ( $settings['storage'] ?? array() );
+		$css     = 'lazy' === ( $settings['performance']['pageCss'] ?? 'lazy' ) ? $this->page_css_url() : null;
+		$prefix  = InlineConfig::GLOBAL_NAME . '=' . Json::encode(
+			array(
+				'storage' => $storage,
+				'css'     => $css,
+				'hk'      => (string) ( $storage['key'] ?? 'ka11y' ) . '-hidden',
+			),
+			self::JSON_FLAGS
+		) . ';';
+
+		return $prefix . str_ireplace( '</script', '<\/script', $this->read_build_file( 'bootstrap.js' ) );
+	}
+
+	private function page_css_url(): string {
+		$page = Manifest::style( 'page' );
+
+		return Manifest::url( $page ) . '?ver=' . $page['ver'];
 	}
 
 	private function read_build_file( string $file ): string {
@@ -149,42 +153,6 @@ final class Assets {
 		}
 
 		return implode( '', (array) file( $path ) );
-	}
-
-	private function asset_version( string $name ): string {
-		$path = KOTLINSKIDEV_A11Y_DIR . 'build/' . $name . '.asset.php';
-
-		if ( is_readable( $path ) ) {
-			$asset = include $path;
-
-			if ( is_array( $asset ) && isset( $asset['version'] ) ) {
-				return (string) $asset['version'];
-			}
-		}
-
-		return KOTLINSKIDEV_A11Y_VERSION;
-	}
-
-	private function idle_loader( string $url ): string {
-		$encoded = wp_json_encode( $url, self::JSON_FLAGS );
-
-		return '(function(){var load=function(){var s=document.createElement("script");s.src=' . $encoded . ';s.defer=true;document.head.appendChild(s);};'
-			. 'if("requestIdleCallback" in window){window.requestIdleCallback(load,{timeout:3000});}else{window.setTimeout(load,1);}})();';
-	}
-
-	private function statement_url( array $settings ): string {
-		$statement = $settings['statement'] ?? array();
-		$page_id   = (int) ( $statement['pageId'] ?? 0 );
-
-		if ( $page_id > 0 ) {
-			$permalink = get_permalink( $page_id );
-
-			if ( is_string( $permalink ) && '' !== $permalink ) {
-				return $permalink;
-			}
-		}
-
-		return (string) ( $statement['url'] ?? '' );
 	}
 
 	private function root_variables( array $settings ): string {
@@ -202,17 +170,9 @@ final class Assets {
 	}
 
 	private function device_rules( array $settings ): string {
-		$widget      = $settings['widget'] ?? array();
-		$visibility  = $settings['visibility'] ?? array();
-		$breakpoints = $visibility['breakpoints'] ?? array();
-		$tablet      = (int) ( $breakpoints['tablet'] ?? 1024 );
-		$mobile      = (int) ( $breakpoints['mobile'] ?? 768 );
-		$queries     = array(
-			'desktop' => '(min-width:' . ( $tablet + 1 ) . 'px)',
-			'tablet'  => '(min-width:' . ( $mobile + 1 ) . 'px) and (max-width:' . $tablet . 'px)',
-			'mobile'  => '(max-width:' . $mobile . 'px)',
-		);
-		$css         = '';
+		$widget  = $settings['widget'] ?? array();
+		$queries = InlineConfig::device_queries( $settings );
+		$css     = '';
 
 		foreach ( self::DEVICES as $device ) {
 			$declarations = $this->placement(
@@ -221,7 +181,7 @@ final class Assets {
 				(int) ( $widget['offsetY'][ $device ] ?? 20 )
 			);
 
-			if ( false === ( $visibility['devices'][ $device ] ?? true ) ) {
+			if ( false === ( $settings['visibility']['devices'][ $device ] ?? true ) ) {
 				$declarations .= 'display:none!important;';
 			}
 

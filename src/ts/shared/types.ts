@@ -1,3 +1,5 @@
+import type { KernelExports } from '../frontend/kernel';
+
 export type StorageMode = 'local' | 'cookie' | 'none';
 
 export type Device = 'desktop' | 'tablet' | 'mobile';
@@ -106,9 +108,105 @@ export interface KotlinskidevA11yConfig {
   assets: AssetsConfig;
 }
 
+export type LoadStrategy = 'interaction' | 'idle' | 'defer' | 'async' | 'eager';
+
+export type PrefetchMode = 'hover' | 'idle' | 'none';
+
+export type PageCssMode = 'lazy' | 'linked' | 'inline';
+
+export type ChunkName = 'kernel' | 'panel' | 'content' | 'color' | 'orientation';
+
+export type GroupName = 'content' | 'color' | 'orientation';
+
+export interface ParsedCombo {
+  alt: boolean;
+  shift: boolean;
+  ctrl: boolean;
+  meta: boolean;
+  key: string;
+  code: string;
+}
+
+export interface InlineShortcutConfig {
+  enabled: boolean;
+  combo: string;
+  parsed: ParsedCombo | null;
+}
+
+export interface LoadConfig {
+  strategy: LoadStrategy;
+  prefetch: PrefetchMode;
+  pageCss: PageCssMode;
+  deviceSkip: boolean;
+}
+
+export interface ChunksConfig {
+  base: string;
+  ver: Record<ChunkName | 'page', string>;
+}
+
+export interface InlineConfig {
+  v: string;
+  locale: string;
+  rtl: boolean;
+  storage: StorageConfig;
+  shortcut: InlineShortcutConfig;
+  load: LoadConfig;
+  hiddenMedia: string;
+  chunks: ChunksConfig;
+  data: string[];
+  strings: Record<string, string>;
+  advanced: AdvancedConfig;
+  assets: AssetsConfig;
+  css?: string | null;
+  hk?: string;
+}
+
+export interface PanelData {
+  hash: string;
+  locale: string;
+  features: Record<string, FeatureConfig>;
+  profiles: Record<string, ProfileConfig>;
+  widget: WidgetConfig;
+  theme: ThemeConfig;
+  tokens: TokensConfig;
+  hideToolbar: HideToolbarConfig;
+  statementUrl: string;
+  customCss: string;
+  strings: Record<string, string>;
+}
+
+export type ChunkFactory = (kernel: KernelExports | undefined) => unknown;
+
+export type ChunkRecord = [name: ChunkName, abi: number, factory: ChunkFactory];
+
+export interface ChunkSink {
+  push(...records: ChunkRecord[]): number;
+}
+
+export interface RuntimeHandoff {
+  s: string[];
+  c: ChunkRecord[] | ChunkSink;
+  e?: (event: MouseEvent) => void;
+}
+
+export type CommandSource = 'early' | 'launcher' | 'hash' | 'shortcut' | 'api';
+
+export interface KA11yCommand {
+  action: string;
+  source?: CommandSource;
+  opener?: HTMLElement | null;
+}
+
+export interface KA11yQueue {
+  push(...commands: KA11yCommand[]): number;
+}
+
 declare global {
   interface Window {
     kotlinskidevA11y?: KotlinskidevA11yConfig;
     kotlinskidevA11yOff?: boolean;
+    kotlinskidevA11yRuntime?: RuntimeHandoff;
+    kotlinskidevA11yQueue?: KA11yCommand[] | KA11yQueue;
   }
 }

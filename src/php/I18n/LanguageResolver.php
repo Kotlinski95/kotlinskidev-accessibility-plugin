@@ -16,6 +16,21 @@ final class LanguageResolver {
 		return (string) apply_filters( 'kotlinskidev_a11y_current_locale', $locale );
 	}
 
+	public function known_locales(): array {
+		$locales = array_merge(
+			array( $this->current_locale(), 'en_US' ),
+			$this->polylang_locales(),
+			$this->wpml_locales(),
+			$this->translatepress_locales(),
+			function_exists( 'get_available_languages' ) ? get_available_languages() : array()
+		);
+
+		$filtered = apply_filters( 'kotlinskidev_a11y_known_locales', $locales );
+		$strings  = array_filter( is_array( $filtered ) ? $filtered : array(), 'is_string' );
+
+		return array_values( array_unique( array_filter( $strings, static fn ( string $locale ): bool => '' !== $locale ) ) );
+	}
+
 	public function is_rtl_locale( string $locale ): bool {
 		$wp_locale = $GLOBALS['wp_locale'] ?? null;
 
@@ -23,9 +38,38 @@ final class LanguageResolver {
 			return 'rtl' === $wp_locale->text_direction;
 		}
 
-		$language = strtolower( (string) preg_split( '/[_\-]/', $locale )[0] );
+		$parts    = preg_split( '/[_\-]/', $locale );
+		$language = strtolower( false === $parts ? '' : $parts[0] );
 
 		return in_array( $language, self::RTL_LANGUAGES, true );
+	}
+
+	private function polylang_locales(): array {
+		if ( ! function_exists( 'pll_languages_list' ) ) {
+			return array();
+		}
+
+		$list = pll_languages_list( array( 'fields' => 'locale' ) );
+
+		return is_array( $list ) ? $list : array();
+	}
+
+	private function wpml_locales(): array {
+		$languages = apply_filters( 'wpml_active_languages', null );
+		$locales   = array();
+
+		foreach ( is_array( $languages ) ? $languages : array() as $code => $language ) {
+			$locales[] = is_array( $language ) && isset( $language['default_locale'] ) ? $language['default_locale'] : $this->locale_from_code( (string) $code );
+		}
+
+		return $locales;
+	}
+
+	private function translatepress_locales(): array {
+		$settings = get_option( 'trp_settings', array() );
+		$list     = is_array( $settings ) ? ( $settings['translation-languages'] ?? array() ) : array();
+
+		return is_array( $list ) ? array_values( $list ) : array();
 	}
 
 	private function from_polylang(): ?string {

@@ -16,17 +16,21 @@ final class Markup {
 	private Repository $repository;
 	private Strings $strings;
 	private LanguageResolver $resolver;
+	private string $launcher_css_path;
 
 	public function __construct(
 		?Visibility $visibility = null,
 		?Repository $repository = null,
 		?Strings $strings = null,
-		?LanguageResolver $resolver = null
+		?LanguageResolver $resolver = null,
+		?string $launcher_css_path = null
 	) {
 		$this->repository = $repository ?? new Repository();
 		$this->visibility = $visibility ?? new Visibility( $this->repository );
 		$this->strings    = $strings ?? new Strings( $this->repository );
 		$this->resolver   = $resolver ?? new LanguageResolver();
+
+		$this->launcher_css_path = $launcher_css_path ?? KOTLINSKIDEV_A11Y_DIR . 'build/launcher.css';
 	}
 
 	public function register(): void {
@@ -45,11 +49,27 @@ final class Markup {
 		$strings = $this->strings->for_locale( $this->resolver->current_locale() );
 		$label   = (string) ( $strings['open'] ?? '' );
 		$widget  = $settings['widget'] ?? array();
+		$locale  = $this->resolver->current_locale();
 
-		return '<div id="ka11y-root"' . $this->root_attributes( $widget ) . '>'
+		return '<div id="ka11y-root"' . $this->language_attributes( $locale ) . $this->root_attributes( $widget ) . '><template shadowrootmode="open">'
+			. $this->launcher_style()
 			. '<button type="button" class="ka11y-launcher" aria-label="' . esc_attr( $label ) . '" aria-haspopup="dialog" aria-expanded="false">'
 			. $this->icon( $widget['icon'] ?? 'universal' )
-			. '</button></div>';
+			. '</button></template></div>';
+	}
+
+	private function language_attributes( string $locale ): string {
+		$direction = $this->resolver->is_rtl_locale( $locale ) ? 'rtl' : 'ltr';
+
+		return ' lang="' . esc_attr( str_replace( '_', '-', $locale ) ) . '" dir="' . $direction . '"';
+	}
+
+	private function launcher_style(): string {
+		if ( ! is_readable( $this->launcher_css_path ) ) {
+			return '';
+		}
+
+		return '<style>' . implode( '', (array) file( $this->launcher_css_path ) ) . '</style>';
 	}
 
 	private function root_attributes( array $widget ): string {
@@ -96,22 +116,26 @@ final class Markup {
 		);
 
 		return array(
-			'div'    => array(
+			'div'      => array(
 				'id'                          => true,
+				'lang'                        => true,
+				'dir'                         => true,
 				'data-ka11y-position-desktop' => true,
 				'data-ka11y-position-tablet'  => true,
 				'data-ka11y-position-mobile'  => true,
 				'data-ka11y-size'             => true,
 				'data-ka11y-icon-border'      => true,
 			),
-			'button' => array(
+			'template' => array( 'shadowrootmode' => true ),
+			'style'    => array(),
+			'button'   => array(
 				'type'          => true,
 				'class'         => true,
 				'aria-label'    => true,
 				'aria-haspopup' => true,
 				'aria-expanded' => true,
 			),
-			'img'    => array(
+			'img'      => array(
 				'class'    => true,
 				'src'      => true,
 				'alt'      => true,
@@ -119,9 +143,9 @@ final class Markup {
 				'height'   => true,
 				'decoding' => true,
 			),
-			'svg'    => $svg_attributes,
-			'circle' => $svg_attributes,
-			'path'   => $svg_attributes,
+			'svg'      => $svg_attributes,
+			'circle'   => $svg_attributes,
+			'path'     => $svg_attributes,
 		);
 	}
 }

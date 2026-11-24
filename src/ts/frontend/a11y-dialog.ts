@@ -7,9 +7,9 @@ export interface DialogOptions {
 }
 
 export interface Dialog {
-  open(): void;
+  open(opener?: HTMLElement | null): void;
   close(): void;
-  toggle(): void;
+  toggle(opener?: HTMLElement | null): void;
   isOpen(): boolean;
   destroy(): void;
 }
@@ -21,6 +21,7 @@ const isFocusable = (element: HTMLElement): boolean =>
 
 export const createDialog = ({ panel, launcher, shadow, doc = document, onChange }: DialogOptions): Dialog => {
   let opened = false;
+  let returnTarget: HTMLElement = launcher;
 
   const focusables = (): HTMLElement[] => [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(isFocusable);
 
@@ -56,9 +57,10 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     launcher.setAttribute('aria-expanded', String(opened));
   };
 
-  function open(): void {
+  function open(opener?: HTMLElement | null): void {
     if (opened) return;
     opened = true;
+    returnTarget = opener ?? launcher;
     render();
     doc.addEventListener('keydown', onKeydown);
     onChange?.(true);
@@ -71,12 +73,12 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     render();
     doc.removeEventListener('keydown', onKeydown);
     onChange?.(false);
-    launcher.focus();
+    (returnTarget.isConnected ? returnTarget : launcher).focus();
   }
 
-  function toggle(): void {
+  function toggle(opener?: HTMLElement | null): void {
     if (opened) close();
-    else open();
+    else open(opener);
   }
 
   const destroy = (): void => {

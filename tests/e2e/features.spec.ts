@@ -114,6 +114,9 @@ test.describe('feature toggles', () => {
     await widget.feature('monochrome').click();
     await expect(widget.feature('monochrome')).toHaveAttribute('aria-pressed', 'true');
 
+    await expect
+      .poll(() => page.evaluate(() => getComputedStyle(document.querySelector('#e2e-spacer') as HTMLElement).filter))
+      .toContain('grayscale(1)');
     const filters = await page.evaluate(() => ({
       html: getComputedStyle(document.documentElement).filter,
       body: getComputedStyle(document.body).filter,

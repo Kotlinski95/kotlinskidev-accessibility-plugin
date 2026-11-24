@@ -37,10 +37,10 @@ final class MarkupTest extends TestCase {
 		Functions\when( 'switch_to_locale' )->justReturn( false );
 	}
 
-	private function markup( bool $render = true ): Markup {
+	private function markup( bool $render = true, ?string $launcher_css = null ): Markup {
 		Functions\when( 'is_admin' )->justReturn( ! $render );
 
-		return new Markup( new Visibility() );
+		return new Markup( new Visibility(), null, null, null, $launcher_css );
 	}
 
 	public function test_registers_footer_hook(): void {
@@ -100,5 +100,64 @@ final class MarkupTest extends TestCase {
 		$this->markup()->render();
 
 		$this->assertStringContainsString( 'id="ka11y-root"', (string) ob_get_clean() );
+	}
+
+	public function test_launcher_is_a_declarative_shadow_root_with_inline_css(): void {
+		$html = $this->markup()->html( Schema::defaults() );
+
+		$this->assertStringContainsString( '><template shadowrootmode="open"><style>', $html );
+		$this->assertStringContainsString( '<style>:host{position:fixed}.ka11y-launcher{display:flex;color:red}</style><button type="button"', $html );
+		$this->assertStringEndsWith( '</button></template></div>', $html );
+		$this->assertSame( 1, substr_count( $html, '<template' ) );
+	}
+
+	public function test_launcher_button_lives_inside_the_template_only(): void {
+		$html     = $this->markup()->html( Schema::defaults() );
+		$template = (int) strpos( $html, '<template' );
+
+		$this->assertGreaterThan( $template, (int) strpos( $html, '<button' ) );
+		$this->assertLessThan( (int) strpos( $html, '</template>' ), (int) strpos( $html, '</button>' ) );
+	}
+
+	public function test_missing_launcher_css_omits_the_style_element(): void {
+		$html = $this->markup( true, sys_get_temp_dir() . '/ka11y-missing-launcher.css' )->html( Schema::defaults() );
+
+		$this->assertStringNotContainsString( '<style', $html );
+		$this->assertStringContainsString( '<template shadowrootmode="open"><button', $html );
+	}
+
+	public function test_label_with_markup_characters_is_escaped(): void {
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'apply_filters' )->alias(
+			static fn ( string $hook, mixed $value ): mixed => 'kotlinskidev_a11y_strings' === $hook ? array_merge( (array) $value, array( 'open' => 'Open "<>" menu' ) ) : $value
+		);
+
+		$html = $this->markup()->html( Schema::defaults() );
+
+		$this->assertStringContainsString( 'aria-label="Open &quot;&lt;&gt;&quot; menu"', $html );
+	}
+
+	public function test_kses_allow_list_keeps_template_and_style(): void {
+		$allowed = array();
+		Functions\when( 'wp_kses' )->alias(
+			static function ( string $html, array $allow ) use ( &$allowed ): string {
+				$allowed = $allow;
+
+				return $html;
+			}
+		);
+
+		ob_start();
+		$this->markup()->render();
+		ob_end_clean();
+
+		$this->assertSame( array( 'shadowrootmode' => true ), $allowed['template'] );
+		$this->assertSame( array(), $allowed['style'] );
+	}
+
+	public function test_host_carries_language_and_direction(): void {
+		$html = $this->markup()->html( Schema::defaults() );
+
+		$this->assertStringContainsString( '<div id="ka11y-root" lang="en-US" dir="ltr"', $html );
 	}
 }

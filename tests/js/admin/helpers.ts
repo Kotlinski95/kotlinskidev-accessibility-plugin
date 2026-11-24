@@ -81,6 +81,13 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['visibility.excludePostTypes'] = definition('array', 'text_list', []);
   defs['visibility.excludeRoles'] = definition('array', 'text_list', []);
   defs['visibility.excludeUrlPatterns'] = definition('array', 'text_list', []);
+  defs['visibility.excludeTemplates'] = definition('array', 'text_list', []);
+  defs['visibility.mode'] = definition('string', 'enum', 'everywhere', { enum: ['everywhere', 'only_on', 'except_on'] });
+  defs['visibility.includePostIds'] = definition('array', 'int_list', []);
+  defs['visibility.includePostTypes'] = definition('array', 'text_list', []);
+  defs['visibility.includeTemplates'] = definition('array', 'text_list', []);
+  defs['visibility.includeRoles'] = definition('array', 'text_list', []);
+  defs['visibility.includeUrlPatterns'] = definition('array', 'text_list', []);
   defs['theme.mode'] = definition('string', 'enum', 'auto', { enum: ['auto', 'light', 'dark'] });
   defs['theme.darkSelector'] = definition('string', 'text', 'html.dark-mode');
   defs['theme.lightSelector'] = definition('string', 'text', 'html.light-mode');
@@ -104,7 +111,9 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['hideToolbar.days'] = definition('array', 'int_list', [1, 7, 30]);
   defs.labels = definition('object', 'label_map', {});
   defs['advanced.excludeSelectors'] = definition('string', 'text', '#wpadminbar');
-  defs['advanced.loadStrategy'] = definition('string', 'enum', 'defer', { enum: ['defer', 'idle'] });
+  defs['performance.strategy'] = definition('string', 'enum', 'interaction', {
+    enum: ['interaction', 'idle', 'defer', 'async', 'eager'],
+  });
   return defs;
 };
 

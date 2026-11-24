@@ -38,6 +38,26 @@ jobs:
       - run: vendor/bin/phpcs --standard=phpcs.xml.dist
       - run: composer test:unit
 
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+      - id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-phpstan-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-phpstan-
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer run analyse
+
   js:
     name: Node 22
     runs-on: ubuntu-latest
@@ -52,12 +72,13 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+      - run: npm run check-budget
       - run: npm run check-version
 
   e2e:
     name: E2E
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
       contents: read
     steps:
@@ -76,7 +97,14 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run wp-env:start
-      - run: npm run test:e2e
+      - id: scope
+        run: |
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ] && npx playwright test --list --grep @smoke 2>/dev/null | grep -Eq '^Total: [1-9]'; then
+            echo "args=--grep @smoke" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+      - run: npx playwright test ${{ steps.scope.outputs.args }}
         env:
           CI: 'true'
       - if: failure()
@@ -89,3 +117,38 @@ jobs:
           retention-days: 7
       - if: always()
         run: npm run wp-env:stop
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    env:
+      PLUGIN_SLUG: kotlinskidev-accessibility
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2
+          coverage: none
+      - run: npm ci
+      - run: npm run build
+      - run: composer install --no-dev -o --prefer-dist --no-interaction
+      - run: |
+          mkdir -p "dist/${PLUGIN_SLUG}"
+          rsync -a --exclude-from=.distignore ./ "dist/${PLUGIN_SLUG}/" --exclude=dist
+      - uses: WordPress/plugin-check-action@v1.1.9
+        with:
+          build-dir: dist/${{ env.PLUGIN_SLUG }}
+          slug: ${{ env.PLUGIN_SLUG }}
+          exclude-checks: |
+            plugin_updater
+            plugin_readme
+          ignore-codes: |
+            wp_function_not_compatible_with_requires_wp
+            missing_composer_json_file
+            WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+            WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound

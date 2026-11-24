@@ -1,0 +1,47 @@
+@use '../widget/tokens';
+
+@keyframes ka11y-spin {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 1;
+    transform: rotate(1turn);
+  }
+}
+
+:host([data-state]) .ka11y-launcher::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+:host([data-state='loading']) .ka11y-launcher::after {
+  inset: -4px;
+  border: 2px solid tokens.$clear;
+  border-top-color: var(--ka11y-w-focus);
+  opacity: 0;
+  animation: ka11y-spin 0.8s linear 300ms infinite;
+}
+
+:host([data-state='error']) .ka11y-launcher::after {
+  content: '!';
+  top: -4px;
+  right: -4px;
+  text-align: center;
+  width: 14px;
+  height: 14px;
+  background: #b3261e;
+  color: #fff;
+  font: 700 10px/14px sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([data-state='loading']) .ka11y-launcher::after {
+    animation: none;
+    opacity: 1;
+    border-color: var(--ka11y-w-focus);
+  }
+}

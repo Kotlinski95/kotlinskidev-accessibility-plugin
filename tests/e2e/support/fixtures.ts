@@ -17,6 +17,15 @@ export interface WidgetLocators {
   reset: Locator;
 }
 
+export type FixtureName = 'stock' | 'hostile';
+
+export const FIXTURE_NAMES: readonly FixtureName[] = ['stock', 'hostile'];
+export const FIXTURE_COOKIE = 'ka11y_fixture';
+
+interface Options {
+  fixture: FixtureName;
+}
+
 interface Fixtures {
   admin: APIRequestContext;
   settings: SettingsClient;
@@ -32,7 +41,14 @@ export const widgetFor = (page: Page): WidgetLocators => ({
   reset: page.locator(`${PANEL} .ka11y-reset`),
 });
 
-export const test = base.extend<Fixtures>({
+export const test = base.extend<Fixtures & Options>({
+  fixture: ['stock', { option: true }],
+  context: async ({ context, fixture, baseURL }, use) => {
+    if (fixture !== 'stock') {
+      await context.addCookies([{ name: FIXTURE_COOKIE, value: fixture, url: baseURL ?? BASE_URL }]);
+    }
+    await use(context);
+  },
   admin: async ({ playwright }, use) => {
     const context = await playwright.request.newContext({ baseURL: BASE_URL, storageState: AUTH_FILE });
     await use(context);
@@ -56,11 +72,17 @@ export const gotoHome = async (page: Page): Promise<WidgetLocators> => {
   return widget;
 };
 
+export const PANEL_TIMEOUT = 5_000;
+
+export const waitForPanel = async (widget: WidgetLocators): Promise<void> => {
+  await expect(widget.launcher).toHaveAttribute('aria-expanded', 'true', { timeout: PANEL_TIMEOUT });
+  await expect(widget.panel).toBeVisible({ timeout: PANEL_TIMEOUT });
+  await expect.poll(() => widget.panel.evaluate((panel) => getComputedStyle(panel).opacity), { timeout: PANEL_TIMEOUT }).toBe('1');
+};
+
 export const openPanel = async (page: Page, widget: WidgetLocators): Promise<void> => {
   await widget.launcher.click();
-  await expect(widget.launcher).toHaveAttribute('aria-expanded', 'true');
-  await expect(widget.panel).toBeVisible();
-  await expect.poll(() => widget.panel.evaluate((panel) => getComputedStyle(panel).opacity)).toBe('1');
+  await waitForPanel(widget);
 };
 
 export { expect };

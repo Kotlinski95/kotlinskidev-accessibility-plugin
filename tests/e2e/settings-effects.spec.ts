@@ -12,6 +12,7 @@ test.describe('settings driven behaviour', () => {
 
   test('host follows html.dark-mode and html.light-mode', async ({ page }) => {
     const widget = await gotoHome(page);
+    await openPanel(page, widget);
     await page.evaluate(() => document.documentElement.classList.add('dark-mode'));
     await expect(widget.host).toHaveAttribute('data-theme', 'dark');
     await page.evaluate(() => {
@@ -61,7 +62,7 @@ test.describe('settings driven behaviour', () => {
     await page.goto(`/?p=${post?.id}`);
     await expect(widgetFor(page).launcher).toBeVisible();
 
-    await settings.patch({ visibility: { excludePostTypes: ['post'] } });
+    await settings.patch({ visibility: { mode: 'except_on', excludePostTypes: ['post'] } });
     await page.goto(`/?p=${post?.id}`);
     await expect(page.locator('#ka11y-root')).toHaveCount(0);
     await expect(page.locator('#kotlinskidev-a11y-bootstrap')).toHaveCount(0);
@@ -75,7 +76,7 @@ test.describe('settings driven behaviour', () => {
     expect(post).toBeDefined();
     expect(sample).toBeDefined();
 
-    await settings.patch({ visibility: { excludePostIds: [post?.id] } });
+    await settings.patch({ visibility: { mode: 'except_on', excludePostIds: [post?.id] } });
     await page.goto(`/?p=${post?.id}`);
     await expect(page.locator('#ka11y-root')).toHaveCount(0);
     await page.goto(`/?page_id=${sample?.id}`);
@@ -84,13 +85,14 @@ test.describe('settings driven behaviour', () => {
 
   test('custom CSS lands in the shadow root and the document', async ({ page, settings }) => {
     await settings.patch({ customCss: `.ka11y-launcher{${CUSTOM_CSS_MARKER}:1}` });
-    await gotoHome(page);
+    const widget = await gotoHome(page);
+    await openPanel(page, widget);
     const inShadow = await page.evaluate((marker) => {
       const shadow = document.querySelector('#ka11y-root')?.shadowRoot;
       return [...(shadow?.querySelectorAll('style') ?? [])].some((style) => style.textContent?.includes(marker) === true);
     }, CUSTOM_CSS_MARKER);
     expect(inShadow).toBe(true);
-    const inDocument = await page.evaluate((marker) => document.getElementById('ka11y-custom-css')?.textContent?.includes(marker) === true, CUSTOM_CSS_MARKER);
+    const inDocument = await page.evaluate((marker) => document.getElementById('kotlinskidev-a11y-tokens-inline-css')?.textContent?.includes(marker) === true, CUSTOM_CSS_MARKER);
     expect(inDocument).toBe(true);
   });
 });

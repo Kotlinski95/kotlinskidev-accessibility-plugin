@@ -96,10 +96,92 @@ final class RepositoryTest extends TestCase {
 		$this->assertSame( Schema::defaults(), ( new Repository() )->reset() );
 	}
 
-	public function test_migrations_list_is_empty_and_schema_version_stamped(): void {
+	public function test_migration_one_is_registered_and_schema_version_stamped(): void {
 		Functions\when( 'get_option' )->justReturn( array( 'schemaVersion' => 0 ) );
 
-		$this->assertSame( array(), Repository::migrations() );
+		$this->assertSame( array( 1 ), array_keys( Repository::migrations() ) );
 		$this->assertSame( Schema::VERSION, ( new Repository() )->get()['schemaVersion'] );
+	}
+
+	private function stored_v1( array $extra ): array {
+		Functions\when( 'get_option' )->justReturn( array_merge( array( 'schemaVersion' => 1 ), $extra ) );
+
+		return ( new Repository() )->get();
+	}
+
+	public function test_v1_idle_becomes_custom_idle_linked(): void {
+		$result = $this->stored_v1( array( 'advanced' => array( 'excludeSelectors' => '#x', 'loadStrategy' => 'idle' ) ) );
+
+		$this->assertSame(
+			array(
+				'preset'        => 'custom',
+				'strategy'      => 'idle',
+				'position'      => 'footer',
+				'fetchPriority' => 'auto',
+				'prefetch'      => 'hover',
+				'pageCss'       => 'linked',
+				'deviceSkip'    => true,
+				'optOut'        => array(),
+			),
+			$result['performance']
+		);
+		$this->assertSame( array( 'excludeSelectors' => '#x' ), $result['advanced'] );
+		$this->assertSame( 2, $result['schemaVersion'] );
+	}
+
+	public function test_v1_defer_becomes_custom_defer(): void {
+		$result = $this->stored_v1( array( 'advanced' => array( 'loadStrategy' => 'defer' ) ) );
+
+		$this->assertSame( 'custom', $result['performance']['preset'] );
+		$this->assertSame( 'defer', $result['performance']['strategy'] );
+	}
+
+	public function test_v1_unknown_load_strategy_becomes_defer(): void {
+		$this->assertSame( 'defer', $this->stored_v1( array( 'advanced' => array( 'loadStrategy' => 'weird' ) ) )['performance']['strategy'] );
+	}
+
+	public function test_v1_without_advanced_gets_defaults(): void {
+		$result = $this->stored_v1( array() );
+
+		$this->assertSame( Schema::defaults()['performance'], $result['performance'] );
+		$this->assertSame( 'recommended', $result['performance']['preset'] );
+	}
+
+	public function test_v1_non_empty_exclude_list_gives_except_on(): void {
+		$this->assertSame( 'except_on', $this->stored_v1( array( 'visibility' => array( 'excludeRoles' => array( 'editor' ) ) ) )['visibility']['mode'] );
+		$this->assertSame( 'except_on', $this->stored_v1( array( 'visibility' => array( 'excludePostIds' => array( 3 ) ) ) )['visibility']['mode'] );
+		$this->assertSame( 'except_on', $this->stored_v1( array( 'visibility' => array( 'excludePostTypes' => array( 'product' ) ) ) )['visibility']['mode'] );
+		$this->assertSame( 'except_on', $this->stored_v1( array( 'visibility' => array( 'excludeUrlPatterns' => array( '/cart*' ) ) ) )['visibility']['mode'] );
+	}
+
+	public function test_v1_empty_lists_give_everywhere(): void {
+		$this->assertSame( 'everywhere', $this->stored_v1( array( 'visibility' => array( 'excludeRoles' => array() ) ) )['visibility']['mode'] );
+		$this->assertSame( 'everywhere', $this->stored_v1( array() )['visibility']['mode'] );
+	}
+
+	public function test_get_applies_preset_row_over_stored_fields(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'schemaVersion' => 2,
+				'performance'   => array( 'preset' => 'compatibility', 'strategy' => 'idle', 'deviceSkip' => true ),
+			)
+		);
+
+		$result = ( new Repository() )->get();
+
+		$this->assertSame( 'eager', $result['performance']['strategy'] );
+		$this->assertFalse( $result['performance']['deviceSkip'] );
+		$this->assertSame( 'linked', $result['performance']['pageCss'] );
+	}
+
+	public function test_get_keeps_custom_stored_fields(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'schemaVersion' => 2,
+				'performance'   => array( 'preset' => 'custom', 'strategy' => 'async' ),
+			)
+		);
+
+		$this->assertSame( 'async', ( new Repository() )->get()['performance']['strategy'] );
 	}
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kotlinskidev\A11y\Admin;
 
 use Kotlinskidev\A11y\Rest\SettingsController;
+use Kotlinskidev\A11y\Support\Json;
 use WP_Post;
 use WP_Query;
 
@@ -16,13 +17,7 @@ final class AltTextPage {
 	public const MOUNT_ID      = 'kotlinskidev-a11y-alt-text';
 	private const JSON_FLAGS   = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS;
 
-	private AltTextCounter $counter;
-
 	private string|false $hook_suffix = false;
-
-	public function __construct( ?AltTextCounter $counter = null ) {
-		$this->counter = $counter ?? new AltTextCounter();
-	}
 
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
@@ -66,7 +61,7 @@ final class AltTextPage {
 		wp_set_script_translations( self::SCRIPT_HANDLE, 'kotlinskidev-accessibility', KOTLINSKIDEV_A11Y_DIR . 'languages' );
 		wp_add_inline_script(
 			self::SCRIPT_HANDLE,
-			'window.kotlinskidevA11yAltText = ' . wp_json_encode( $this->config(), self::JSON_FLAGS ) . ';',
+			'window.kotlinskidevA11yAltText = ' . Json::encode( $this->config(), self::JSON_FLAGS ) . ';',
 			'before'
 		);
 	}
@@ -102,7 +97,7 @@ final class AltTextPage {
 		$this->render_summary( (int) $query->found_posts );
 		$this->render_search( $search );
 
-		if ( array() === $query->posts ) {
+		if ( ! is_array( $query->posts ) || array() === $query->posts ) {
 			printf( '<p class="ka11y-alt-empty">%s</p>', esc_html__( 'Every image has alt text.', 'kotlinskidev-accessibility' ) );
 		} else {
 			$this->render_rows( $query->posts );

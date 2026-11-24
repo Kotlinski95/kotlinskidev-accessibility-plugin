@@ -23,6 +23,8 @@ do_action( 'kotlinskidev_a11y_cache_invalidated', string $reason );
 
 `$reason` is `settings` after settings are saved, imported or reset (at most once per request), or `update` once after the plugin version changes (checked in the admin and cron only, never on first install).
 
+Role-based visibility rules (including `__guest`) only work when the page cache varies by login state. A cache that serves one stored page to everyone shows or hides the widget for the wrong audience.
+
 Hook your cache plugin into it from a small mu-plugin or the theme:
 
 ```php

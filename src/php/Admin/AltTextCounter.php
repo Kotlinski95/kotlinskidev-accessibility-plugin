@@ -47,7 +47,7 @@ final class AltTextCounter {
 		$this->flush();
 	}
 
-	public function on_meta_change( $meta_id, $object_id, $meta_key = '' ): void {
+	public function on_meta_change( mixed $meta_id, mixed $object_id, mixed $meta_key = '' ): void {
 		if ( MissingAltQuery::META_KEY === $meta_key ) {
 			$this->flush();
 		}

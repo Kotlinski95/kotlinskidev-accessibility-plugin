@@ -22,14 +22,50 @@ final class Repository {
 	}
 
 	public static function migrations(): array {
-		return array();
+		return array(
+			1 => static function ( array $stored ): array {
+				if ( isset( $stored['advanced']['loadStrategy'] ) ) {
+					$legacy = $stored['advanced']['loadStrategy'];
+
+					$stored['performance'] = array(
+						'preset'        => 'custom',
+						'strategy'      => in_array( $legacy, array( 'defer', 'idle' ), true ) ? $legacy : 'defer',
+						'position'      => 'footer',
+						'fetchPriority' => 'auto',
+						'prefetch'      => 'hover',
+						'pageCss'       => 'linked',
+						'deviceSkip'    => true,
+						'optOut'        => array(),
+					);
+
+					unset( $stored['advanced']['loadStrategy'] );
+				}
+
+				$restricted = false;
+
+				foreach ( array( 'excludePostIds', 'excludePostTypes', 'excludeRoles', 'excludeUrlPatterns' ) as $key ) {
+					$list = $stored['visibility'][ $key ] ?? null;
+					if ( is_array( $list ) && array() !== $list ) {
+						$restricted = true;
+					}
+				}
+
+				if ( ! isset( $stored['visibility'] ) || ! is_array( $stored['visibility'] ) ) {
+					$stored['visibility'] = array();
+				}
+
+				$stored['visibility']['mode'] = $restricted ? 'except_on' : 'everywhere';
+
+				return $stored;
+			},
+		);
 	}
 
 	public function get(): array {
 		if ( null === self::$cache ) {
 			$stored      = get_option( self::OPTION, array() );
 			$migrated    = $this->migrate( is_array( $stored ) ? $stored : array() );
-			self::$cache = $this->merge( Schema::defaults(), $migrated );
+			self::$cache = Schema::apply_performance_preset( $this->merge( Schema::defaults(), $migrated ) );
 		}
 
 		return self::$cache;

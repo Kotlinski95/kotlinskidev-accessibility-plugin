@@ -1,4 +1,4 @@
-import { expect, gotoHome, openPanel, test, widgetFor } from './support/fixtures';
+import { expect, gotoHome, openPanel, test, waitForPanel, widgetFor } from './support/fixtures';
 import { OPEN_HASH } from './support/env';
 
 test.describe('panel open and close', () => {
@@ -38,7 +38,8 @@ test.describe('panel open and close', () => {
   test('opens with Alt+Shift+A and toggles closed', async ({ page }) => {
     const widget = await gotoHome(page);
     await page.keyboard.press('Alt+Shift+A');
-    await expect(widget.panel).toBeVisible();
+    await waitForPanel(widget);
+    await page.waitForTimeout(100);
     await page.keyboard.press('Alt+Shift+A');
     await expect(widget.launcher).toHaveAttribute('aria-expanded', 'false');
   });

@@ -189,4 +189,52 @@ final class SanitizerTest extends TestCase {
 		$this->assertSame( 'Ctrl+Alt+K', $result['shortcut']['combo'] );
 		$this->assertSame( 'https://example.com/a11y', $result['statement']['url'] );
 	}
+
+	public function test_invalid_performance_and_visibility_enums_fall_back(): void {
+		$result = $this->sanitizer->sanitize(
+			array(
+				'performance' => array(
+					'preset'        => 'custom',
+					'strategy'      => 'nope',
+					'position'      => 'side',
+					'fetchPriority' => 5,
+					'prefetch'      => 'always',
+					'pageCss'       => 'x',
+					'deviceSkip'    => 'yes',
+				),
+				'visibility'  => array( 'mode' => 'sometimes' ),
+			)
+		);
+
+		$this->assertSame( 'interaction', $result['performance']['strategy'] );
+		$this->assertSame( 'footer', $result['performance']['position'] );
+		$this->assertSame( 'low', $result['performance']['fetchPriority'] );
+		$this->assertSame( 'hover', $result['performance']['prefetch'] );
+		$this->assertSame( 'lazy', $result['performance']['pageCss'] );
+		$this->assertTrue( $result['performance']['deviceSkip'] );
+		$this->assertSame( 'everywhere', $result['visibility']['mode'] );
+		$this->assertSame( 'recommended', $this->sanitizer->sanitize( array( 'performance' => array( 'preset' => 'bogus' ) ) )['performance']['preset'] );
+	}
+
+	public function test_opt_out_drops_unknown_and_duplicate_values(): void {
+		$result = $this->sanitizer->sanitize(
+			array( 'performance' => array( 'preset' => 'custom', 'optOut' => array( 'litespeed', 'bogus', 'litespeed', 'cloudflare', 4 ) ) )
+		);
+
+		$this->assertSame( array( 'litespeed', 'cloudflare' ), $result['performance']['optOut'] );
+	}
+
+	public function test_preset_row_overrides_posted_fields(): void {
+		$result = $this->sanitizer->sanitize( array( 'performance' => array( 'preset' => 'recommended', 'strategy' => 'eager', 'deviceSkip' => false ) ) );
+
+		$this->assertSame( 'interaction', $result['performance']['strategy'] );
+		$this->assertTrue( $result['performance']['deviceSkip'] );
+	}
+
+	public function test_custom_preset_keeps_posted_fields(): void {
+		$result = $this->sanitizer->sanitize( array( 'performance' => array( 'preset' => 'custom', 'strategy' => 'eager', 'pageCss' => 'inline' ) ) );
+
+		$this->assertSame( 'eager', $result['performance']['strategy'] );
+		$this->assertSame( 'inline', $result['performance']['pageCss'] );
+	}
 }

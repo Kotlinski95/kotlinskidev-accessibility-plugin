@@ -58,9 +58,9 @@ export const buildBehaviorPanel = (ctx: FormContext): HTMLElement =>
         help: __('Elements matching these selectors are left untouched by the adjustments.', 'kotlinskidev-accessibility'),
       }),
       createSelectField(ctx, {
-        path: 'advanced.loadStrategy',
+        path: 'performance.strategy',
         label: __('Script loading', 'kotlinskidev-accessibility'),
-        choices: enumChoices(ctx, 'advanced.loadStrategy', loadStrategyLabel),
+        choices: enumChoices(ctx, 'performance.strategy', loadStrategyLabel),
       })
     )
   );

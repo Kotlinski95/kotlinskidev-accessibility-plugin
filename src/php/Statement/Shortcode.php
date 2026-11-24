@@ -34,7 +34,7 @@ final class Shortcode {
 		add_shortcode( self::TAG, array( $this, 'render' ) );
 	}
 
-	public function render( $atts = array() ): string {
+	public function render( mixed $atts = array() ): string {
 		$attributes = shortcode_atts( array( 'locale' => '' ), is_array( $atts ) ? $atts : array(), self::TAG );
 		$requested  = sanitize_text_field( (string) $attributes['locale'] );
 		$locale     = '' !== $requested ? $requested : $this->resolver->current_locale();

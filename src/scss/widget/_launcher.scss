@@ -1,55 +1,42 @@
+@use 'tokens';
+
 :host {
   position: fixed;
-  display: block;
-  z-index: var(--ka11y-z-index, 2147483000);
-  font-family: var(--ka11y-font-family, system-ui, -apple-system, 'Segoe UI', sans-serif);
-  font-size: 1rem;
-  line-height: 1.4;
-  color: var(--ka11y-w-text);
+  z-index: tokens.$z-index;
+  --ka11y-w-focus: #{tokens.$focus-light};
 }
 
 :host([hidden]) {
   display: none;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
 .ka11y-launcher {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: max(var(--ka11y-w-size), var(--ka11y-w-target));
-  block-size: max(var(--ka11y-w-size), var(--ka11y-w-target));
-  margin: 0;
+  width: max(#{tokens.$size}, #{tokens.$target});
+  aspect-ratio: 1;
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: var(--ka11y-w-primary);
-  color: var(--ka11y-w-on-primary);
-  box-shadow: var(--ka11y-w-shadow);
+  background: tokens.$primary;
+  color: tokens.$on-primary;
+  box-shadow: tokens.$shadow;
   cursor: pointer;
-  transition: transform var(--ka11y-w-duration) ease;
-
-  &:hover {
-    transform: scale(1.06);
-  }
 
   &:focus-visible {
     outline: 3px solid var(--ka11y-w-focus);
     outline-offset: 3px;
   }
+}
 
-  .ka11y-icon {
-    inline-size: 56%;
-    block-size: 56%;
-    object-fit: contain;
-  }
+.ka11y-icon {
+  width: 56%;
+  height: 56%;
+  object-fit: contain;
 }
 
 :host([data-ka11y-icon-border='true']) .ka11y-launcher {
-  border: 2px solid var(--ka11y-w-on-primary);
+  border: 2px solid;
 }

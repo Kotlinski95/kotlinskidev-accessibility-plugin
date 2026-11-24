@@ -5,7 +5,7 @@ namespace Kotlinskidev\A11y\Settings;
 
 final class Schema {
 
-	public const VERSION = 1;
+	public const VERSION = 2;
 
 	private const FEATURE_KEYS = array(
 		'biggerText',
@@ -42,6 +42,31 @@ final class Schema {
 		'adhdFriendly'   => array( 'readingMask', 'stopAnimations', 'highlightTitles', 'muteSounds' ),
 		'blindness'      => array( 'keyboardNavigation', 'readPage', 'highlightAll', 'skipToContent' ),
 		'epilepsySafe'   => array( 'stopAnimations', 'muteSounds', 'monochrome' ),
+	);
+
+	private const PERFORMANCE_PRESET_KEYS = array( 'strategy', 'position', 'fetchPriority', 'prefetch', 'pageCss', 'deviceSkip', 'optOut' );
+
+	private const OPT_OUTS = array( 'cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup' );
+
+	private const PERFORMANCE_PRESETS = array(
+		'recommended'   => array(
+			'strategy'      => 'interaction',
+			'position'      => 'footer',
+			'fetchPriority' => 'low',
+			'prefetch'      => 'hover',
+			'pageCss'       => 'lazy',
+			'deviceSkip'    => true,
+			'optOut'        => array(),
+		),
+		'compatibility' => array(
+			'strategy'      => 'eager',
+			'position'      => 'footer',
+			'fetchPriority' => 'auto',
+			'prefetch'      => 'none',
+			'pageCss'       => 'linked',
+			'deviceSkip'    => false,
+			'optOut'        => array( 'cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup' ),
+		),
 	);
 
 	private const DEVICES = array( 'desktop', 'tablet', 'mobile' );
@@ -86,6 +111,24 @@ final class Schema {
 		return array_keys( self::PROFILE_PRESETS );
 	}
 
+	public static function performance_presets(): array {
+		return self::PERFORMANCE_PRESETS;
+	}
+
+	public static function apply_performance_preset( array $tree ): array {
+		$preset = $tree['performance']['preset'] ?? null;
+
+		if ( ! is_string( $preset ) || ! isset( self::PERFORMANCE_PRESETS[ $preset ] ) ) {
+			return $tree;
+		}
+
+		foreach ( self::PERFORMANCE_PRESET_KEYS as $key ) {
+			$tree['performance'][ $key ] = self::PERFORMANCE_PRESETS[ $preset ][ $key ];
+		}
+
+		return $tree;
+	}
+
 	public static function assign( array &$tree, string $path, mixed $value ): void {
 		$segments = explode( '.', $path );
 		$last     = array_pop( $segments );
@@ -101,7 +144,7 @@ final class Schema {
 		$cursor[ $last ] = $value;
 	}
 
-	public static function read( array $tree, string $path, ?bool &$found = null ): mixed {
+	public static function read( array $tree, string $path, bool &$found = false ): mixed {
 		$cursor = $tree;
 
 		foreach ( explode( '.', $path ) as $segment ) {
@@ -207,6 +250,21 @@ final class Schema {
 		$defs['visibility.excludePostTypes']   = self::def( 'array', 'text_list', array() );
 		$defs['visibility.excludeRoles']       = self::def( 'array', 'text_list', array() );
 		$defs['visibility.excludeUrlPatterns'] = self::def( 'array', 'text_list', array() );
+		$defs['visibility.mode']               = self::def( 'string', 'enum', 'everywhere', array( 'enum' => array( 'everywhere', 'only_on', 'except_on' ) ) );
+		$defs['visibility.includePostIds']     = self::def(
+			'array',
+			'int_list',
+			array(),
+			array(
+				'min' => 1,
+				'max' => PHP_INT_MAX,
+			)
+		);
+		$defs['visibility.includePostTypes']   = self::def( 'array', 'text_list', array() );
+		$defs['visibility.includeTemplates']   = self::def( 'array', 'text_list', array() );
+		$defs['visibility.includeRoles']       = self::def( 'array', 'text_list', array() );
+		$defs['visibility.includeUrlPatterns'] = self::def( 'array', 'text_list', array() );
+		$defs['visibility.excludeTemplates']   = self::def( 'array', 'text_list', array() );
 
 		$defs['theme.mode']                     = self::def( 'string', 'enum', 'auto', array( 'enum' => array( 'auto', 'light', 'dark' ) ) );
 		$defs['theme.darkSelector']             = self::def( 'string', 'text', 'html.dark-mode, body.dark-mode' );
@@ -274,7 +332,15 @@ final class Schema {
 		$defs['labels'] = self::def( 'object', 'label_map', array() );
 
 		$defs['advanced.excludeSelectors'] = self::def( 'string', 'text', '#wpadminbar' );
-		$defs['advanced.loadStrategy']     = self::def( 'string', 'enum', 'defer', array( 'enum' => array( 'defer', 'idle' ) ) );
+
+		$defs['performance.preset']        = self::def( 'string', 'enum', 'recommended', array( 'enum' => array( 'recommended', 'compatibility', 'custom' ) ) );
+		$defs['performance.strategy']      = self::def( 'string', 'enum', 'interaction', array( 'enum' => array( 'interaction', 'idle', 'defer', 'async', 'eager' ) ) );
+		$defs['performance.position']      = self::def( 'string', 'enum', 'footer', array( 'enum' => array( 'head', 'footer' ) ) );
+		$defs['performance.fetchPriority'] = self::def( 'string', 'enum', 'low', array( 'enum' => array( 'low', 'auto', 'high' ) ) );
+		$defs['performance.prefetch']      = self::def( 'string', 'enum', 'hover', array( 'enum' => array( 'none', 'hover', 'idle' ) ) );
+		$defs['performance.pageCss']       = self::def( 'string', 'enum', 'lazy', array( 'enum' => array( 'lazy', 'linked', 'inline' ) ) );
+		$defs['performance.deviceSkip']    = self::def( 'boolean', 'bool', true );
+		$defs['performance.optOut']        = self::def( 'array', 'enum_list', array(), array( 'enum' => self::OPT_OUTS ) );
 
 		return $defs;
 	}

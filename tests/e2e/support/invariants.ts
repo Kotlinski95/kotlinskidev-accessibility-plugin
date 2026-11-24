@@ -1,43 +1,14 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-
-export const FEATURE_LEVELS: Readonly<Record<string, number>> = {
-  biggerText: 3,
-  lineHeight: 3,
-  letterSpacing: 1,
-  fontWeight: 1,
-  readableFont: 1,
-  dyslexicFont: 1,
-  textAlign: 3,
-  highlightLinks: 1,
-  bigCursor: 1,
-  textMagnifier: 1,
-  cognitiveReading: 1,
-  darkContrast: 1,
-  lightContrast: 1,
-  highContrast: 1,
-  monochrome: 1,
-  saturation: 2,
-  readingLine: 1,
-  readingMask: 1,
-  readPage: 1,
-  keyboardNavigation: 1,
-  hideImages: 1,
-  muteSounds: 1,
-  highlightTitles: 1,
-  highlightAll: 1,
-  stopAnimations: 1,
-  skipToContent: 1,
-};
-
-export const PROFILE_KEYS: readonly string[] = ['visionImpaired', 'seizureSafe', 'adhdFriendly', 'blindness', 'epilepsySafe'];
+import { FEATURE_LEVELS, kebab, PROFILE_KEYS } from './schema';
+import { assertHostileIntact, isHostile } from './hostile';
 
 export const LINK_SELECTOR = '#e2e-link';
 export const LINK_HASH = '#e2e-target';
 
-const PARAGRAPHS = 80;
+export { FEATURE_LEVELS, kebab, PROFILE_KEYS };
 
-export const kebab = (name: string): string => name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+const PARAGRAPHS = 80;
 
 export const installLongContent = async (page: Page): Promise<void> => {
   await page.addInitScript(
@@ -125,4 +96,5 @@ export const assertPageUsable = async (page: Page): Promise<void> => {
     window.history.replaceState(null, '', window.location.pathname + window.location.search);
     window.scrollTo({ top: 0, behavior: 'instant' });
   });
+  if (await isHostile(page)) await assertHostileIntact(page);
 };

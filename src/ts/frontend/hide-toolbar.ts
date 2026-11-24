@@ -1,6 +1,7 @@
 export interface HideToolbarOptions {
   host: HTMLElement;
   key: string;
+  doc?: Document;
   onChange?(hidden: boolean): void;
 }
 
@@ -12,8 +13,9 @@ export interface HideToolbar {
 }
 
 const DAY_MS = 86_400_000;
+const HIDDEN_ATTRIBUTE = 'data-ka11y-hidden';
 
-export const createHideToolbar = ({ host, key, onChange }: HideToolbarOptions): HideToolbar => {
+export const createHideToolbar = ({ host, key, doc = document, onChange }: HideToolbarOptions): HideToolbar => {
   const storageKey = `${key}-hidden`;
 
   const readHidden = (): boolean => {
@@ -30,10 +32,11 @@ export const createHideToolbar = ({ host, key, onChange }: HideToolbarOptions): 
 
   const render = (hidden: boolean): void => {
     host.hidden = hidden;
+    doc.documentElement.toggleAttribute(HIDDEN_ATTRIBUTE, hidden);
     onChange?.(hidden);
   };
 
-  const isHidden = (): boolean => host.hidden;
+  const isHidden = (): boolean => doc.documentElement.hasAttribute(HIDDEN_ATTRIBUTE);
 
   const attempt = (action: () => void): void => {
     try {
@@ -61,7 +64,7 @@ export const createHideToolbar = ({ host, key, onChange }: HideToolbarOptions): 
     render(false);
   };
 
-  if (readHidden()) render(true);
+  if (isHidden() || readHidden()) render(true);
 
   return { isHidden, hideForSession, hideForDays, show };
 };

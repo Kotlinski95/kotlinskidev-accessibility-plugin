@@ -13,6 +13,7 @@
     "i18n:pot": "wp i18n make-pot . languages/kotlinskidev-accessibility.pot --include=src/php,build",
     "i18n:json": "wp i18n make-json languages --no-purge && node bin/fix-i18n-json.mjs",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/ts/**/*.ts\" \"tests/js/**/*.ts\" \"tests/e2e/**/*.ts\" playwright.config.ts",
+    "check-budget": "node bin/check-budget.mjs",
     "check-scss-scope": "node bin/check-scss-scope.mjs",
     "check-version": "node bin/check-version.mjs",
     "release": "node bin/release.mjs",

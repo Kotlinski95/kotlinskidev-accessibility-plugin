@@ -90,6 +90,7 @@ final class SettingsController {
 				'defaults'    => Schema::defaults(),
 				'features'    => Schema::feature_keys(),
 				'profiles'    => Schema::profile_keys(),
+				'presets'     => Schema::performance_presets(),
 			)
 		);
 	}

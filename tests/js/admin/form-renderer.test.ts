@@ -55,7 +55,7 @@ describe('form renderer', () => {
     const ctx = sampleContext();
     const form = renderForm(ctx);
     const root = form.element;
-    expect(root.querySelectorAll('.ka11y-panel--visibility .ka11y-field--list')).toHaveLength(4);
+    expect(root.querySelectorAll('.ka11y-panel--visibility .ka11y-field--list')).toHaveLength(10);
     expect(root.querySelectorAll('.ka11y-panel--appearance .ka11y-field--color')).toHaveLength(6);
     expect(root.querySelector('.ka11y-panel--appearance textarea')).not.toBeNull();
     expect(root.querySelectorAll('.ka11y-panel--languages .ka11y-field--locale-map')).toHaveLength(2);

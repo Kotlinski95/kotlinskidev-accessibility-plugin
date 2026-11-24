@@ -38,7 +38,7 @@ jobs:
           (cd dist && zip -qr "${PLUGIN_SLUG}.zip" "${PLUGIN_SLUG}")
       - run: |
           listing=$(unzip -Z1 "dist/${PLUGIN_SLUG}.zip")
-          for required in build/frontend.js build/admin.js vendor/autoload.php kotlinskidev-accessibility.php; do
+          for required in build/loader.js build/manifest.php build/launcher.css build/admin.js vendor/autoload.php kotlinskidev-accessibility.php; do
             if ! grep -qx "${PLUGIN_SLUG}/${required}" <<< "$listing"; then
               echo "Missing ${required} in zip" >&2
               exit 1

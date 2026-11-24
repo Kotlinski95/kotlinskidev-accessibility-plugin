@@ -6,6 +6,7 @@ namespace Kotlinskidev\A11y\Admin;
 use Kotlinskidev\A11y\I18n\Strings;
 use Kotlinskidev\A11y\Rest\SettingsController;
 use Kotlinskidev\A11y\Settings\Schema;
+use Kotlinskidev\A11y\Support\Json;
 
 final class SettingsPage {
 
@@ -85,7 +86,7 @@ final class SettingsPage {
 		wp_set_script_translations( self::SCRIPT_HANDLE, self::TEXT_DOMAIN, KOTLINSKIDEV_A11Y_DIR . 'languages' );
 		wp_add_inline_script(
 			self::SCRIPT_HANDLE,
-			'window.kotlinskidevA11yAdmin = ' . wp_json_encode( $this->config(), self::JSON_FLAGS ) . ';',
+			'window.kotlinskidevA11yAdmin = ' . Json::encode( $this->config(), self::JSON_FLAGS ) . ';',
 			'before'
 		);
 	}

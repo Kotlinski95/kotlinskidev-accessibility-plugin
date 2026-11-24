@@ -39,7 +39,10 @@ final class RequirementsTest extends TestCase {
 
 	private function complete(): void {
 		touch( $this->dir . 'vendor/autoload.php' );
-		touch( $this->dir . 'build/frontend.js' );
+		touch( $this->dir . 'build/loader.js' );
+		touch( $this->dir . 'build/bootstrap.js' );
+		touch( $this->dir . 'build/launcher.css' );
+		touch( $this->dir . 'build/manifest.php' );
 	}
 
 	public function test_complete_install_registers_no_notice(): void {
@@ -50,7 +53,10 @@ final class RequirementsTest extends TestCase {
 	}
 
 	public function test_missing_vendor_registers_notice_and_reports_failure(): void {
-		touch( $this->dir . 'build/frontend.js' );
+		touch( $this->dir . 'build/loader.js' );
+		touch( $this->dir . 'build/bootstrap.js' );
+		touch( $this->dir . 'build/launcher.css' );
+		touch( $this->dir . 'build/manifest.php' );
 
 		$this->assertSame( array( 'vendor/autoload.php' ), kotlinskidev_a11y_missing_files( $this->dir ) );
 		Actions\expectAdded( 'admin_notices' )->once()->with( 'kotlinskidev_a11y_render_incomplete_notice' );
@@ -60,9 +66,17 @@ final class RequirementsTest extends TestCase {
 	public function test_missing_build_registers_notice(): void {
 		touch( $this->dir . 'vendor/autoload.php' );
 
-		$this->assertSame( array( 'build/frontend.js' ), kotlinskidev_a11y_missing_files( $this->dir ) );
+		$this->assertSame( array( 'build/loader.js', 'build/bootstrap.js', 'build/launcher.css', 'build/manifest.php' ), kotlinskidev_a11y_missing_files( $this->dir ) );
 		Actions\expectAdded( 'admin_notices' )->once();
 		$this->assertFalse( kotlinskidev_a11y_requirements_met( $this->dir ) );
+	}
+
+	public function test_missing_bootstrap_or_launcher_css_is_reported(): void {
+		touch( $this->dir . 'vendor/autoload.php' );
+		touch( $this->dir . 'build/loader.js' );
+		touch( $this->dir . 'build/manifest.php' );
+
+		$this->assertSame( array( 'build/bootstrap.js', 'build/launcher.css' ), kotlinskidev_a11y_missing_files( $this->dir ) );
 	}
 
 	public function test_notice_is_hidden_without_manage_options(): void {

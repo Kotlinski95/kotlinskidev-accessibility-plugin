@@ -47,6 +47,16 @@ export const themeModeLabel = (mode: string): string =>
     mode
   );
 
+export const visibilityModeLabel = (mode: string): string =>
+  lookup(
+    {
+      everywhere: __('Everywhere', 'kotlinskidev-accessibility'),
+      only_on: __('Only on the pages listed below', 'kotlinskidev-accessibility'),
+      except_on: __('Everywhere except the pages listed below', 'kotlinskidev-accessibility'),
+    },
+    mode
+  );
+
 export const storageModeLabel = (mode: string): string =>
   lookup(
     {
@@ -60,8 +70,11 @@ export const storageModeLabel = (mode: string): string =>
 export const loadStrategyLabel = (strategy: string): string =>
   lookup(
     {
+      interaction: __('On first interaction', 'kotlinskidev-accessibility'),
       defer: __('Deferred script', 'kotlinskidev-accessibility'),
       idle: __('When the browser is idle', 'kotlinskidev-accessibility'),
+      async: __('Asynchronous script', 'kotlinskidev-accessibility'),
+      eager: __('Immediately', 'kotlinskidev-accessibility'),
     },
     strategy
   );
