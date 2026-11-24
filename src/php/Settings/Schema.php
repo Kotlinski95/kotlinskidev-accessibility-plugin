@@ -48,18 +48,8 @@ final class Schema {
 
 	private const POSITIONS = array( 'bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left' );
 
-	/**
-	 * Memoised definitions.
-	 *
-	 * @var array<string, array<string, mixed>>|null
-	 */
 	private static ?array $definitions = null;
 
-	/**
-	 * Flat map of dotted path to definition.
-	 *
-	 * @return array<string, array<string, mixed>>
-	 */
 	public static function definitions(): array {
 		if ( null === self::$definitions ) {
 			self::$definitions = self::build();
@@ -68,32 +58,16 @@ final class Schema {
 		return self::$definitions;
 	}
 
-	/**
-	 * Definition for a dotted path.
-	 *
-	 * @param string $path Dotted path.
-	 * @return array<string, mixed>|null
-	 */
 	public static function definition( string $path ): ?array {
 		return self::definitions()[ $path ] ?? null;
 	}
 
-	/**
-	 * Visit every definition in declaration order.
-	 *
-	 * @param callable(string, array<string, mixed>): void $visitor Visitor.
-	 */
 	public static function walk( callable $visitor ): void {
 		foreach ( self::definitions() as $path => $definition ) {
 			$visitor( $path, $definition );
 		}
 	}
 
-	/**
-	 * Nested default option tree.
-	 *
-	 * @return array<string, mixed>
-	 */
 	public static function defaults(): array {
 		$tree = array();
 
@@ -104,31 +78,14 @@ final class Schema {
 		return $tree;
 	}
 
-	/**
-	 * Feature keys.
-	 *
-	 * @return list<string>
-	 */
 	public static function feature_keys(): array {
 		return self::FEATURE_KEYS;
 	}
 
-	/**
-	 * Profile keys.
-	 *
-	 * @return list<string>
-	 */
 	public static function profile_keys(): array {
 		return array_keys( self::PROFILE_PRESETS );
 	}
 
-	/**
-	 * Write a value into a nested array by dotted path.
-	 *
-	 * @param array<string, mixed> $tree  Target tree.
-	 * @param string               $path  Dotted path.
-	 * @param mixed                $value Value.
-	 */
 	public static function assign( array &$tree, string $path, mixed $value ): void {
 		$segments = explode( '.', $path );
 		$last     = array_pop( $segments );
@@ -144,13 +101,6 @@ final class Schema {
 		$cursor[ $last ] = $value;
 	}
 
-	/**
-	 * Read a value from a nested array by dotted path.
-	 *
-	 * @param array<string, mixed> $tree Source tree.
-	 * @param string               $path Dotted path.
-	 * @param bool                 $found Set to whether the path exists.
-	 */
 	public static function read( array $tree, string $path, ?bool &$found = null ): mixed {
 		$cursor = $tree;
 
@@ -166,11 +116,6 @@ final class Schema {
 		return $cursor;
 	}
 
-	/**
-	 * Build definitions.
-	 *
-	 * @return array<string, array<string, mixed>>
-	 */
 	private static function build(): array {
 		$defs = array(
 			'schemaVersion' => self::def(
@@ -334,15 +279,6 @@ final class Schema {
 		return $defs;
 	}
 
-	/**
-	 * Build one definition.
-	 *
-	 * @param string               $type     Structural type.
-	 * @param string               $sanitize Sanitizer strategy.
-	 * @param mixed                $fallback  Default value.
-	 * @param array<string, mixed> $extra    Constraints.
-	 * @return array<string, mixed>
-	 */
 	private static function def( string $type, string $sanitize, mixed $fallback, array $extra = array() ): array {
 		return array_merge(
 			array(

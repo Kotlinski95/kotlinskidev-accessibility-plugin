@@ -11,12 +11,6 @@ final class Sanitizer {
 	private const LOCALE_PATTERN     = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
 	private const STRING_KEY_PATTERN = '/^[A-Za-z0-9_.-]{1,80}$/';
 
-	/**
-	 * Sanitize a full option tree against the schema.
-	 *
-	 * @param array<string, mixed> $input Raw input.
-	 * @return array<string, mixed>
-	 */
 	public function sanitize( array $input ): array {
 		$output = array();
 
@@ -30,12 +24,6 @@ final class Sanitizer {
 		return $output;
 	}
 
-	/**
-	 * Sanitize one value, falling back to the default on bad input.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 */
 	public function sanitize_value( mixed $value, array $definition ): mixed {
 		$fallback = $definition['default'];
 
@@ -61,12 +49,6 @@ final class Sanitizer {
 		};
 	}
 
-	/**
-	 * Clamp an integer-like value to the definition range.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 */
 	private function clamp_int( mixed $value, array $definition ): ?int {
 		if ( is_string( $value ) && 1 === preg_match( '/^-?\d{1,18}$/', $value ) ) {
 			$value = (int) $value;
@@ -79,12 +61,6 @@ final class Sanitizer {
 		return max( $definition['min'], min( $definition['max'], $value ) );
 	}
 
-	/**
-	 * Level is false or an integer index.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 */
 	private function level( mixed $value, array $definition ): bool|int {
 		if ( is_bool( $value ) ) {
 			return $value;
@@ -93,12 +69,6 @@ final class Sanitizer {
 		return $this->clamp_int( $value, $definition ) ?? $definition['default'];
 	}
 
-	/**
-	 * Plain text.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 */
 	private function text( mixed $value, array $definition ): string {
 		if ( ! is_string( $value ) ) {
 			return $definition['default'];
@@ -113,12 +83,6 @@ final class Sanitizer {
 		return $clean;
 	}
 
-	/**
-	 * Storage key.
-	 *
-	 * @param mixed  $value   Raw value.
-	 * @param string $fallback Default.
-	 */
 	private function key( mixed $value, string $fallback ): string {
 		if ( ! is_string( $value ) ) {
 			return $fallback;
@@ -129,13 +93,6 @@ final class Sanitizer {
 		return '' === $clean ? $fallback : $clean;
 	}
 
-	/**
-	 * Pattern-validated string.
-	 *
-	 * @param mixed  $value   Raw value.
-	 * @param string $pattern Pattern.
-	 * @param string $fallback Default.
-	 */
 	private function matching( mixed $value, string $pattern, string $fallback ): string {
 		if ( ! is_string( $value ) ) {
 			return $fallback;
@@ -146,12 +103,6 @@ final class Sanitizer {
 		return 1 === preg_match( $pattern, $trimmed ) ? $trimmed : $fallback;
 	}
 
-	/**
-	 * Icon is universal or an attachment ID.
-	 *
-	 * @param mixed  $value   Raw value.
-	 * @param string $fallback Default.
-	 */
 	private function icon( mixed $value, string $fallback ): int|string {
 		if ( is_int( $value ) && $value > 0 ) {
 			return $value;
@@ -164,11 +115,6 @@ final class Sanitizer {
 		return 'universal' === $value ? 'universal' : $fallback;
 	}
 
-	/**
-	 * Custom CSS without markup or style terminators.
-	 *
-	 * @param string $value Raw CSS.
-	 */
 	private function css( string $value ): string {
 		$clean = wp_strip_all_tags( $value );
 
@@ -180,13 +126,6 @@ final class Sanitizer {
 		return trim( $clean );
 	}
 
-	/**
-	 * List of ints.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 * @return list<int>
-	 */
 	private function int_list( mixed $value, array $definition ): array {
 		if ( ! is_array( $value ) ) {
 			return $definition['default'];
@@ -204,13 +143,6 @@ final class Sanitizer {
 		return $items;
 	}
 
-	/**
-	 * List of text strings.
-	 *
-	 * @param mixed        $value   Raw value.
-	 * @param list<string> $fallback Default.
-	 * @return list<string>
-	 */
 	private function text_list( mixed $value, array $fallback ): array {
 		if ( ! is_array( $value ) ) {
 			return $fallback;
@@ -231,13 +163,6 @@ final class Sanitizer {
 		return $items;
 	}
 
-	/**
-	 * List restricted to allowed values.
-	 *
-	 * @param mixed                $value      Raw value.
-	 * @param array<string, mixed> $definition Schema definition.
-	 * @return list<string>
-	 */
 	private function enum_list( mixed $value, array $definition ): array {
 		if ( ! is_array( $value ) ) {
 			return $definition['default'];
@@ -254,13 +179,6 @@ final class Sanitizer {
 		return $items;
 	}
 
-	/**
-	 * Locale to string-key to text map.
-	 *
-	 * @param mixed                $value   Raw value.
-	 * @param array<string, mixed> $fallback Default.
-	 * @return array<string, array<string, string>>
-	 */
 	private function label_map( mixed $value, array $fallback ): array {
 		if ( ! is_array( $value ) ) {
 			return $fallback;
@@ -288,13 +206,6 @@ final class Sanitizer {
 		return $map;
 	}
 
-	/**
-	 * Locale to HTML map.
-	 *
-	 * @param mixed                $value   Raw value.
-	 * @param array<string, mixed> $fallback Default.
-	 * @return array<string, string>
-	 */
 	private function html_map( mixed $value, array $fallback ): array {
 		if ( ! is_array( $value ) ) {
 			return $fallback;
@@ -311,11 +222,6 @@ final class Sanitizer {
 		return $map;
 	}
 
-	/**
-	 * Locale key check.
-	 *
-	 * @param mixed $locale Candidate key.
-	 */
 	private function is_locale( mixed $locale ): bool {
 		return is_string( $locale ) && 1 === preg_match( self::LOCALE_PATTERN, $locale );
 	}

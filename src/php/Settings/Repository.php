@@ -7,11 +7,6 @@ final class Repository {
 
 	public const OPTION = 'kotlinskidev_a11y_settings';
 
-	/**
-	 * Per-request cache.
-	 *
-	 * @var array<string, mixed>|null
-	 */
 	private static ?array $cache = null;
 
 	private Sanitizer $sanitizer;
@@ -20,27 +15,14 @@ final class Repository {
 		$this->sanitizer = $sanitizer ?? new Sanitizer();
 	}
 
-	/**
-	 * Drop the per-request cache.
-	 */
 	public static function flush(): void {
 		self::$cache = null;
 	}
 
-	/**
-	 * Schema-ordered migrations keyed by the version they upgrade from.
-	 *
-	 * @return array<int, callable(array<string, mixed>): array<string, mixed>>
-	 */
 	public static function migrations(): array {
 		return array();
 	}
 
-	/**
-	 * Stored settings deep-merged over defaults.
-	 *
-	 * @return array<string, mixed>
-	 */
 	public function get(): array {
 		if ( null === self::$cache ) {
 			$stored      = get_option( self::OPTION, array() );
@@ -51,12 +33,6 @@ final class Repository {
 		return self::$cache;
 	}
 
-	/**
-	 * Sanitize and persist a full option tree.
-	 *
-	 * @param array<string, mixed> $input Raw input.
-	 * @return array<string, mixed>
-	 */
 	public function save( array $input ): array {
 		$clean = $this->sanitizer->sanitize( $input );
 
@@ -66,11 +42,6 @@ final class Repository {
 		return $clean;
 	}
 
-	/**
-	 * Remove stored settings.
-	 *
-	 * @return array<string, mixed>
-	 */
 	public function reset(): array {
 		delete_option( self::OPTION );
 		self::flush();
@@ -78,12 +49,6 @@ final class Repository {
 		return Schema::defaults();
 	}
 
-	/**
-	 * Apply pending migrations.
-	 *
-	 * @param array<string, mixed> $stored Stored option.
-	 * @return array<string, mixed>
-	 */
 	private function migrate( array $stored ): array {
 		$version    = isset( $stored['schemaVersion'] ) && is_int( $stored['schemaVersion'] ) ? $stored['schemaVersion'] : 1;
 		$migrations = self::migrations();
@@ -100,13 +65,6 @@ final class Repository {
 		return $stored;
 	}
 
-	/**
-	 * Deep-merge stored over defaults; lists and open maps are replaced.
-	 *
-	 * @param array<string, mixed> $defaults Defaults.
-	 * @param array<string, mixed> $stored   Stored.
-	 * @return array<string, mixed>
-	 */
 	private function merge( array $defaults, array $stored ): array {
 		$merged = $defaults;
 
