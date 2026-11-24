@@ -1,0 +1,322 @@
+<?php
+declare(strict_types=1);
+
+namespace Kotlinskidev\A11y\Settings;
+
+final class Sanitizer {
+
+	private const COLOR_PATTERN      = '/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i';
+	private const LENGTH_PATTERN     = '/^-?\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|vmin|vmax|ch)?$/';
+	private const COMBO_PATTERN      = '/^(?:(?:Alt|Ctrl|Shift|Meta)\+)*[A-Za-z0-9]$/';
+	private const LOCALE_PATTERN     = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
+	private const STRING_KEY_PATTERN = '/^[A-Za-z0-9_.-]{1,80}$/';
+
+	/**
+	 * Sanitize a full option tree against the schema.
+	 *
+	 * @param array<string, mixed> $input Raw input.
+	 * @return array<string, mixed>
+	 */
+	public function sanitize( array $input ): array {
+		$output = array();
+
+		Schema::walk(
+			function ( string $path, array $definition ) use ( $input, &$output ): void {
+				$value = Schema::read( $input, $path, $found );
+				Schema::assign( $output, $path, $found ? $this->sanitize_value( $value, $definition ) : $definition['default'] );
+			}
+		);
+
+		return $output;
+	}
+
+	/**
+	 * Sanitize one value, falling back to the default on bad input.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 */
+	public function sanitize_value( mixed $value, array $definition ): mixed {
+		$fallback = $definition['default'];
+
+		return match ( $definition['sanitize'] ) {
+			'bool'      => is_bool( $value ) ? $value : $fallback,
+			'int'       => $this->clamp_int( $value, $definition ) ?? $fallback,
+			'level'     => $this->level( $value, $definition ),
+			'enum'      => is_string( $value ) && in_array( $value, $definition['enum'], true ) ? $value : $fallback,
+			'text'      => $this->text( $value, $definition ),
+			'key'       => $this->key( $value, $fallback ),
+			'color'     => $this->matching( $value, self::COLOR_PATTERN, $fallback ),
+			'length'    => $this->matching( $value, self::LENGTH_PATTERN, $fallback ),
+			'combo'     => $this->matching( $value, self::COMBO_PATTERN, $fallback ),
+			'icon'      => $this->icon( $value, $fallback ),
+			'url'       => is_string( $value ) ? esc_url_raw( trim( $value ) ) : $fallback,
+			'css'       => is_string( $value ) ? $this->css( $value ) : $fallback,
+			'int_list'  => $this->int_list( $value, $definition ),
+			'text_list' => $this->text_list( $value, $fallback ),
+			'enum_list' => $this->enum_list( $value, $definition ),
+			'label_map' => $this->label_map( $value, $fallback ),
+			'html_map'  => $this->html_map( $value, $fallback ),
+			default     => $fallback,
+		};
+	}
+
+	/**
+	 * Clamp an integer-like value to the definition range.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 */
+	private function clamp_int( mixed $value, array $definition ): ?int {
+		if ( is_string( $value ) && 1 === preg_match( '/^-?\d{1,18}$/', $value ) ) {
+			$value = (int) $value;
+		}
+
+		if ( ! is_int( $value ) ) {
+			return null;
+		}
+
+		return max( $definition['min'], min( $definition['max'], $value ) );
+	}
+
+	/**
+	 * Level is false or an integer index.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 */
+	private function level( mixed $value, array $definition ): bool|int {
+		if ( is_bool( $value ) ) {
+			return $value;
+		}
+
+		return $this->clamp_int( $value, $definition ) ?? $definition['default'];
+	}
+
+	/**
+	 * Plain text.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 */
+	private function text( mixed $value, array $definition ): string {
+		if ( ! is_string( $value ) ) {
+			return $definition['default'];
+		}
+
+		$clean = sanitize_text_field( $value );
+
+		if ( '' === $clean && ! empty( $definition['required'] ) ) {
+			return $definition['default'];
+		}
+
+		return $clean;
+	}
+
+	/**
+	 * Storage key.
+	 *
+	 * @param mixed  $value   Raw value.
+	 * @param string $fallback Default.
+	 */
+	private function key( mixed $value, string $fallback ): string {
+		if ( ! is_string( $value ) ) {
+			return $fallback;
+		}
+
+		$clean = sanitize_key( $value );
+
+		return '' === $clean ? $fallback : $clean;
+	}
+
+	/**
+	 * Pattern-validated string.
+	 *
+	 * @param mixed  $value   Raw value.
+	 * @param string $pattern Pattern.
+	 * @param string $fallback Default.
+	 */
+	private function matching( mixed $value, string $pattern, string $fallback ): string {
+		if ( ! is_string( $value ) ) {
+			return $fallback;
+		}
+
+		$trimmed = trim( $value );
+
+		return 1 === preg_match( $pattern, $trimmed ) ? $trimmed : $fallback;
+	}
+
+	/**
+	 * Icon is universal or an attachment ID.
+	 *
+	 * @param mixed  $value   Raw value.
+	 * @param string $fallback Default.
+	 */
+	private function icon( mixed $value, string $fallback ): int|string {
+		if ( is_int( $value ) && $value > 0 ) {
+			return $value;
+		}
+
+		if ( is_string( $value ) && 1 === preg_match( '/^[1-9]\d{0,17}$/', $value ) ) {
+			return (int) $value;
+		}
+
+		return 'universal' === $value ? 'universal' : $fallback;
+	}
+
+	/**
+	 * Custom CSS without markup or style terminators.
+	 *
+	 * @param string $value Raw CSS.
+	 */
+	private function css( string $value ): string {
+		$clean = wp_strip_all_tags( $value );
+
+		do {
+			$previous = $clean;
+			$clean    = preg_replace( '#</\s*style#i', '', $clean ) ?? '';
+		} while ( $clean !== $previous );
+
+		return trim( $clean );
+	}
+
+	/**
+	 * List of ints.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 * @return list<int>
+	 */
+	private function int_list( mixed $value, array $definition ): array {
+		if ( ! is_array( $value ) ) {
+			return $definition['default'];
+		}
+
+		$items = array();
+
+		foreach ( $value as $item ) {
+			$int = $this->clamp_int( $item, $definition );
+			if ( null !== $int && ! in_array( $int, $items, true ) ) {
+				$items[] = $int;
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * List of text strings.
+	 *
+	 * @param mixed        $value   Raw value.
+	 * @param list<string> $fallback Default.
+	 * @return list<string>
+	 */
+	private function text_list( mixed $value, array $fallback ): array {
+		if ( ! is_array( $value ) ) {
+			return $fallback;
+		}
+
+		$items = array();
+
+		foreach ( $value as $item ) {
+			if ( ! is_string( $item ) ) {
+				continue;
+			}
+			$clean = sanitize_text_field( $item );
+			if ( '' !== $clean && ! in_array( $clean, $items, true ) ) {
+				$items[] = $clean;
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * List restricted to allowed values.
+	 *
+	 * @param mixed                $value      Raw value.
+	 * @param array<string, mixed> $definition Schema definition.
+	 * @return list<string>
+	 */
+	private function enum_list( mixed $value, array $definition ): array {
+		if ( ! is_array( $value ) ) {
+			return $definition['default'];
+		}
+
+		$items = array();
+
+		foreach ( $value as $item ) {
+			if ( is_string( $item ) && in_array( $item, $definition['enum'], true ) && ! in_array( $item, $items, true ) ) {
+				$items[] = $item;
+			}
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Locale to string-key to text map.
+	 *
+	 * @param mixed                $value   Raw value.
+	 * @param array<string, mixed> $fallback Default.
+	 * @return array<string, array<string, string>>
+	 */
+	private function label_map( mixed $value, array $fallback ): array {
+		if ( ! is_array( $value ) ) {
+			return $fallback;
+		}
+
+		$map = array();
+
+		foreach ( $value as $locale => $strings ) {
+			if ( ! $this->is_locale( $locale ) || ! is_array( $strings ) ) {
+				continue;
+			}
+
+			$clean = array();
+			foreach ( $strings as $string_key => $text ) {
+				if ( is_string( $string_key ) && 1 === preg_match( self::STRING_KEY_PATTERN, $string_key ) && is_string( $text ) ) {
+					$clean[ $string_key ] = sanitize_text_field( $text );
+				}
+			}
+
+			if ( array() !== $clean ) {
+				$map[ $locale ] = $clean;
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Locale to HTML map.
+	 *
+	 * @param mixed                $value   Raw value.
+	 * @param array<string, mixed> $fallback Default.
+	 * @return array<string, string>
+	 */
+	private function html_map( mixed $value, array $fallback ): array {
+		if ( ! is_array( $value ) ) {
+			return $fallback;
+		}
+
+		$map = array();
+
+		foreach ( $value as $locale => $html ) {
+			if ( $this->is_locale( $locale ) && is_string( $html ) ) {
+				$map[ $locale ] = wp_kses_post( $html );
+			}
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Locale key check.
+	 *
+	 * @param mixed $locale Candidate key.
+	 */
+	private function is_locale( mixed $locale ): bool {
+		return is_string( $locale ) && 1 === preg_match( self::LOCALE_PATTERN, $locale );
+	}
+}
