@@ -1,0 +1,42 @@
+html.ka11y-keyboard-navigation :focus-visible:not(#ka11y-root) {
+  outline: 0.1875rem solid var(--ka11y-pal-focus) !important;
+  outline-offset: 0.1875rem !important;
+  box-shadow: 0 0 0 0.375rem var(--ka11y-pal-focus-inner) !important;
+}
+
+html.ka11y-hide-images body :is(img, picture, svg[role='img'], video):not(#ka11y-root *) {
+  visibility: hidden !important;
+}
+
+html.ka11y-hide-images body *:not(#ka11y-root):not(#ka11y-root *) {
+  background-image: none !important;
+}
+
+html.ka11y-highlight-titles :is(h1, h2, h3, h4, h5, h6):not(#ka11y-root *) {
+  outline: 0.1875rem solid var(--ka11y-pal-title) !important;
+  outline-offset: 0.25rem !important;
+}
+
+html.ka11y-highlight-all body :is(*:hover, *:focus):not(#ka11y-root):not(#ka11y-root *):not(body) {
+  outline: 0.125rem solid var(--ka11y-pal-hover) !important;
+  outline-offset: 0.125rem !important;
+}
+
+html.ka11y-read-page body *:not(#ka11y-root):not(#ka11y-root *) {
+  cursor: pointer;
+}
+
+html.ka11y-stop-animations body *:not(#ka11y-root):not(#ka11y-root *),
+html.ka11y-stop-animations body *:not(#ka11y-root *)::before,
+html.ka11y-stop-animations body *:not(#ka11y-root *)::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ka11y-reading-line,
+  .ka11y-reading-mask {
+    transition: none;
+  }
+}

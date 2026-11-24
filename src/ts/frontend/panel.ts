@@ -2,6 +2,7 @@ import type { FeatureLevel, KotlinskidevA11yConfig } from '../shared/types';
 import { createDialog, type Dialog } from './a11y-dialog';
 import { createElement } from './dom';
 import { FEATURE_GROUPS, FEATURE_LEVEL_LABELS, levelCountOf } from './feature-groups';
+import { findLandmarks, focusLandmark, type Landmark, type LandmarkKind } from './features/color-orientation';
 import { isLevelActive } from './feature-utils';
 import type { HideToolbar } from './hide-toolbar';
 import type { Profiles } from './profiles';
@@ -38,6 +39,17 @@ interface ProfileControl {
 const PANEL_ID = 'ka11y-panel';
 const TITLE_ID = 'ka11y-panel-title';
 const LAUNCHER_SELECTOR = '.ka11y-launcher';
+const SKIP_FEATURE_KEY = 'skipToContent';
+const SKIP_SELECT_ID = 'ka11y-skip-select';
+
+const LANDMARK_LABEL_KEYS: Readonly<Record<LandmarkKind, string>> = {
+  main: 'landmarkMain',
+  navigation: 'landmarkNavigation',
+  footer: 'landmarkFooter',
+};
+
+const firstLandmarkPerKind = (landmarks: Landmark[]): Landmark[] =>
+  landmarks.filter((landmark, index) => landmarks.findIndex((other) => other.kind === landmark.kind) === index);
 
 const nextLevel = (key: string, current: FeatureLevel | undefined): FeatureLevel => {
   const count = levelCountOf(key);
@@ -60,6 +72,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
   const featureControls: FeatureControl[] = [];
   const profileControls: ProfileControl[] = [];
   const listeners: Array<() => void> = [];
+  let skipRefresh: () => void = () => undefined;
 
   const listen = (target: EventTarget, type: string, handler: EventListener): void => {
     target.addEventListener(type, handler);
@@ -136,6 +149,33 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     ]);
   };
 
+  const buildSkipControl = (): HTMLElement | null => {
+    if (config.features[SKIP_FEATURE_KEY]?.enabled !== true) return null;
+    const select = createElement(doc, 'select', { id: SKIP_SELECT_ID, class: 'ka11y-select' });
+    const wrapper = createElement(doc, 'div', { class: 'ka11y-skip', hidden: true }, [
+      createElement(doc, 'label', { class: 'ka11y-skip__label', for: SKIP_SELECT_ID }, [t(`features.${SKIP_FEATURE_KEY}.label`)]),
+      select,
+    ]);
+    let landmarks: Landmark[] = [];
+    const onSkipChange = (): void => {
+      const landmark = landmarks.find((item) => item.kind === select.value);
+      select.value = '';
+      if (landmark) focusLandmark(landmark);
+    };
+    listen(select, 'change', onSkipChange);
+    const refresh = (): void => {
+      const active = isLevelActive(store.getState().levels[SKIP_FEATURE_KEY]);
+      landmarks = active ? firstLandmarkPerKind(findLandmarks(doc)) : [];
+      const options = landmarks.map((landmark) =>
+        createElement(doc, 'option', { value: landmark.kind }, [t(LANDMARK_LABEL_KEYS[landmark.kind])])
+      );
+      select.replaceChildren(createElement(doc, 'option', { value: '' }, [t(`features.${SKIP_FEATURE_KEY}.label`)]), ...options);
+      wrapper.hidden = options.length === 0;
+    };
+    skipRefresh = refresh;
+    return wrapper;
+  };
+
   const buildHideMenu = (onHide: () => void): HTMLElement | null => {
     if (!config.hideToolbar.allow) return null;
     const menu = createElement(doc, 'div', { class: 'ka11y-hide-menu', id: 'ka11y-hide-menu', hidden: true });
@@ -159,7 +199,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     menu.append(sessionButton);
     config.hideToolbar.days.forEach((days) => {
       const button = createElement(doc, 'button', { type: 'button', class: 'ka11y-action', 'data-days': String(days) }, [
-        `${t('hideToolbarDays')}: ${days}`,
+        `${t('hideToolbarDays')} ${days} ${t('hideToolbarDaysUnit')}`,
       ]);
       const onDaysClick = (): void => {
         onHide();
@@ -219,7 +259,10 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
   );
 
   const onChange = (open: boolean): void => {
-    if (open) placePanel(panel);
+    if (open) {
+      placePanel(panel);
+      skipRefresh();
+    }
     if (store.getState().open !== open) store.set({ open });
   };
 
@@ -228,7 +271,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
   const onCloseClick = (): void => dialog.close();
   listen(closeButton, 'click', onCloseClick);
 
-  [buildProfiles(), buildFeatures()].forEach((section) => {
+  [buildProfiles(), buildFeatures(), buildSkipControl()].forEach((section) => {
     if (section) content.append(section);
   });
   content.append(buildFooter(() => dialog.close()));
@@ -243,6 +286,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     profileControls.forEach(({ key, button }) => {
       button.setAttribute('aria-pressed', String(profiles.isActive(key)));
     });
+    skipRefresh();
     if (state.open && !dialog.isOpen()) dialog.open();
     if (!state.open && dialog.isOpen()) dialog.close();
   };

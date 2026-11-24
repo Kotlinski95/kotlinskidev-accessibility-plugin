@@ -77,6 +77,14 @@ export interface HideToolbarConfig {
   days: number[];
 }
 
+export interface AdvancedConfig {
+  excludeSelectors: string;
+}
+
+export interface AssetsConfig {
+  dyslexicFontUrl: string;
+}
+
 export interface KotlinskidevA11yConfig {
   v: string;
   features: Record<string, FeatureConfig>;
@@ -92,6 +100,8 @@ export interface KotlinskidevA11yConfig {
   locale: string;
   rtl: boolean;
   customCss: string;
+  advanced: AdvancedConfig;
+  assets: AssetsConfig;
 }
 
 declare global {

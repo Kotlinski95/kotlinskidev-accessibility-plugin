@@ -1,0 +1,23 @@
+@mixin palette($name) {
+  html.ka11y-#{$name}-contrast body :not(#ka11y-root):not(#ka11y-root *):not([data-ka11y-overlay]),
+  html.ka11y-#{$name}-contrast body {
+    background-color: var(--ka11y-pal-#{$name}-bg) !important;
+    background-image: none !important;
+    color: var(--ka11y-pal-#{$name}-fg) !important;
+    border-color: var(--ka11y-pal-#{$name}-border) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  html.ka11y-#{$name}-contrast body a:not(#ka11y-root *),
+  html.ka11y-#{$name}-contrast body a:not(#ka11y-root *) * {
+    color: var(--ka11y-pal-#{$name}-link) !important;
+  }
+
+  html.ka11y-#{$name}-contrast body :is(img, picture, video, canvas, svg, iframe):not(#ka11y-root *) {
+    background-color: transparent !important;
+  }
+}
+
+@include palette(dark);
+@include palette(light);

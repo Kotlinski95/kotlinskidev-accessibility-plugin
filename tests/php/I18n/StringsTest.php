@@ -34,7 +34,7 @@ final class StringsTest extends TestCase {
 		foreach ( Schema::profile_keys() as $profile ) {
 			$this->assertContains( "profiles.$profile", $keys );
 		}
-		foreach ( array( 'panelTitle', 'reset', 'close', 'hideToolbar', 'statementLink', 'shortcutHint' ) as $key ) {
+		foreach ( array( 'panelTitle', 'reset', 'close', 'hideToolbar', 'hideToolbarDays', 'hideToolbarDaysUnit', 'statementLink', 'shortcutHint' ) as $key ) {
 			$this->assertContains( $key, $keys );
 		}
 	}

@@ -165,6 +165,32 @@
   }
 }
 
+.ka11y-skip {
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 1rem;
+}
+
+.ka11y-skip__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.ka11y-select {
+  min-height: 2.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--ka11y-w-muted);
+  border-radius: var(--ka11y-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+
+  &:focus-visible {
+    outline: 3px solid var(--ka11y-w-focus);
+    outline-offset: 2px;
+  }
+}
+
 .ka11y-hint {
   margin: 0;
   color: var(--ka11y-w-muted);

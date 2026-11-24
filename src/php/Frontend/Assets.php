@@ -114,6 +114,12 @@ final class Assets {
 			'locale'       => $locale,
 			'rtl'          => $this->resolver->is_rtl_locale( $locale ),
 			'customCss'    => (string) ( $settings['customCss'] ?? '' ),
+			'advanced'     => array(
+				'excludeSelectors' => (string) ( $settings['advanced']['excludeSelectors'] ?? '' ),
+			),
+			'assets'       => array(
+				'dyslexicFontUrl' => KOTLINSKIDEV_A11Y_URL . 'assets/fonts/opendyslexic-regular.woff2',
+			),
 		);
 	}
 

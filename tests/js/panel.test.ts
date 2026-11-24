@@ -206,10 +206,51 @@ describe('panel', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
     const days = shadow.querySelectorAll('[data-days]');
     expect(days).toHaveLength(2);
-    expect(days[0]?.textContent).toBe('hideToolbarDays: 1');
+    expect(days[0]?.textContent).toBe('hideToolbarDays 1 hideToolbarDaysUnit');
     (days[1] as HTMLButtonElement).click();
     expect(host.hidden).toBe(true);
     expect(dialogEl.hasAttribute('inert')).toBe(true);
     expect(localStorage.getItem('ka11y-hidden')).not.toBeNull();
+  });
+
+  describe('skip to content control', () => {
+    const skipConfig = (): KotlinskidevA11yConfig =>
+      createConfig({ features: { skipToContent: { enabled: true, default: false } } });
+
+    const select = (shadow: ShadowRoot): HTMLSelectElement => shadow.querySelector('.ka11y-select') as HTMLSelectElement;
+    const wrapper = (shadow: ShadowRoot): HTMLElement => shadow.querySelector('.ka11y-skip') as HTMLElement;
+
+    it('is absent when the feature is disabled', () => {
+      const { shadow } = setup(createConfig());
+      expect(shadow.querySelector('.ka11y-skip')).toBeNull();
+    });
+
+    it('stays hidden until the feature is on and a landmark exists', () => {
+      const { shadow, store } = setup(skipConfig());
+      store.setLevel('skipToContent', true);
+      expect(wrapper(shadow).hidden).toBe(true);
+    });
+
+    it('lists only landmarks present and focuses the chosen one', () => {
+      const { shadow, store } = setup(skipConfig());
+      document.body.insertAdjacentHTML('beforeend', '<main id="m">m</main><footer id="f">f</footer>');
+      store.setLevel('skipToContent', true);
+      expect(wrapper(shadow).hidden).toBe(false);
+      const values = [...select(shadow).options].map((option) => option.value);
+      expect(values).toEqual(['', 'main', 'footer']);
+      select(shadow).value = 'footer';
+      select(shadow).dispatchEvent(new Event('change'));
+      expect(document.activeElement).toBe(document.getElementById('f'));
+      expect(select(shadow).value).toBe('');
+    });
+
+    it('hides again when the feature is turned off', () => {
+      const { shadow, store } = setup(skipConfig());
+      document.body.insertAdjacentHTML('beforeend', '<main>m</main>');
+      store.setLevel('skipToContent', true);
+      expect(wrapper(shadow).hidden).toBe(false);
+      store.setLevel('skipToContent', false);
+      expect(wrapper(shadow).hidden).toBe(true);
+    });
   });
 });

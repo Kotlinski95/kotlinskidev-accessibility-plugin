@@ -1,4 +1,6 @@
 import { createApplier } from './apply';
+import { registerAllFeatures } from './features';
+import { bindContrastExclusivity } from './features/color-orientation';
 import { bindHashOpen } from './hash-open';
 import { createHideToolbar } from './hide-toolbar';
 import { createPanel } from './panel';
@@ -15,9 +17,11 @@ const boot = (): void => {
   if (!config) return;
 
   const store = createStore();
+  bindContrastExclusivity(store);
   const storage = createStorage(config.storage);
   const saved = storage.load();
   if (saved) store.set(saved);
+  registerAllFeatures();
   createApplier(store);
   store.subscribe((state) => storage.save(state));
 

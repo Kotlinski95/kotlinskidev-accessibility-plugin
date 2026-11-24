@@ -51,5 +51,7 @@ export const createConfig = (overrides: Partial<KotlinskidevA11yConfig> = {}): K
   locale: 'en_US',
   rtl: false,
   customCss: '.x{color:red}',
+  advanced: { excludeSelectors: '#wpadminbar' },
+  assets: { dyslexicFontUrl: 'https://example.test/opendyslexic.woff2' },
   ...overrides,
 });

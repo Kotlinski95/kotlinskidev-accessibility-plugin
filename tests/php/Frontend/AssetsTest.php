@@ -59,7 +59,7 @@ final class AssetsTest extends TestCase {
 		$config = $this->assets()->config( Schema::defaults() );
 
 		$this->assertSame(
-			array( 'v', 'features', 'profiles', 'widget', 'theme', 'tokens', 'storage', 'shortcut', 'hideToolbar', 'statementUrl', 'strings', 'locale', 'rtl', 'customCss' ),
+			array( 'v', 'features', 'profiles', 'widget', 'theme', 'tokens', 'storage', 'shortcut', 'hideToolbar', 'statementUrl', 'strings', 'locale', 'rtl', 'customCss', 'advanced', 'assets' ),
 			array_keys( $config )
 		);
 		$this->assertSame( '0.0.0-test', $config['v'] );
@@ -69,6 +69,11 @@ final class AssetsTest extends TestCase {
 		$this->assertArrayHasKey( 'panelTitle', $config['strings'] );
 		$this->assertArrayHasKey( 'biggerText', $config['features'] );
 		$this->assertSame( 'ka11y', $config['storage']['key'] );
+		$this->assertSame( '#wpadminbar', $config['advanced']['excludeSelectors'] );
+		$this->assertSame(
+			'https://example.test/wp-content/plugins/kotlinskidev-accessibility/assets/fonts/opendyslexic-regular.woff2',
+			$config['assets']['dyslexicFontUrl']
+		);
 	}
 
 	public function test_statement_url_prefers_page_id(): void {
