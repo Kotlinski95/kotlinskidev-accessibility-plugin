@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Settings;
 
+use Kotlinskidev\A11y\Cache\Invalidation;
+
 final class Repository {
 
 	public const OPTION = 'kotlinskidev_a11y_settings';
@@ -38,6 +40,7 @@ final class Repository {
 
 		update_option( self::OPTION, $clean );
 		self::flush();
+		Invalidation::settings_changed();
 
 		return $clean;
 	}
@@ -45,6 +48,7 @@ final class Repository {
 	public function reset(): array {
 		delete_option( self::OPTION );
 		self::flush();
+		Invalidation::settings_changed();
 
 		return Schema::defaults();
 	}

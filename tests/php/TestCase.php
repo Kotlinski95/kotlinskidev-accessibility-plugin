@@ -5,6 +5,7 @@ namespace Kotlinskidev\A11y\Tests;
 
 use Brain\Monkey;
 use Brain\Monkey\Functions;
+use Kotlinskidev\A11y\Cache\Invalidation;
 use Kotlinskidev\A11y\Settings\Repository;
 use PHPUnit\Framework\TestCase as PhpUnitTestCase;
 
@@ -14,6 +15,7 @@ abstract class TestCase extends PhpUnitTestCase {
 		parent::setUp();
 		Monkey\setUp();
 		Repository::flush();
+		Invalidation::reset_request_state();
 
 		Functions\stubs(
 			array(
@@ -29,6 +31,7 @@ abstract class TestCase extends PhpUnitTestCase {
 	protected function tearDown(): void {
 		Monkey\tearDown();
 		Repository::flush();
+		Invalidation::reset_request_state();
 		parent::tearDown();
 	}
 }

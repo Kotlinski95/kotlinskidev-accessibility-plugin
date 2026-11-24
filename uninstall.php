@@ -6,4 +6,5 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 }
 
 delete_option( 'kotlinskidev_a11y_settings' );
+delete_option( 'kotlinskidev_a11y_installed_version' );
 delete_transient( 'kotlinskidev_a11y_missing_alt' );

@@ -5,6 +5,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `kotlinskidev_a11y_cache_invalidated` action with a `$reason` argument: `settings` after settings are saved, imported or reset (once per request), `update` once after the plugin version changes.
+
+### Docs
+
+- README Installation and Page caches sections, with purge snippets for common cache plugins.
+
 ## [0.1.2] - 2026-11-24
 
 ### Fixed

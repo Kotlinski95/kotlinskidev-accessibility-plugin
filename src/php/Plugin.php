@@ -18,6 +18,8 @@ final class Plugin {
 	}
 
 	public static function init(): void {
+		( new Cache\VersionWatcher() )->register();
+
 		$counter = new Admin\AltTextCounter();
 
 		$counter->register();

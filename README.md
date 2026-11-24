@@ -4,9 +4,45 @@ Standalone GPL accessibility widget plugin for WordPress. Visitors adjust conten
 
 Requires WordPress 6.4+, PHP 8.1+, Node 20+ (22 in CI).
 
-## Install
+## Installation
 
-Download `kotlinskidev-accessibility.zip` from the latest GitHub release and upload it under Plugins, Add New, Upload Plugin. Do not use GitHub's "Source code" archive: it has no built assets or vendor directory.
+1. Download `kotlinskidev-accessibility.zip` from the latest GitHub Release. Do not download "Source code (zip)": it lacks `vendor/` and `build/` and the plugin will not run.
+2. In WordPress open Plugins, Add New, Upload Plugin, choose the zip and activate.
+
+Updates arrive through the Plugins screen like any other plugin. The "Check for updates" link on the plugin row forces an immediate check; otherwise the updater runs about every 12 hours.
+
+## Page caches
+
+Asset URLs are versioned, so browsers fetch new files after an update. The page HTML embeds the widget configuration, so a full-page cache keeps serving the old configuration until it is purged. Purge the page cache after every plugin update and every settings change.
+
+The plugin does not know any cache plugin. It fires one generic action instead:
+
+```php
+do_action( 'kotlinskidev_a11y_cache_invalidated', string $reason );
+```
+
+`$reason` is `settings` after settings are saved, imported or reset (at most once per request), or `update` once after the plugin version changes (checked in the admin and cron only, never on first install).
+
+Hook your cache plugin into it from a small mu-plugin or the theme:
+
+```php
+add_action(
+	'kotlinskidev_a11y_cache_invalidated',
+	static function (): void {
+		my_cache_purge();
+	}
+);
+```
+
+`my_cache_purge()` is a placeholder for your cache plugin's purge call. Examples:
+
+```php
+add_action( 'kotlinskidev_a11y_cache_invalidated', static fn () => rocket_clean_domain() );
+add_action( 'kotlinskidev_a11y_cache_invalidated', static fn () => w3tc_flush_all() );
+add_action( 'kotlinskidev_a11y_cache_invalidated', static fn () => do_action( 'litespeed_purge_all' ) );
+```
+
+These are WP Rocket, W3 Total Cache and LiteSpeed Cache. For Super Page Cache, call its purge function from the same callback in place of `my_cache_purge()`; its exact hook name is not verified here, so check its documentation. Cloudflare edge caching is left to the cache plugin.
 
 ## Build
 
