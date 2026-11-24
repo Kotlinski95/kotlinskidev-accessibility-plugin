@@ -91,7 +91,7 @@ export const createApplier = (store: Store, root: HTMLElement = document.documen
 
   const destroy = (): void => {
     unsubscribe();
-    sync({ classes: new Set(), vars: {}, levels: {}, open: false });
+    sync({ classes: new Set(), vars: {}, levels: {}, profile: null, owned: {}, open: false });
   };
 
   return { sync, destroy };

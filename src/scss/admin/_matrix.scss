@@ -1,0 +1,28 @@
+.ka11y-table-wrap {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+
+.ka11y-matrix__table {
+  th,
+  td {
+    vertical-align: middle;
+    text-align: start;
+  }
+
+  .small-text {
+    inline-size: 6rem;
+  }
+}
+
+.ka11y-feature-group {
+  display: grid;
+  gap: var(--ka11y-a-gap-small);
+}
+
+.ka11y-profile {
+  display: grid;
+  gap: var(--ka11y-a-gap-small);
+  padding-block-end: var(--ka11y-a-gap);
+  border-block-end: 1px solid var(--ka11y-a-border);
+}

@@ -24,5 +24,9 @@ final class Plugin {
 
 		( new Frontend\Assets( $visibility ) )->register();
 		( new Frontend\Markup( $visibility ) )->register();
+
+		if ( is_admin() ) {
+			( new Admin\SettingsPage() )->register();
+		}
 	}
 }

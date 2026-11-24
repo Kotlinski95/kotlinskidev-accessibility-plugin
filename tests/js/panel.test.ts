@@ -114,7 +114,21 @@ describe('panel', () => {
     expect(profile.getAttribute('aria-pressed')).toBe('false');
     profile.click();
     expect(profile.getAttribute('aria-pressed')).toBe('true');
-    expect(store.getState().levels).toEqual({ biggerText: 1, highlightLinks: true });
+    expect(store.getState().levels).toEqual({ biggerText: 2, highlightLinks: true });
+  });
+
+  it('second profile click and reset remove the profile without touching other features', () => {
+    const { shadow, store } = setup();
+    const profile = shadow.querySelector('[data-profile="visionImpaired"]') as HTMLButtonElement;
+    toggleOf(shadow, 'highlightLinks').click();
+    profile.click();
+    profile.click();
+    expect(profile.getAttribute('aria-pressed')).toBe('false');
+    expect(store.getState().levels).toEqual({ highlightLinks: true });
+    profile.click();
+    (shadow.querySelector('.ka11y-reset') as HTMLButtonElement).click();
+    expect(profile.getAttribute('aria-pressed')).toBe('false');
+    expect(store.getState().levels).toEqual({});
   });
 
   it('shows statement link and shortcut hint', () => {

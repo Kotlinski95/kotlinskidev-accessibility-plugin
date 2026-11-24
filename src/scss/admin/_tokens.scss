@@ -1,0 +1,31 @@
+.ka11y-admin {
+  --ka11y-a-accent: var(--wp-admin-theme-color, #2271b1);
+  --ka11y-a-accent-strong: var(--wp-admin-theme-color-darker-10, #135e96);
+  --ka11y-a-surface: #fff;
+  --ka11y-a-subtle: #f6f7f7;
+  --ka11y-a-border: #c3c4c7;
+  --ka11y-a-border-strong: #8c8f94;
+  --ka11y-a-text: #1d2327;
+  --ka11y-a-muted: #50575e;
+  --ka11y-a-danger: #b32d2e;
+  --ka11y-a-focus: var(--wp-admin-theme-color, #2271b1);
+  --ka11y-a-backdrop: rgb(0 0 0 / 0.6);
+  --ka11y-a-radius: 4px;
+  --ka11y-a-gap: 1rem;
+  --ka11y-a-gap-small: 0.5rem;
+  --ka11y-a-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+  --ka11y-a-preview-bg: #e8eaed;
+  --ka11y-a-preview-bar: #c3c4c7;
+}
+
+.ka11y-admin [hidden] {
+  display: none !important;
+}
+
+.ka11y-preview {
+  --ka11y-primary: #0b57d0;
+  --ka11y-on-primary: #fff;
+  --ka11y-surface-light: #fff;
+  --ka11y-text-light: #1b1b1f;
+  --ka11y-radius: 12px;
+}

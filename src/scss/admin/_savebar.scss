@@ -1,0 +1,26 @@
+.ka11y-savebar {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 2;
+  display: flex;
+  gap: var(--ka11y-a-gap);
+  align-items: center;
+  padding: 0.75rem var(--ka11y-a-gap);
+  margin-block-start: var(--ka11y-a-gap);
+  background: var(--ka11y-a-surface);
+  border: 1px solid var(--ka11y-a-border);
+  border-radius: var(--ka11y-a-radius);
+  box-shadow: var(--ka11y-a-shadow);
+
+  &.is-dirty {
+    border-color: var(--ka11y-a-accent);
+  }
+}
+
+.ka11y-savebar__save.is-busy {
+  opacity: 0.7;
+}
+
+.ka11y-savebar__status {
+  color: var(--ka11y-a-muted);
+}

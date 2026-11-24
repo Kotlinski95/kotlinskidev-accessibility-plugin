@@ -20,6 +20,8 @@ export interface SavedState {
   classes: string[];
   vars: Record<string, string>;
   levels?: Record<string, FeatureLevel>;
+  profile?: string;
+  owned?: Record<string, FeatureLevel>;
   exp: number;
 }
 

@@ -39,8 +39,8 @@ final class Schema {
 	private const PROFILE_PRESETS = array(
 		'visionImpaired' => array( 'biggerText', 'highContrast', 'readableFont', 'highlightLinks', 'bigCursor' ),
 		'seizureSafe'    => array( 'stopAnimations', 'muteSounds', 'saturation' ),
-		'adhdFriendly'   => array( 'readingMask', 'readingLine', 'stopAnimations', 'highlightTitles' ),
-		'blindness'      => array( 'keyboardNavigation', 'readPage', 'skipToContent', 'highlightTitles' ),
+		'adhdFriendly'   => array( 'readingMask', 'stopAnimations', 'highlightTitles', 'muteSounds' ),
+		'blindness'      => array( 'keyboardNavigation', 'readPage', 'highlightAll', 'skipToContent' ),
 		'epilepsySafe'   => array( 'stopAnimations', 'muteSounds', 'monochrome' ),
 	);
 

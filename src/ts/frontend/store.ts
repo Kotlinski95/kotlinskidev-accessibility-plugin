@@ -5,6 +5,8 @@ export interface StoreState {
   classes: Set<string>;
   vars: Record<string, string>;
   levels: Record<string, FeatureLevel>;
+  profile: string | null;
+  owned: Record<string, FeatureLevel>;
   open: boolean;
 }
 
@@ -19,7 +21,7 @@ export interface Store {
   reset(): void;
 }
 
-const emptyState = (): StoreState => ({ classes: new Set(), vars: {}, levels: {}, open: false });
+const emptyState = (): StoreState => ({ classes: new Set(), vars: {}, levels: {}, profile: null, owned: {}, open: false });
 
 const isLevelClass = (name: string, base: string): boolean =>
   name === base || (name.startsWith(`${base}-`) && /^\d+$/.test(name.slice(base.length + 1)));
@@ -54,6 +56,8 @@ export const createStore = (initial: Partial<StoreState> = {}): Store => {
       classes: new Set(patch.classes ?? state.classes),
       vars: { ...(patch.vars ?? state.vars) },
       levels: { ...(patch.levels ?? state.levels) },
+      profile: patch.profile === undefined ? state.profile : patch.profile,
+      owned: { ...(patch.owned ?? state.owned) },
       open: patch.open ?? state.open,
     });
   };
@@ -72,7 +76,7 @@ export const createStore = (initial: Partial<StoreState> = {}): Store => {
   };
 
   const reset = (): void => {
-    set({ classes: new Set(), vars: {}, levels: {} });
+    set({ classes: new Set(), vars: {}, levels: {}, profile: null, owned: {} });
   };
 
   return { getState, subscribe, set, toggle, setLevel, reset };

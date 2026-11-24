@@ -1,0 +1,24 @@
+.ka11y-locale__rows {
+  display: grid;
+  gap: var(--ka11y-a-gap-small);
+  max-block-size: 32rem;
+  margin-block-start: var(--ka11y-a-gap-small);
+  overflow-y: auto;
+}
+
+.ka11y-locale__row {
+  display: grid;
+  gap: 0.25rem 1rem;
+  align-items: center;
+
+  @media (min-width: 48rem) {
+    grid-template-columns: minmax(10rem, 16rem) minmax(0, 1fr);
+  }
+}
+
+.ka11y-locale__key {
+  font-family: monospace;
+  font-size: 0.85em;
+  color: var(--ka11y-a-muted);
+  overflow-wrap: anywhere;
+}

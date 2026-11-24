@@ -1,0 +1,122 @@
+.ka11y-field {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  margin-block-end: var(--ka11y-a-gap);
+
+  .description {
+    margin: 0;
+  }
+}
+
+.ka11y-field__label {
+  font-weight: 600;
+}
+
+.ka11y-fieldset {
+  display: grid;
+  gap: var(--ka11y-a-gap-small);
+  min-inline-size: 0;
+  padding: var(--ka11y-a-gap);
+  margin: 0;
+  border: 1px solid var(--ka11y-a-border);
+  border-radius: var(--ka11y-a-radius);
+}
+
+.ka11y-fieldset__legend {
+  padding-inline: 0.4rem;
+  font-weight: 600;
+}
+
+.ka11y-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ka11y-color {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ka11y-color__picker {
+  inline-size: 2.5rem;
+  block-size: 2rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.ka11y-color__text {
+  inline-size: 8rem;
+}
+
+.ka11y-list__add,
+.ka11y-combo,
+.ka11y-media {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ka11y-a-gap-small);
+  align-items: center;
+}
+
+.ka11y-list__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ka11y-a-gap-small);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.ka11y-list__item {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  margin: 0;
+  background: var(--ka11y-a-subtle);
+  border: 1px solid var(--ka11y-a-border);
+  border-radius: 999px;
+}
+
+.ka11y-list__remove {
+  color: var(--ka11y-a-danger);
+}
+
+.ka11y-media__preview {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  object-fit: contain;
+  background: var(--ka11y-a-subtle);
+  border: 1px solid var(--ka11y-a-border);
+  border-radius: var(--ka11y-a-radius);
+}
+
+.ka11y-checklist__grid {
+  display: grid;
+  gap: 0.35rem 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+}
+
+.ka11y-checklist__item {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.ka11y-gdpr {
+  padding: 0.6rem 0.8rem;
+  margin: 0;
+  background: var(--ka11y-a-subtle);
+  border-inline-start: 4px solid var(--ka11y-a-accent);
+}
+
+[aria-invalid='true'] {
+  border-color: var(--ka11y-a-danger);
+}
+
+.ka11y-admin :where(input, select, textarea, button):focus-visible {
+  outline: 2px solid var(--ka11y-a-focus);
+  outline-offset: 1px;
+}

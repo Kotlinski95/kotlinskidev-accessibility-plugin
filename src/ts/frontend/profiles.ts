@@ -1,6 +1,6 @@
-import type { FeatureConfig, ProfileConfig } from '../shared/types';
+import type { FeatureConfig, FeatureLevel, ProfileConfig } from '../shared/types';
 import { isLevelActive } from './feature-utils';
-import { levelCountOf } from './feature-groups';
+import { profileLevelFor } from './profile-levels';
 import type { Store } from './store';
 
 export interface Profiles {
@@ -21,24 +21,42 @@ export const createProfiles = (
 
   const keys = (): string[] => Object.keys(profiles).filter((key) => profiles[key]?.enabled === true);
 
-  const featuresOf = (key: string): string[] => (profiles[key]?.features ?? []).filter(isAllowed);
+  const featuresOf = (key: string): string[] =>
+    keys().includes(key) ? (profiles[key]?.features ?? []).filter(isAllowed) : [];
+
+  const releaseOwned = (): void => {
+    const { owned, levels } = store.getState();
+    Object.entries(owned).forEach(([feature, level]) => {
+      if (levels[feature] === level) store.setLevel(feature, false);
+    });
+    store.set({ profile: null, owned: {} });
+  };
 
   const apply = (key: string): void => {
-    featuresOf(key).forEach((feature) => store.setLevel(feature, levelCountOf(feature) > 1 ? 1 : true));
+    const members = featuresOf(key);
+    if (members.length === 0) return;
+    releaseOwned();
+    const owned: Record<string, FeatureLevel> = {};
+    members.forEach((feature) => {
+      if (isLevelActive(store.getState().levels[feature])) return;
+      const level = profileLevelFor(key, feature);
+      store.setLevel(feature, level);
+      if (store.getState().levels[feature] === level) owned[feature] = level;
+    });
+    store.set({ profile: key, owned });
   };
 
   const clear = (key: string): void => {
-    featuresOf(key).forEach((feature) => store.setLevel(feature, false));
+    if (store.getState().profile === key) releaseOwned();
   };
 
   const isActive = (key: string): boolean => {
-    const members = featuresOf(key);
-    const { levels } = store.getState();
-    return members.length > 0 && members.every((feature) => isLevelActive(levels[feature]));
+    const { profile, owned, levels } = store.getState();
+    return profile === key && Object.entries(owned).every(([feature, level]) => levels[feature] === level);
   };
 
   const toggle = (key: string): void => {
-    if (isActive(key)) clear(key);
+    if (store.getState().profile === key && isActive(key)) clear(key);
     else apply(key);
   };
 

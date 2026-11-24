@@ -5,6 +5,8 @@ export interface LoadedState {
   classes: Set<string>;
   vars: Record<string, string>;
   levels: Record<string, FeatureLevel>;
+  profile: string | null;
+  owned: Record<string, FeatureLevel>;
 }
 
 export interface StateStorage {
@@ -60,6 +62,8 @@ const parse = (raw: string): LoadedState | null => {
     classes: new Set(pickStrings(data.classes).filter((name) => name.startsWith('ka11y-'))),
     vars: pickVars(data.vars),
     levels: pickLevels(data.levels),
+    profile: typeof data.profile === 'string' ? data.profile : null,
+    owned: pickLevels(data.owned),
   };
 };
 
@@ -93,6 +97,7 @@ export const createStorage = (config: StorageConfig): StateStorage => {
       classes: [...state.classes],
       vars: state.vars,
       levels: state.levels,
+      ...(state.profile === null ? {} : { profile: state.profile, owned: state.owned }),
     };
     const serialized = JSON.stringify(body);
     if (serialized === lastSerialized) return;

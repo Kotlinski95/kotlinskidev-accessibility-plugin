@@ -1,0 +1,31 @@
+.ka11y-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: grid;
+  place-items: center;
+  padding: var(--ka11y-a-gap);
+  background: var(--ka11y-a-backdrop);
+}
+
+.ka11y-dialog {
+  inline-size: min(28rem, 100%);
+  padding: calc(var(--ka11y-a-gap) * 1.5);
+  background: var(--ka11y-a-surface);
+  border-radius: var(--ka11y-a-radius);
+  box-shadow: var(--ka11y-a-shadow);
+}
+
+.ka11y-dialog__title {
+  margin-block-start: 0;
+}
+
+.ka11y-dialog__actions {
+  display: flex;
+  gap: var(--ka11y-a-gap-small);
+  justify-content: flex-end;
+}
+
+.ka11y-import__file {
+  max-inline-size: 100%;
+}
