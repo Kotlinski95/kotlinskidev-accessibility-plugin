@@ -1,0 +1,37 @@
+{
+  "name": "kotlinskidev/kotlinskidev-accessibility",
+  "description": "Accessibility widget for WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.1",
+    "yahnis-elsts/plugin-update-checker": "^5.5"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5",
+    "brain/monkey": "^2.6",
+    "wp-coding-standards/wpcs": "^3.1",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kotlinskidev\\A11y\\": "src/php/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kotlinskidev\\A11y\\Tests\\": "tests/php/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  },
+  "scripts": {
+    "test:unit": "phpunit --configuration phpunit.xml.dist",
+    "lint": "phpcs --standard=phpcs.xml.dist"
+  }
+}
