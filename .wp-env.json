@@ -10,5 +10,8 @@
     "WP_DEBUG_DISPLAY": false,
     "SCRIPT_DEBUG": false
   },
-  "mappings": {}
+  "mappings": {
+    "wp-content/themes/ka11y-hostile": "./tests/e2e/fixtures/hostile-theme",
+    "wp-content/mu-plugins": "./tests/e2e/fixtures/mu-plugins"
+  }
 }

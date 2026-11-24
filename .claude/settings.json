@@ -1,0 +1,16 @@
+{
+  "enabledPlugins": {
+    "kd-core@kotlinskidev-claude-kit": true,
+    "kd-web@kotlinskidev-claude-kit": true,
+    "kd-wp@kotlinskidev-claude-kit": true
+  },
+  "extraKnownMarketplaces": {
+    "kotlinskidev-claude-kit": {
+      "source": {
+        "source": "github",
+        "repo": "Kotlinski95/kotlinskidev-claude-kit"
+      }
+    }
+  },
+  "agent": "kd-core:orchestrator"
+}

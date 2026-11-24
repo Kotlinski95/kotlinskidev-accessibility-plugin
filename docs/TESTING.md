@@ -1,0 +1,65 @@
+## CI
+
+| Workflow | Trigger | What runs |
+| --- | --- | --- |
+| `ci.yml` `php` | push to main, pull request | phpcs and PHPUnit on PHP 8.1 and 8.3 |
+| `ci.yml` `phpstan` | push to main, pull request | `composer run analyse` (level 8, config in `phpstan.neon.dist`) |
+| `ci.yml` `js` | push to main, pull request | ESLint, typecheck, Jest, build, version check |
+| `ci.yml` `e2e` | push to main, pull request | wp-env in Docker, Chromium. Pull requests run `--grep @smoke` when tagged tests exist, otherwise the full suite. Main runs the full suite. |
+| `ci.yml` `plugin-check` | push to main, pull request | Builds the package like the release (build, `composer --no-dev`, rsync with `.distignore`) and runs WordPress Plugin Check on `dist/kotlinskidev-accessibility` |
+| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke` |
+| `codeql.yml` | push to main, pull request, weekly | CodeQL for JavaScript and TypeScript |
+| `release.yml` | tag `v*` | Builds and attaches `kotlinskidev-accessibility.zip` |
+
+Plugin Check runs without the `plugin_updater` and `plugin_readme` checks because the plugin ships from GitHub with its own updater, not from wordpress.org. Four codes are ignored: `wp_function_not_compatible_with_requires_wp` (`array_is_list()` is native on PHP 8.1+), `missing_composer_json_file`, `WordPress.DB.SlowDBQuery.slow_db_query_meta_query` and `WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound` (third-party WPML hooks).
+
+Nightly sets the WordPress and PHP version through a generated `.wp-env.override.json` (git-ignored, not packaged). Cross-browser jobs need `firefox` and `webkit` projects in `playwright.config.ts`.
+
+Run PHPStan locally with `composer run analyse`. Run Plugin Check locally by packaging the plugin as in `release.yml`, mounting the folder in a throwaway wp-env, then `wp plugin install plugin-check --activate` and `wp plugin check kotlinskidev-accessibility`.
+
+## End-to-end fixtures and projects
+
+Every page invariant runs against two fixtures.
+
+| Fixture | Page | How it is selected |
+| --- | --- | --- |
+| `stock` | The default wp-env theme | Nothing to set |
+| `hostile` | `tests/e2e/fixtures/hostile-theme`, a classic theme with a transformed page wrapper, sticky header, `overflow-x: clip` on `html` and `body`, smooth scrolling, a fixed cookie wall, a fixed badge, a `<dialog>`, a scroll-snap carousel, an iframe, a muted looping video, a background-image `<img>`, about 3000 nodes and a `<body>` child appended 400 ms after load | The Playwright option `fixture: 'hostile'` sets the cookie `ka11y_fixture=hostile`; the mu-plugin `tests/e2e/fixtures/mu-plugins/ka11y-fixture-switch.php` then filters `pre_option_template` and `pre_option_stylesheet`. The theme is never activated, so the admin and REST calls keep the stock theme. |
+
+The mu-plugin does nothing unless `WP_ENVIRONMENT_TYPE` is `local` (wp-env sets it), the cookie is present and the fixture theme folder exists. Both folders are mounted through `mappings` in `.wp-env.json`. Run `npm run wp-env:start` again after changing the mappings.
+
+`assertPageUsable` detects the hostile page and adds hostile-only checks (`tests/e2e/support/hostile.ts`): `html` and `body` filter is `none` and `html` is static, the fixed badge keeps its rectangle, the header stays sticky, the cookie wall button is reachable, the late `<body>` node is filtered exactly when a filter feature is on, overlays never intercept the pointer, and the dialog opens and closes.
+
+| Project | Runs |
+| --- | --- |
+| `chromium` | Every spec on desktop Chrome |
+| `mobile-smoke` | `invariants.spec.ts` on Pixel 5, only tests tagged `@smoke` |
+
+Specs that loop over `FIXTURE_NAMES` wrap their tests in `test.describe('[stock]')` and `test.describe('[hostile]')`, each with `test.use({ fixture })`.
+
+### Pairwise combinations
+
+`tests/e2e/support/pairwise.ts` builds a deterministic greedy covering array over `FEATURE_LEVELS` (`off` plus each level). Every valid 2-way pair of feature levels appears in at least one row; the three contrast features are mutually exclusive, so pairs of them are not required. `tests/js/pairwise.test.ts` proves coverage and determinism. `combinations.spec.ts` applies each row through the panel on both fixtures, then reloads and resets with the page invariants checked at each step.
+
+### Running
+
+```bash
+npm run wp-env:start
+npx playwright test                       # everything
+npx playwright test --grep @smoke         # fast subset
+npx playwright test --project=mobile-smoke
+npx playwright test --grep-invert "combination"  # without pairwise rows
+```
+
+`@smoke` is every single-level feature on `stock`, level 1 of each multi-level feature on `stock`, and every profile on `hostile`.
+
+### Adding a fixture
+
+1. Add a folder under `tests/e2e/fixtures/` and map it in `.wp-env.json` (a theme goes to `wp-content/themes/<slug>`).
+2. Make the mu-plugin switch to it for a new cookie value.
+3. Add the name to `FixtureName` and `FIXTURE_NAMES` in `tests/e2e/support/fixtures.ts`.
+4. Put its fixture-only checks in `tests/e2e/support/hostile.ts` style helpers and call them from `assertPageUsable` when a marker element is present.
+
+### Loading specs
+
+`loading.spec.ts` covers the five load strategies with and without saved state on both fixtures, open triggers held behind a delayed `loader.js`, a 404 on `panel.js` (error state, then recovery), the uploads JSON fallback to REST, device skip, no JavaScript and the three Page CSS modes. `support/perf.ts` has `pluginRequests`, `seedSavedState` and `firstPaintSnapshot`. `@smoke` marks interaction without state on `stock`, eager without state on `stock`, interaction with state on `hostile`, the early-trigger test, the chunk failure test and the no-JS test. The Asset CleanUp and strict CSP mu-plugin cases (`compat.spec.ts`) and `perf.spec.ts` arrive in M3.11.

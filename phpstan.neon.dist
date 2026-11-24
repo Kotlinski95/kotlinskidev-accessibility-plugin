@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - src/php
+        - uninstall.php
+    scanFiles:
+        - kotlinskidev-accessibility.php
+    bootstrapFiles:
+        - tests/phpstan-bootstrap.php
+    treatPhpDocTypesAsCertain: false
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
