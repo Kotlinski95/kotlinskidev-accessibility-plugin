@@ -18,11 +18,18 @@ const apply = (state: SavedState): void => {
 };
 
 const storage = window.kotlinskidevA11y?.storage;
+const recovery = new URLSearchParams(location.search).get('ka11y');
 
-if (storage && storage.mode !== 'none') {
+if (recovery === 'off') window.kotlinskidevA11yOff = true;
+else if (storage) {
   try {
-    const raw = storage.mode === 'cookie' ? readCookie(storage.key) : localStorage.getItem(storage.key);
-    if (raw) apply(JSON.parse(raw) as SavedState);
+    if (recovery === 'reset') {
+      document.cookie = `${storage.key}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+      localStorage.removeItem(storage.key);
+    } else if (storage.mode !== 'none') {
+      const raw = storage.mode === 'cookie' ? readCookie(storage.key) : localStorage.getItem(storage.key);
+      if (raw) apply(JSON.parse(raw) as SavedState);
+    }
   } catch {
     document.documentElement.dataset.ka11y = 'error';
   }

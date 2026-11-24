@@ -14,7 +14,7 @@ import { createThemeResolver } from './theme';
 
 const boot = (): void => {
   const config = window.kotlinskidevA11y;
-  if (!config) return;
+  if (!config || window.kotlinskidevA11yOff) return;
 
   const store = createStore();
   bindContrastExclusivity(store);

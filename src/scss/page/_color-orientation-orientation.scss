@@ -35,8 +35,7 @@ html.ka11y-stop-animations body *:not(#ka11y-root *)::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ka11y-reading-line,
-  .ka11y-reading-mask {
+  .ka11y-overlay {
     transition: none;
   }
 }

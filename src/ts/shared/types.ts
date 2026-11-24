@@ -109,5 +109,6 @@ export interface KotlinskidevA11yConfig {
 declare global {
   interface Window {
     kotlinskidevA11y?: KotlinskidevA11yConfig;
+    kotlinskidevA11yOff?: boolean;
   }
 }

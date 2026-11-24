@@ -8,7 +8,7 @@ let tracker: PointerTracker | null = null;
 
 const on = (): void => {
   if (overlay) return;
-  const line = createOverlay('ka11y-reading-line');
+  const line = createOverlay('ka11y-overlay ka11y-overlay--line');
   overlay = line;
   tracker = trackPointerY((y) => setPointerY(line, y));
 };

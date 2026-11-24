@@ -4,6 +4,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { findBareStateSelectors, readFeatureKeys } from './lib-scss-scope.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const out = resolve(root, 'build');
@@ -88,10 +89,18 @@ const buildStyle = async ({ entry, file }) => {
   return result.css;
 };
 
+const assertScopedPageCss = (css) => {
+  const offenders = findBareStateSelectors(css, readFeatureKeys(resolve(root, 'src/php/Settings/Schema.php')));
+  if (offenders.length > 0) {
+    throw new Error(`Page CSS selectors match a bare <html> state class:\n${offenders.join('\n')}`);
+  }
+};
+
 const run = async () => {
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
   const compiled = await Promise.all(styles.map(buildStyle));
+  assertScopedPageCss(compiled[styles.findIndex((style) => style.file === 'frontend.css')] ?? '');
   const widgetCss = compiled[styles.findIndex((style) => style.file === 'widget.css')] ?? '';
   await Promise.all(bundles.map((bundle) => buildScript(bundle, widgetCss)));
 };

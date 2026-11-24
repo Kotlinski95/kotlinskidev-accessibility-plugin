@@ -23,12 +23,12 @@ define( 'KOTLINSKIDEV_A11Y_FILE', __FILE__ );
 define( 'KOTLINSKIDEV_A11Y_DIR', plugin_dir_path( __FILE__ ) );
 define( 'KOTLINSKIDEV_A11Y_URL', plugin_dir_url( __FILE__ ) );
 
-$kotlinskidev_a11y_autoload = KOTLINSKIDEV_A11Y_DIR . 'vendor/autoload.php';
+require_once KOTLINSKIDEV_A11Y_DIR . 'src/php/requirements.php';
 
-if ( ! is_readable( $kotlinskidev_a11y_autoload ) ) {
+if ( ! kotlinskidev_a11y_requirements_met( KOTLINSKIDEV_A11Y_DIR ) ) {
 	return;
 }
 
-require_once $kotlinskidev_a11y_autoload;
+require_once KOTLINSKIDEV_A11Y_DIR . 'vendor/autoload.php';
 
 \Kotlinskidev\A11y\Plugin::boot();

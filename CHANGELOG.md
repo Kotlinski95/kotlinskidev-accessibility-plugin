@@ -5,6 +5,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Reading mask, reading line and the ADHD profile no longer freeze the page: overlay classes no longer collide with the state classes on `<html>`. A build check now rejects unscoped state-class selectors.
+- The reading mask appears only after the first pointer move instead of darkening the page on load.
+
+### Added
+
+- Recovery URLs: `?ka11y=reset` clears saved state, `?ka11y=off` disables the widget for that page view.
+- Admin notice when `vendor/` or `build/` is missing, pointing to the release zip, instead of a silent stop.
+- Playwright invariants test for every feature, level and profile, plus the roadmap in `docs/ROADMAP.md`.
+
 ## [0.1.1] - 2026-11-24
 
 ### Added

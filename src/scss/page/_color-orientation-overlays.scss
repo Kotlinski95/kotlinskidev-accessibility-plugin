@@ -1,7 +1,6 @@
 $overlay-z: calc(var(--ka11y-z-index, 2147483000) - 1);
 
-.ka11y-reading-line,
-.ka11y-reading-mask {
+.ka11y-overlay {
   position: fixed;
   left: 0;
   width: 100%;
@@ -13,7 +12,7 @@ $overlay-z: calc(var(--ka11y-z-index, 2147483000) - 1);
   --ka11y-mask-band: 4.5rem;
 }
 
-.ka11y-reading-line {
+.ka11y-overlay--line {
   top: var(--ka11y-pointer-y);
   height: 0.375rem;
   transform: translateY(-50%);
@@ -21,16 +20,17 @@ $overlay-z: calc(var(--ka11y-z-index, 2147483000) - 1);
   box-shadow: 0 0 0 0.125rem var(--ka11y-pal-line-edge);
 }
 
-.ka11y-reading-mask {
+.ka11y-overlay--mask-top,
+.ka11y-overlay--mask-bottom {
   background: var(--ka11y-pal-mask);
 }
 
-.ka11y-reading-mask--top {
+.ka11y-overlay--mask-top {
   top: 0;
   height: max(0px, calc(var(--ka11y-pointer-y) - var(--ka11y-mask-band) / 2));
 }
 
-.ka11y-reading-mask--bottom {
+.ka11y-overlay--mask-bottom {
   top: calc(var(--ka11y-pointer-y) + var(--ka11y-mask-band) / 2);
   bottom: 0;
 }
