@@ -10,6 +10,8 @@
     "build": "node bin/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
+    "i18n:pot": "wp i18n make-pot . languages/kotlinskidev-accessibility.pot --include=src/php,build",
+    "i18n:json": "wp i18n make-json languages --no-purge",
     "lint": "eslint --no-error-on-unmatched-pattern \"src/ts/**/*.ts\" \"tests/js/**/*.ts\""
   },
   "devDependencies": {

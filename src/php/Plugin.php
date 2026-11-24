@@ -18,5 +18,6 @@ final class Plugin {
 	}
 
 	public static function init(): void {
+		add_action( 'rest_api_init', array( new Rest\SettingsController(), 'register_routes' ) );
 	}
 }

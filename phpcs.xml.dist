@@ -24,6 +24,7 @@
 				<element value="kotlinskidev_a11y"/>
 				<element value="KOTLINSKIDEV_A11Y"/>
 				<element value="Kotlinskidev\A11y"/>
+				<element value="wpml"/>
 			</property>
 		</properties>
 	</rule>
