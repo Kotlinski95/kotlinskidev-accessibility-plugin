@@ -122,4 +122,21 @@ final class StringsTest extends TestCase {
 
 		$this->assertSame( 'Zresetuj!pl_PL', ( new Strings() )->for_locale( 'pl_PL' )['reset'] );
 	}
+
+	public function test_defaults_are_public_and_ignore_overrides(): void {
+		$this->store_labels( array( 'en_US' => array( 'reset' => 'Zresetuj' ) ) );
+
+		$defaults = ( new Strings() )->defaults();
+
+		$this->assertSame( 'Reset all settings', $defaults['reset'] );
+	}
+
+	public function test_includes_statement_template_keys(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		$keys = ( new Strings() )->keys();
+
+		foreach ( array( 'statementEmpty', 'statementCommitmentHeading', 'statementConformanceHeading', 'statementFeedbackHeading', 'statementDateHeading' ) as $key ) {
+			$this->assertContains( $key, $keys );
+		}
+	}
 }

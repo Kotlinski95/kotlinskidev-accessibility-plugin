@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  PLUGIN_SLUG: kotlinskidev-accessibility
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:v2, wp-cli
+          coverage: none
+      - run: npm ci
+      - run: npm run build
+      - run: composer install --no-dev -o --prefer-dist --no-interaction
+      - run: node bin/check-version.mjs
+      - run: |
+          wp i18n make-pot . languages/${PLUGIN_SLUG}.pot --include=src/php,build --allow-root
+          wp i18n make-json languages --no-purge --allow-root
+      - run: |
+          mkdir -p "dist/${PLUGIN_SLUG}"
+          rsync -a --exclude-from=.distignore ./ "dist/${PLUGIN_SLUG}/" --exclude=dist
+          (cd dist && zip -qr "${PLUGIN_SLUG}.zip" "${PLUGIN_SLUG}")
+      - run: |
+          listing=$(unzip -Z1 "dist/${PLUGIN_SLUG}.zip")
+          for required in build/frontend.js build/admin.js vendor/autoload.php kotlinskidev-accessibility.php; do
+            if ! grep -qx "${PLUGIN_SLUG}/${required}" <<< "$listing"; then
+              echo "Missing ${required} in zip" >&2
+              exit 1
+            fi
+          done
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ env.PLUGIN_SLUG }}.zip
+          generate_release_notes: true
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "${GITHUB_REF_NAME}" --json assets --jq '.assets[].name' | grep -qx "${PLUGIN_SLUG}.zip" || {
+            echo "Release asset ${PLUGIN_SLUG}.zip missing" >&2
+            exit 1
+          }

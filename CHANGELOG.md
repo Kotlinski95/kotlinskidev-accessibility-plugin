@@ -7,4 +7,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Plugin scaffold: header, bootstrap class, build pipeline, tooling configuration.
+- Settings schema, sanitizer and repository with a REST controller and import/export round-trip.
+- Page-language aware strings (Polylang, WPML, TranslatePress, `determine_locale()`) with `pl_PL` shipped beyond English.
+- Front end: device-aware visibility, asset loading, Shadow DOM widget markup and a pre-paint head bootstrap.
+- Widget core: store, storage modes (local, cookie, none), theme handling, accessible dialog, `Alt+Shift+A` shortcut, `#kotlinskidev-a11y` hash open, reset and hide toolbar.
+- Content, color and orientation features, plus profiles with provenance.
+- Admin settings page rendered from the REST schema, with alt-text tools, accessibility statement and dashboard widget.
+- Updates through Plugin Update Checker v5 and GitHub Releases, swappable via `kotlinskidev_a11y_update_source` and `kotlinskidev_a11y_update_token`.
+- `npm run check-version` and `npm run release` keep the plugin header, PHP constant, `package.json`, CHANGELOG and git tag in sync.
+- GitHub Actions: CI (PHPCS, PHPUnit on PHP 8.1 and 8.3, ESLint, tsc, Jest, build, version check) and a tag-triggered release that builds `kotlinskidev-accessibility.zip`.
+
+## [0.1.0] - 2026-11-24
+
+### Added
+
+- Plugin scaffold: header, bootstrap class, esbuild and dart-sass pipeline, PHPUnit, Jest, ESLint, PHPCS tooling.

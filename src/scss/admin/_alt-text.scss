@@ -1,0 +1,108 @@
+.ka11y-alt-text {
+  .ka11y-alt-summary {
+    font-size: 1rem;
+  }
+
+  .ka11y-alt-remaining {
+    font-weight: 600;
+  }
+
+  .ka11y-alt-search {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ka11y-a-gap-small);
+    margin: var(--ka11y-a-gap) 0;
+  }
+
+  .ka11y-alt-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ka11y-alt-row {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 1fr) minmax(0, 2fr);
+    gap: var(--ka11y-a-gap);
+    align-items: center;
+    padding: var(--ka11y-a-gap-small) var(--ka11y-a-gap);
+    margin-bottom: var(--ka11y-a-gap-small);
+    background: var(--ka11y-a-surface);
+    border: 1px solid var(--ka11y-a-border);
+    border-radius: var(--ka11y-a-radius);
+
+    &.is-saved {
+      border-color: var(--ka11y-a-accent);
+    }
+
+    &[aria-busy='true'] {
+      opacity: 0.7;
+    }
+  }
+
+  .ka11y-alt-row__thumb img {
+    display: block;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+  }
+
+  .ka11y-alt-row__meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .ka11y-alt-row__file {
+    color: var(--ka11y-a-muted);
+  }
+
+  .ka11y-alt-row__edit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ka11y-a-gap-small);
+    align-items: center;
+
+    label {
+      flex-basis: 100%;
+      font-weight: 600;
+    }
+
+    input {
+      flex: 1 1 12rem;
+    }
+  }
+
+  .ka11y-alt-status {
+    position: sticky;
+    bottom: 0;
+    min-height: 1.5rem;
+    margin: var(--ka11y-a-gap) 0 0;
+    color: var(--ka11y-a-text);
+
+    &.is-error {
+      color: var(--ka11y-a-danger);
+    }
+  }
+
+  .ka11y-alt-pagination {
+    margin: var(--ka11y-a-gap) 0;
+
+    .page-numbers {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+    }
+  }
+
+  @media (max-width: 782px) {
+    .ka11y-alt-row {
+      grid-template-columns: 60px minmax(0, 1fr);
+    }
+
+    .ka11y-alt-row__edit {
+      grid-column: 1 / -1;
+    }
+  }
+}

@@ -38,6 +38,7 @@ const bundles = [
   { entry: 'src/ts/bootstrap/index.ts', file: 'bootstrap.js', admin: false },
   { entry: 'src/ts/frontend/index.ts', file: 'frontend.js', admin: false },
   { entry: 'src/ts/admin/index.ts', file: 'admin.js', admin: true },
+  { entry: 'src/ts/admin/alt-text-entry.ts', file: 'alt-text.js', admin: true },
 ];
 
 const styles = [

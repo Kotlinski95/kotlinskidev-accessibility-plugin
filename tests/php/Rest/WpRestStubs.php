@@ -26,7 +26,11 @@ if ( ! class_exists( 'WP_REST_Response' ) ) {
 if ( ! class_exists( 'WP_REST_Request' ) ) {
 	class WP_REST_Request {
 
-		public function __construct( private mixed $json = null ) {}
+		public function __construct( private mixed $json = null, private array $params = array() ) {}
+
+		public function get_param( string $key ): mixed {
+			return $this->params[ $key ] ?? null;
+		}
 
 		public function get_json_params(): mixed {
 			return $this->json;

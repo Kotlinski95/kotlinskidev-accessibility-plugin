@@ -52,7 +52,7 @@ final class Strings {
 		return $overrides;
 	}
 
-	private function defaults(): array {
+	public function defaults(): array {
 		return array(
 			'features.biggerText.label'               => __( 'Bigger text', 'kotlinskidev-accessibility' ),
 			'features.biggerText.description'         => __( 'Increase the text size across the page.', 'kotlinskidev-accessibility' ),
@@ -143,6 +143,15 @@ final class Strings {
 			'levelLeft'                               => __( 'Left', 'kotlinskidev-accessibility' ),
 			'levelCenter'                             => __( 'Center', 'kotlinskidev-accessibility' ),
 			'levelRight'                              => __( 'Right', 'kotlinskidev-accessibility' ),
+			'statementEmpty'                          => __( 'The accessibility statement has not been published yet.', 'kotlinskidev-accessibility' ),
+			'statementCommitmentHeading'              => __( 'Our commitment to accessibility', 'kotlinskidev-accessibility' ),
+			'statementCommitmentBody'                 => __( 'We want this website to be usable by everyone, including people with disabilities.', 'kotlinskidev-accessibility' ),
+			'statementConformanceHeading'             => __( 'Conformance status', 'kotlinskidev-accessibility' ),
+			'statementConformanceBody'                => __( 'We are working towards conformance with WCAG 2.2 level AA.', 'kotlinskidev-accessibility' ),
+			'statementFeedbackHeading'                => __( 'Feedback and contact', 'kotlinskidev-accessibility' ),
+			'statementFeedbackBody'                   => __( 'If you run into an accessibility barrier on this website, please contact the site owner and describe the problem.', 'kotlinskidev-accessibility' ),
+			'statementDateHeading'                    => __( 'Date of this statement', 'kotlinskidev-accessibility' ),
+			'statementDateBody'                       => __( 'This statement is reviewed regularly; the date of the last review is added by the site owner.', 'kotlinskidev-accessibility' ),
 		);
 	}
 }

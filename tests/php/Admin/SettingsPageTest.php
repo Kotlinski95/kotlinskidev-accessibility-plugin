@@ -116,6 +116,14 @@ final class SettingsPageTest extends TestCase {
 		);
 	}
 
+	public function test_config_strings_are_untranslated_override_defaults(): void {
+		Functions\when( 'get_option' )->justReturn( array( 'labels' => array( 'en_US' => array( 'panelTitle' => 'Overridden' ) ) ) );
+
+		$config = ( new SettingsPage() )->config();
+
+		$this->assertSame( 'Accessibility settings', $config['strings']['panelTitle'] );
+	}
+
 	public function test_locales_come_from_wpml_when_present(): void {
 		Filters\expectApplied( 'wpml_active_languages' )->andReturn(
 			array(

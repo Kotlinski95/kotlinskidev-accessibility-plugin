@@ -94,7 +94,7 @@ final class SettingsPage {
 		return array(
 			'restRoot' => esc_url_raw( rest_url( SettingsController::REST_NAMESPACE . '/' ) ),
 			'nonce'    => wp_create_nonce( 'wp_rest' ),
-			'strings'  => $this->strings->for_locale( get_locale() ),
+			'strings'  => $this->strings->defaults(),
 			'locales'  => $this->locales(),
 			'profiles' => Schema::profile_keys(),
 			'features' => Schema::feature_keys(),
