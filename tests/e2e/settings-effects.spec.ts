@@ -1,5 +1,5 @@
 import { expect, gotoHome, openPanel, test, widgetFor } from './support/fixtures';
-import { OPEN_HASH } from './support/env';
+import { AUTH_FILE, OPEN_HASH, SETTINGS_PAGE } from './support/env';
 import { tryWpCli, wpCli } from './support/wp-cli';
 
 const POLISH_TITLE = 'Ustawienia dostępności (e2e)';
@@ -120,11 +120,28 @@ test.describe('locale', () => {
     await expect(page.locator('#ka11y-root #ka11y-panel-title')).toHaveText(POLISH_TITLE);
   });
 
-  test('strings without an override keep their default text', async ({ page, settings }) => {
-    await settings.patch({ labels: { pl_PL: { panelTitle: POLISH_TITLE } } });
+  test('without overrides the panel uses the shipped Polish translation', async ({ page }) => {
     const widget = await gotoHome(page);
     await openPanel(page, widget);
-    await expect(widget.reset).not.toHaveText('');
-    await expect(widget.feature('letterSpacing')).not.toHaveText('');
+    await expect(page.locator('#ka11y-root #ka11y-panel-title')).toHaveText('Ustawienia dostępności');
+    await expect(widget.reset).toContainText('Zresetuj ustawienia');
+    await expect(widget.feature('biggerText')).toContainText('Powiększ tekst');
+    await expect(widget.feature('letterSpacing')).toContainText('Odstępy między literami');
+    await expect(widget.feature('highContrast')).toContainText('Wysoki kontrast');
+    await expect(widget.feature('readPage')).toContainText('Czytnik strony');
+    await expect(widget.feature('readingMask')).toContainText('Maska czytania');
+  });
+
+  test.describe('admin page', () => {
+    test.use({ storageState: AUTH_FILE });
+
+    test('script strings come from the Polish JSON translation', async ({ page }) => {
+      await page.goto(SETTINGS_PAGE);
+      await expect(page.locator('#kotlinskidev-a11y-admin .ka11y-tabs').first()).toBeVisible();
+      await expect(page.getByRole('tab', { name: 'Języki' })).toBeVisible();
+      await page.getByRole('tab', { name: 'Języki' }).click();
+      await expect(page.getByRole('tabpanel', { name: 'Języki' })).toContainText('Zastąp dowolny tekst widżetu osobno dla każdego języka');
+      await expect(page.getByRole('button', { name: 'Zapisz zmiany' })).toBeVisible();
+    });
   });
 });

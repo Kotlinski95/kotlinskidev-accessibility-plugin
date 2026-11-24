@@ -31,6 +31,7 @@ jobs:
       - run: |
           wp i18n make-pot . languages/${PLUGIN_SLUG}.pot --include=src/php,build --allow-root
           wp i18n make-json languages --no-purge --allow-root
+          node bin/fix-i18n-json.mjs
       - run: |
           mkdir -p "dist/${PLUGIN_SLUG}"
           rsync -a --exclude-from=.distignore ./ "dist/${PLUGIN_SLUG}/" --exclude=dist
