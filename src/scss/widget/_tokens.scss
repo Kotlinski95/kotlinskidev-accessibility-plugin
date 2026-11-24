@@ -1,0 +1,28 @@
+:host {
+  --ka11y-w-primary: var(--ka11y-primary, #0b5fff);
+  --ka11y-w-on-primary: var(--ka11y-on-primary, #ffffff);
+  --ka11y-w-surface-light: var(--ka11y-surface-light, #ffffff);
+  --ka11y-w-surface-dark: var(--ka11y-surface-dark, #14171c);
+  --ka11y-w-text-light: var(--ka11y-text-light, #14171c);
+  --ka11y-w-text-dark: var(--ka11y-text-dark, #f4f6fa);
+  --ka11y-w-muted-light: #4a5260;
+  --ka11y-w-muted-dark: #b4bcc9;
+  --ka11y-w-border-light: #cfd5df;
+  --ka11y-w-border-dark: #3a4150;
+  --ka11y-w-subtle-light: #f1f3f7;
+  --ka11y-w-subtle-dark: #1f242c;
+  --ka11y-w-focus-light: #0b3fa8;
+  --ka11y-w-focus-dark: #8fb4ff;
+  --ka11y-w-shadow: 0 0.5rem 2rem rgb(0 0 0 / 0.28);
+  --ka11y-w-radius: var(--ka11y-radius, 0.75rem);
+  --ka11y-w-size: var(--ka11y-size, 52px);
+  --ka11y-w-target: 2.75rem;
+  --ka11y-w-gap: 0.75rem;
+  --ka11y-w-duration: 160ms;
+  --ka11y-w-bg: var(--ka11y-w-surface-light);
+  --ka11y-w-text: var(--ka11y-w-text-light);
+  --ka11y-w-muted: var(--ka11y-w-muted-light);
+  --ka11y-w-border: var(--ka11y-w-border-light);
+  --ka11y-w-subtle: var(--ka11y-w-subtle-light);
+  --ka11y-w-focus: var(--ka11y-w-focus-light);
+}

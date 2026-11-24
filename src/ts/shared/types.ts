@@ -19,6 +19,7 @@ export type FeatureLevel = boolean | number;
 export interface SavedState {
   classes: string[];
   vars: Record<string, string>;
+  levels?: Record<string, FeatureLevel>;
   exp: number;
 }
 

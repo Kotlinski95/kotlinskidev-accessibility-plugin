@@ -1,0 +1,9 @@
+:host([data-theme='dark']) {
+  --ka11y-w-bg: var(--ka11y-w-surface-dark);
+  --ka11y-w-text: var(--ka11y-w-text-dark);
+  --ka11y-w-muted: var(--ka11y-w-muted-dark);
+  --ka11y-w-border: var(--ka11y-w-border-dark);
+  --ka11y-w-subtle: var(--ka11y-w-subtle-dark);
+  --ka11y-w-focus: var(--ka11y-w-focus-dark);
+  color-scheme: dark;
+}

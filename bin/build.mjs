@@ -48,7 +48,7 @@ const styles = [
 
 const hashOf = (content) => createHash('sha1').update(content).digest('hex').slice(0, 20);
 
-const buildScript = async ({ entry, file, admin }) => {
+const buildScript = async ({ entry, file, admin }, widgetCss) => {
   const outfile = resolve(out, file);
   const result = await build({
     entryPoints: [resolve(root, entry)],
@@ -60,6 +60,7 @@ const buildScript = async ({ entry, file, admin }) => {
     minify,
     minifyIdentifiers: admin ? false : minify,
     plugins: admin ? [wpExternalsPlugin] : [],
+    define: { __KA11Y_WIDGET_CSS__: JSON.stringify(widgetCss) },
     metafile: true,
     logLevel: 'warning',
   });
@@ -83,12 +84,15 @@ const buildStyle = async ({ entry, file }) => {
     style: minify ? 'compressed' : 'expanded',
   });
   await writeFile(resolve(out, file), result.css);
+  return result.css;
 };
 
 const run = async () => {
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
-  await Promise.all([...bundles.map(buildScript), ...styles.map(buildStyle)]);
+  const compiled = await Promise.all(styles.map(buildStyle));
+  const widgetCss = compiled[styles.findIndex((style) => style.file === 'widget.css')] ?? '';
+  await Promise.all(bundles.map((bundle) => buildScript(bundle, widgetCss)));
 };
 
 run().catch((error) => {
