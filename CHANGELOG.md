@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-11-24
+
 ### Added
 
 - `kotlinskidev_a11y_cache_invalidated` action with a `$reason` argument: `settings` after settings are saved, imported or reset (once per request), `update` once after the plugin version changes.
