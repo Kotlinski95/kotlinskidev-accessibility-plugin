@@ -10,7 +10,7 @@ export const resolveHost = (doc: Document, config: KotlinskidevA11yConfig): HTML
     doc.body.append(host);
   }
   host.dir = config.rtl ? 'rtl' : 'ltr';
-  host.lang = config.locale;
+  host.lang = config.locale.replace(/_/g, '-');
   return host;
 };
 

@@ -1,0 +1,145 @@
+import { expect, gotoHome, openPanel, test } from './support/fixtures';
+
+test.describe('feature toggles', () => {
+  test.beforeEach(async ({ settings }) => {
+    await settings.reset();
+  });
+
+  test('letterSpacing toggles the html class and persists across reload', async ({ page }) => {
+    const widget = await gotoHome(page);
+    await openPanel(page, widget);
+    await widget.feature('letterSpacing').click();
+    await expect(widget.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
+
+    await page.reload();
+    await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
+    const reopened = await gotoHome(page);
+    await openPanel(page, reopened);
+    await expect(reopened.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('biggerText scales font size inline, cycles levels and persists', async ({ page }) => {
+    const widget = await gotoHome(page);
+    const heading = page.locator('h1, h2').first();
+    const original = await heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
+    await openPanel(page, widget);
+    await widget.feature('biggerText').click();
+    await expect
+      .poll(() => heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)))
+      .toBeCloseTo(Math.round(original * 1.1 * 100) / 100, 1);
+    await widget.feature('biggerText').click();
+    await expect
+      .poll(() => heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)))
+      .toBeCloseTo(Math.round(original * 1.25 * 100) / 100, 1);
+
+    await page.reload();
+    await expect
+      .poll(() => page.locator('h1, h2').first().evaluate((element) => parseFloat(getComputedStyle(element).fontSize)))
+      .toBeGreaterThan(original * 1.2);
+  });
+
+  test('reset clears every active feature and saved state', async ({ page }) => {
+    const widget = await gotoHome(page);
+    const heading = page.locator('h1, h2').first();
+    const original = await heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize));
+    await openPanel(page, widget);
+    await widget.feature('letterSpacing').click();
+    await widget.feature('biggerText').click();
+    await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
+    await widget.reset.click();
+    await expect(widget.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('html')).not.toHaveClass(/ka11y-letter-spacing/);
+    await expect
+      .poll(() => heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)))
+      .toBeCloseTo(original, 1);
+    const saved = await page.evaluate(() => window.localStorage.getItem('ka11y'));
+    expect(saved).toBeNull();
+    await page.reload();
+    await expect(page.locator('html')).not.toHaveClass(/ka11y-letter-spacing/);
+  });
+
+  test('profile toggle applies and removes its features but keeps separately enabled ones', async ({ page }) => {
+    const widget = await gotoHome(page);
+    await openPanel(page, widget);
+    await widget.feature('highlightLinks').click();
+    await expect(widget.feature('highlightLinks')).toHaveAttribute('aria-pressed', 'true');
+
+    await widget.profile('visionImpaired').click();
+    await expect(widget.profile('visionImpaired')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('readableFont')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('bigCursor')).toHaveAttribute('aria-pressed', 'true');
+
+    await widget.profile('visionImpaired').click();
+    await expect(widget.profile('visionImpaired')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('readableFont')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('highlightLinks')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  test('contrast features are mutually exclusive', async ({ page }) => {
+    const widget = await gotoHome(page);
+    await openPanel(page, widget);
+    await widget.feature('darkContrast').click();
+    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'true');
+    await widget.feature('lightContrast').click();
+    await expect(widget.feature('lightContrast')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'false');
+    await widget.feature('highContrast').click();
+    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'true');
+    await expect(widget.feature('lightContrast')).toHaveAttribute('aria-pressed', 'false');
+    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('filters apply to body children, never to html or body, and keep fixed elements in place', async ({ page }) => {
+    const widget = await gotoHome(page);
+    await page.evaluate(() => {
+      const spacer = document.createElement('div');
+      spacer.id = 'e2e-spacer';
+      spacer.style.height = '4000px';
+      document.body.append(spacer);
+      const pinned = document.createElement('div');
+      pinned.id = 'e2e-fixed';
+      pinned.textContent = 'pinned';
+      pinned.style.cssText = 'position:fixed;top:12px;left:12px;width:80px;height:24px;background:#c00;z-index:1';
+      document.body.append(pinned);
+      window.scrollTo(0, 300);
+    });
+    const before = await page.locator('#e2e-fixed').boundingBox();
+    await openPanel(page, widget);
+    await widget.feature('monochrome').click();
+    await expect(widget.feature('monochrome')).toHaveAttribute('aria-pressed', 'true');
+
+    const filters = await page.evaluate(() => ({
+      html: getComputedStyle(document.documentElement).filter,
+      body: getComputedStyle(document.body).filter,
+      child: getComputedStyle(document.querySelector('#e2e-spacer') as HTMLElement).filter,
+      host: getComputedStyle(document.querySelector('#ka11y-root') as HTMLElement).filter,
+    }));
+    expect(filters.html).toBe('none');
+    expect(filters.body).toBe('none');
+    expect(filters.child).toContain('grayscale(1)');
+    expect(filters.host).toBe('none');
+
+    const after = await page.locator('#e2e-fixed').boundingBox();
+    expect(after?.y).toBe(before?.y);
+    expect(after?.x).toBe(before?.x);
+
+    await page.evaluate(() => window.scrollTo(0, 900));
+    const scrolled = await page.locator('#e2e-fixed').boundingBox();
+    expect(scrolled?.y).toBe(before?.y);
+
+    await widget.feature('highContrast').click();
+    const combined = await page.evaluate(() => getComputedStyle(document.querySelector('#e2e-spacer') as HTMLElement).filter);
+    expect(combined).toContain('contrast(1.5)');
+    expect(combined).toContain('grayscale(1)');
+
+    await widget.reset.click();
+    const cleared = await page.evaluate(() => getComputedStyle(document.querySelector('#e2e-spacer') as HTMLElement).filter);
+    expect(cleared).toBe('none');
+  });
+});

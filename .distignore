@@ -30,3 +30,5 @@
 /vendor/**/.git*
 /vendor/**/*.md
 .DS_Store
+/playwright-report
+/test-results
