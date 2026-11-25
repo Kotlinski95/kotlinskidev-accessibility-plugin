@@ -2,11 +2,14 @@ import type { FeatureChunk, KernelApi, KernelExports } from '../frontend/kernel'
 import type { GroupName, InlineConfig } from '../shared/types';
 import { attachRuntime, createChunkLoader } from './chunks';
 import { whenDeviceVisible } from './device';
+import { installApi } from './api';
 import { ensureShadow } from './dsd';
+import { mountLauncher } from './launcher';
 import { createPanelFlow } from './open';
 import { installQueue } from './queue';
+import { createRouter } from './router';
 import { applyStrategy } from './strategy';
-import { bindTriggers } from './triggers';
+import { bindTriggers, wireAria } from './triggers';
 
 declare const __KA11Y_GROUPS__: Record<string, GroupName>;
 
@@ -15,6 +18,8 @@ export interface StartOptions {
   cfasync?: string | null;
   groups?: Record<string, GroupName>;
 }
+
+const ROUTED_ACTIONS = ['open', 'close', 'toggle', 'reset', 'feature', 'profile', 'statement', 'hide', 'show', 'trigger'];
 
 const noop = (): void => undefined;
 
@@ -34,9 +39,6 @@ export const startLoader = (options: StartOptions = scriptOptions()): void => {
   const hiddenKey = config.hk || `${config.storage.key}-hidden`;
 
   const runtime = (window.kotlinskidevA11yRuntime = window.kotlinskidevA11yRuntime || { s: [], c: [] });
-  if (runtime.e) document.removeEventListener('click', runtime.e, true);
-  delete runtime.e;
-
   const chunks = createChunkLoader(config, options.nonce || '', options.cfasync || null);
   attachRuntime(chunks.register);
 
@@ -68,9 +70,13 @@ export const startLoader = (options: StartOptions = scriptOptions()): void => {
     const host = document.getElementById('ka11y-root');
     if (!host) return;
     ensureShadow(host);
-    const run = createPanelFlow({ config, host, chunks, ensureKernel });
-    const queue = installQueue({ open: run, close: run, toggle: run });
-    const push = (command: Parameters<typeof run>[0]): void => void queue.push(command);
+    mountLauncher(config, host);
+    const flow = createPanelFlow({ config, host, chunks, ensureKernel });
+    const route = createRouter({ config, host, chunks, hiddenKey, dialog: flow, ensureKernel });
+    const queue = installQueue(Object.fromEntries(ROUTED_ACTIONS.map((name) => [name, route])));
+    const push = (command: Parameters<typeof route>[0]): void => void queue.push(command);
+    wireAria(config);
+    installApi({ config, push, ensureKernel, isOpen: flow.isOpen });
     const inject = (name: Parameters<typeof chunks.has>[0]): void => void chunks.load(name, 'low').catch(noop);
     whenDeviceVisible(config, () => {
       bindTriggers({ config, host, push, prefetch: warm, hiddenKey });

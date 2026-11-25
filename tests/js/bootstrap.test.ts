@@ -323,16 +323,94 @@ describe('bootstrap', () => {
       expect(typeof window.kotlinskidevA11yRuntime?.e).toBe('function');
     });
 
-    it('prevents default and queues open for the hash anchor', async () => {
-      await loadBootstrap('local');
-      const anchor = document.createElement('a');
-      anchor.href = '#kotlinskidev-a11y';
-      document.body.append(anchor);
+    const click = (element: Element): MouseEvent => {
       const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-      anchor.dispatchEvent(event);
+      element.dispatchEvent(event);
+      return event;
+    };
+
+    const clicked = (markup: string): { element: Element; event: MouseEvent } => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = markup;
+      document.body.append(wrapper);
+      const element = wrapper.firstElementChild as Element;
+      const event = click(element);
+      wrapper.remove();
+      return { element, event };
+    };
+
+    it.each([
+      ['<a href="#kotlinskidev-a11y">x</a>', true],
+      ['<a href="#ka11y/profile:adhdFriendly">x</a>', true],
+      ['<button data-ka11y="feature:darkContrast">x</button>', true],
+      ['<span data-ka11y="open"><b>x</b></span>', true],
+      ['<button class="ka11y-open">x</button>', false],
+    ])('queues a trigger command for %s', async (markup, prevented) => {
+      await loadBootstrap('local');
+      const { element, event } = clicked(markup);
+      expect(event.defaultPrevented).toBe(prevented);
+      expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'trigger', source: 'trigger', opener: element }]);
+    });
+
+    it('uses the nearest matching ancestor as the opener', async () => {
+      await loadBootstrap('local');
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<button data-ka11y="open"><b>x</b></button>';
+      document.body.append(wrapper);
+      click(wrapper.querySelector('b') as Element);
+      expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'trigger', source: 'trigger', opener: wrapper.firstElementChild }]);
+      wrapper.remove();
+    });
+
+    it('ignores clicks anywhere when only html carries data-ka11y', async () => {
+      await loadBootstrap('local');
+      document.documentElement.setAttribute('data-ka11y', 'error');
+      click(document.body);
+      expect(window.kotlinskidevA11yQueue).toBeUndefined();
+      document.documentElement.removeAttribute('data-ka11y');
+    });
+
+    it('matches custom selectors from t', async () => {
+      await loadBootstrap('local', { t: '.menu-a11y > a' });
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<li class="menu-a11y"><a href="/x">x</a></li>';
+      document.body.append(wrapper);
+      const link = wrapper.querySelector('a') as Element;
+      const linkEvent = click(link);
+      expect(linkEvent.defaultPrevented).toBe(true);
+      expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'trigger', source: 'trigger', opener: link }]);
+      wrapper.remove();
+    });
+
+    it('falls back to the built-in selector when t is broken', async () => {
+      await loadBootstrap('local', { t: '[[' });
+      const { element, event } = clicked('<button data-ka11y="open">x</button>');
       expect(event.defaultPrevented).toBe(true);
+      expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'trigger', source: 'trigger', opener: element }]);
+    });
+
+    it('queues early only while the loader queue is missing or an array', async () => {
+      await loadBootstrap('local');
+      const host = mountHost();
+      const push = jest.fn();
+      window.kotlinskidevA11yQueue = { push };
+      host.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(push).not.toHaveBeenCalled();
+      window.kotlinskidevA11yQueue = [];
+      host.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'open', source: 'early' }]);
-      anchor.remove();
+    });
+
+    it('pushes a url action from the query string', async () => {
+      window.history.replaceState({}, '', '/?ka11y=feature:biggerText:2');
+      await loadBootstrap('local');
+      expect(window.kotlinskidevA11yQueue).toEqual([{ action: 'feature:biggerText:2', source: 'url' }]);
+    });
+
+    it.each(['reset', 'off', ''])('does not push ka11y=%s', async (value) => {
+      window.history.replaceState({}, '', `/?ka11y=${value}`);
+      await loadBootstrap('local');
+      expect(window.kotlinskidevA11yQueue).toBeUndefined();
     });
 
     it('ignores unrelated clicks and appends to an existing queue', async () => {

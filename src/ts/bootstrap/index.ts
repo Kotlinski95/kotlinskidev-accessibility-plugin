@@ -1,9 +1,10 @@
-import type { RuntimeHandoff, SavedState, StorageConfig } from '../shared/types';
+import type { KA11yCommand, RuntimeHandoff, SavedState, StorageConfig } from '../shared/types';
 
 interface BootstrapConfig {
   storage?: StorageConfig;
   css?: string | null;
   hk?: string;
+  t?: string;
 }
 
 const config = window.kotlinskidevA11y as unknown as BootstrapConfig | undefined;
@@ -11,6 +12,7 @@ const storage = config?.storage;
 const recovery = new URLSearchParams(location.search).get('ka11y');
 const root = document.documentElement;
 const runtime: RuntimeHandoff = (window.kotlinskidevA11yRuntime = window.kotlinskidevA11yRuntime || { s: [], c: [] });
+const SELECTOR = '[data-ka11y]:not(html),a[href^="#ka11y/"],a[href="#kotlinskidev-a11y"],.ka11y-open,#ka11y-root';
 const unsafe = /url|set\(|expr|[;{}]|[^]{201}/i;
 
 if (recovery === 'off') {
@@ -47,11 +49,24 @@ if (recovery === 'off') {
   } catch {
     root.dataset.ka11y = 'error';
   }
+  const push = (command: KA11yCommand): void => void (window.kotlinskidevA11yQueue = window.kotlinskidevA11yQueue || []).push(command);
+  const closest = (origin: Element): Element | null => {
+    try {
+      return origin.closest(config?.t ? `${SELECTOR},${config.t}` : SELECTOR);
+    } catch {
+      return origin.closest(SELECTOR);
+    }
+  };
+  if (recovery && recovery !== 'reset') push({ action: recovery, source: 'url' });
   runtime.e = (event: MouseEvent): void => {
-    const target = event.target instanceof Element ? event.target.closest('a[href="#kotlinskidev-a11y"],#ka11y-root') : null;
+    const target = event.target instanceof Element ? closest(event.target) : null;
     if (!target) return;
-    if (target.id !== 'ka11y-root') event.preventDefault();
-    (window.kotlinskidevA11yQueue = window.kotlinskidevA11yQueue || []).push({ action: 'open', source: 'early' });
+    if (target.id === 'ka11y-root') {
+      if (Array.isArray(window.kotlinskidevA11yQueue) || !window.kotlinskidevA11yQueue) push({ action: 'open', source: 'early' });
+      return;
+    }
+    if (target.matches('a,[data-ka11y]')) event.preventDefault();
+    push({ action: 'trigger', source: 'trigger', opener: target as HTMLElement });
   };
   document.addEventListener('click', runtime.e, true);
 }

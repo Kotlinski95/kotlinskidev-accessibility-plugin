@@ -145,6 +145,18 @@ export interface ChunksConfig {
   ver: Record<ChunkName | 'page', string>;
 }
 
+export type LauncherMode = 'floating' | 'inline' | 'hidden';
+
+export interface TriggersConfig {
+  s: string;
+  u: string[];
+}
+
+export interface LauncherConfig {
+  mode: LauncherMode;
+  mount: string;
+}
+
 export interface InlineConfig {
   v: string;
   locale: string;
@@ -158,6 +170,8 @@ export interface InlineConfig {
   strings: Record<string, string>;
   advanced: AdvancedConfig;
   assets: AssetsConfig;
+  triggers?: TriggersConfig;
+  launcher?: LauncherConfig;
   css?: string | null;
   hk?: string;
 }

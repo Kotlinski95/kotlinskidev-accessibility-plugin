@@ -19,8 +19,14 @@ const DEFAULT_LOAD_ERROR = 'Try again';
 
 type DialogAction = 'open' | 'close' | 'toggle';
 
-export const createPanelFlow = ({ config, host, chunks, ensureKernel }: PanelFlowOptions): ((command: KA11yCommand) => void) => {
+export interface PanelFlow {
+  (command: KA11yCommand): void;
+  isOpen(): boolean;
+}
+
+export const createPanelFlow = ({ config, host, chunks, ensureKernel }: PanelFlowOptions): PanelFlow => {
   let started = false;
+  let current: Dialog | null = null;
   let mounted = false;
 
   const setLabel = (label: string): void => {
@@ -36,7 +42,8 @@ export const createPanelFlow = ({ config, host, chunks, ensureKernel }: PanelFlo
     ]);
     kernel.ensurePageCss();
     const merged = { ...config, ...data, strings: { ...config.strings, ...data.strings } };
-    return panel.mount({ kernel, config: merged, data, host, shadow: ensureShadow(host) }).dialog;
+    current = panel.mount({ kernel, config: merged, data, host, shadow: ensureShadow(host) }).dialog;
+    return current;
   };
 
   const onMounted = (): void => {
@@ -59,11 +66,12 @@ export const createPanelFlow = ({ config, host, chunks, ensureKernel }: PanelFlo
     chunks.once('mount', mountPanel).then(onMounted, onFailed);
   };
 
-  return (command) => {
+  const flow = (command: KA11yCommand): void => {
     const action = actionName(command) as DialogAction;
     if (mounted && command.source === 'launcher') return;
     if (!started && action === 'close') return;
     if (!started) begin();
     chunks.once('mount', mountPanel).then((dialog) => (action === 'close' ? dialog.close() : dialog[action](command.opener)), noop);
   };
+  return Object.assign(flow, { isOpen: () => current?.isOpen() ?? false });
 };

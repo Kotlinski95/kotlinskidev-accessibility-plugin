@@ -1,8 +1,8 @@
 {
   "gzip": {
-    "inline.bootstrap": 1024,
-    "scripts.loader": 3072,
-    "scripts.kernel": 4608,
+    "inline.bootstrap": 1152,
+    "scripts.loader": 4200,
+    "scripts.kernel": 5632,
     "scripts.panel": 7168,
     "scripts.content": 4096,
     "scripts.color": 1536,
@@ -13,6 +13,6 @@
     "styles.launcher": 1400
   },
   "sum": {
-    "everyPage": { "gzip": 3840, "of": ["inline.bootstrap", "scripts.loader"] }
+    "everyPage": { "gzip": 5250, "of": ["inline.bootstrap", "scripts.loader"] }
   }
 }

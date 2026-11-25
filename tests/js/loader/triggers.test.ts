@@ -1,5 +1,5 @@
 import { startLoader } from '../../../src/ts/loader';
-import { bindTriggers } from '../../../src/ts/loader/triggers';
+import { bindTriggers, resolveTrigger, wireAria } from '../../../src/ts/loader/triggers';
 import type { InlineConfig, KA11yCommand } from '../../../src/ts/shared/types';
 import { configure, createEnv, inlineConfig, mountHost, type Env } from './helpers';
 
@@ -100,17 +100,6 @@ describe('loader triggers', () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it('prevents the anchor click and opens', () => {
-    const { push } = setup(inlineConfig());
-    const anchor = document.createElement('a');
-    anchor.href = '#kotlinskidev-a11y';
-    document.body.append(anchor);
-    const event = new MouseEvent('click', { bubbles: true, cancelable: true });
-    anchor.dispatchEvent(event);
-    expect(event.defaultPrevented).toBe(true);
-    expect(push).toHaveBeenCalledWith({ action: 'open', source: 'hash' });
-  });
-
   it('leaves unrelated clicks alone', () => {
     const { push } = setup(inlineConfig());
     const button = document.createElement('button');
@@ -150,14 +139,137 @@ describe('loader triggers', () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  it('removes the bootstrap capture listener at install', () => {
+  it('keeps the bootstrap capture listener at install', () => {
     const early = jest.fn();
     window.kotlinskidevA11yRuntime = { s: [], c: [], e: early };
     const remove = jest.spyOn(document, 'removeEventListener');
     configure(inlineConfig());
     mountHost();
     startLoader({});
-    expect(remove).toHaveBeenCalledWith('click', early, true);
-    expect(window.kotlinskidevA11yRuntime?.e).toBeUndefined();
+    expect(remove).not.toHaveBeenCalledWith('click', early, true);
+    expect(window.kotlinskidevA11yRuntime?.e).toBe(early);
+  });
+
+  describe('resolveTrigger', () => {
+    const element = (markup: string): Element => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = markup;
+      return wrapper.firstElementChild as Element;
+    };
+    const config = (selectors = ''): InlineConfig => ({ ...inlineConfig(), triggers: { s: selectors, u: ['open'] } });
+
+    it.each([
+      ['<button data-ka11y="profile:adhdFriendly" class="ka11y-open">', 'profile:adhdFriendly'],
+      ['<a href="#ka11y/feature%3AbiggerText%3A2" data-ka11y="close">', 'close'],
+      ['<a href="#ka11y/feature%3AbiggerText%3A2" class="ka11y-open">', 'feature:biggerText:2'],
+      ['<a href="#kotlinskidev-a11y" class="menu">', 'open'],
+      ['<button class="ka11y-open">', 'open'],
+      ['<li class="menu"><a>', 'toggle'],
+    ])('resolves %s to %s', (markup, expected) => {
+      expect(resolveTrigger(element(markup), config('.menu'))).toBe(expected);
+    });
+
+    it.each([
+      ['<button data-ka11y="Open">'],
+      ['<button data-ka11y="trigger">'],
+      ['<button data-ka11y="open;x">'],
+      ['<a href="#ka11y/%E0%A4%A">'],
+      ['<button>'],
+    ])('returns null for %s', (markup) => {
+      expect(resolveTrigger(element(markup), config())).toBeNull();
+    });
+
+    it('returns null for a missing element, the html element and a broken selector', () => {
+      expect(resolveTrigger(null, config())).toBeNull();
+      document.documentElement.setAttribute('data-ka11y', 'error');
+      expect(resolveTrigger(document.documentElement, config())).toBeNull();
+      document.documentElement.removeAttribute('data-ka11y');
+      expect(resolveTrigger(element('<button>'), config('[['))).toBeNull();
+    });
+  });
+
+  describe('action hash', () => {
+    it('pushes a url command at boot and on hashchange', () => {
+      history.replaceState(null, '', '#ka11y/feature%3AbiggerText%3A2');
+      const { push } = setup(inlineConfig());
+      expect(push).toHaveBeenCalledWith({ action: 'feature:biggerText:2', source: 'url' });
+      history.replaceState(null, '', '#ka11y/profile:visionImpaired');
+      window.dispatchEvent(new HashChangeEvent('hashchange'));
+      expect(push).toHaveBeenLastCalledWith({ action: 'profile:visionImpaired', source: 'url' });
+    });
+
+    it('ignores a malformed escape without throwing', () => {
+      history.replaceState(null, '', '#ka11y/%E0%A4%A');
+      expect(() => setup(inlineConfig())).not.toThrow();
+    });
+
+    it('keeps the open hash in the address bar', () => {
+      history.replaceState(null, '', '#kotlinskidev-a11y');
+      setup(inlineConfig());
+      expect(location.hash).toBe('#kotlinskidev-a11y');
+    });
+  });
+
+  describe('space on link triggers', () => {
+    const spaceOn = (markup: string): { click: jest.Mock; event: KeyboardEvent } => {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = markup;
+      document.body.append(wrapper);
+      const target = wrapper.firstElementChild as HTMLElement;
+      const click = jest.fn();
+      target.addEventListener('click', click);
+      const event = new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true });
+      target.dispatchEvent(event);
+      return { click, event };
+    };
+
+    it('clicks an a[role=button] trigger once', () => {
+      setup(inlineConfig());
+      const { click, event } = spaceOn('<a href="#ka11y/open" role="button">x</a>');
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('does nothing on a plain link or a non-trigger role button', () => {
+      setup(inlineConfig());
+      expect(spaceOn('<a href="#ka11y/open">x</a>').click).not.toHaveBeenCalled();
+      expect(spaceOn('<a href="/x" role="button">x</a>').click).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('wireAria', () => {
+    const wire = (markup: string): Element => {
+      document.body.innerHTML = markup;
+      wireAria(inlineConfig());
+      return document.body.firstElementChild as Element;
+    };
+
+    it('wires dialog triggers and sets role on links', () => {
+      const link = wire('<a href="#ka11y/open">x</a>');
+      expect(link.getAttribute('role')).toBe('button');
+      expect(link.getAttribute('aria-controls')).toBe('ka11y-root');
+      expect(link.getAttribute('aria-expanded')).toBe('false');
+      expect(link.getAttribute('aria-haspopup')).toBe('dialog');
+    });
+
+    it('wires toggle like open and close with controls only', () => {
+      expect(wire('<button data-ka11y="toggle">x</button>').getAttribute('aria-expanded')).toBe('false');
+      const close = wire('<button data-ka11y="close">x</button>');
+      expect(close.getAttribute('aria-controls')).toBe('ka11y-root');
+      expect(close.hasAttribute('aria-expanded')).toBe(false);
+    });
+
+    it.each(['feature:biggerText', 'profile:visionImpaired'])('wires aria-pressed for %s', (action) => {
+      expect(wire(`<button data-ka11y="${action}">x</button>`).getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('never overwrites existing attributes and skips other actions', () => {
+      const button = wire('<button data-ka11y="open" aria-expanded="true" aria-haspopup="menu">x</button>');
+      expect(button.getAttribute('aria-expanded')).toBe('true');
+      expect(button.getAttribute('aria-haspopup')).toBe('menu');
+      expect(button.getAttribute('aria-controls')).toBe('ka11y-root');
+      expect(wire('<button data-ka11y="reset">x</button>').getAttributeNames()).toEqual(['data-ka11y']);
+      expect(wire('<button data-ka11y="bogus!">x</button>').getAttributeNames()).toEqual(['data-ka11y']);
+    });
   });
 });
