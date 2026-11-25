@@ -31,6 +31,20 @@ final class LanguageResolver {
 		return array_values( array_unique( array_filter( $strings, static fn ( string $locale ): bool => '' !== $locale ) ) );
 	}
 
+	public function locale_label( string $locale ): string {
+		$label = $locale;
+
+		if ( class_exists( \Locale::class ) ) {
+			$name = \Locale::getDisplayLanguage( $locale, $locale );
+
+			if ( '' !== $name && $name !== $locale ) {
+				$label = $name;
+			}
+		}
+
+		return (string) apply_filters( 'kotlinskidev_a11y_locale_label', $label, $locale );
+	}
+
 	public function is_rtl_locale( string $locale ): bool {
 		$wp_locale = $GLOBALS['wp_locale'] ?? null;
 

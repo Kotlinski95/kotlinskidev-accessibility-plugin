@@ -45,6 +45,14 @@ const panelData = (): PanelData => {
     statementUrl: 'https://example.test/s',
     customCss: '.y{}',
     strings: { panelTitle: 'Title' },
+    panel: {
+      columns: 3,
+      sections: { profiles: true, content: true, color: true, orientation: true, skip: true },
+      languageSwitcher: true,
+    },
+    layout: { sheetQuery: '(max-width:768px)' },
+    locales: [],
+    icons: {},
   };
 };
 

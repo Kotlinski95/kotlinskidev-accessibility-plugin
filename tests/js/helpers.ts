@@ -18,6 +18,12 @@ export const createConfig = (overrides: Partial<KotlinskidevA11yConfig> = {}): K
   tokens: {
     primary: '#000',
     onPrimary: '#fff',
+    primaryDark: '#fff',
+    onPrimaryDark: '#000',
+    headerBg: '#000',
+    onHeader: '#fff',
+    canvasLight: '#fff',
+    canvasDark: '#000',
     surfaceLight: '#fff',
     surfaceDark: '#000',
     textLight: '#000',

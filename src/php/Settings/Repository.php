@@ -59,6 +59,7 @@ final class Repository {
 				return $stored;
 			},
 			2 => static fn ( array $stored ): array => $stored,
+			3 => static fn ( array $stored ): array => $stored,
 		);
 	}
 

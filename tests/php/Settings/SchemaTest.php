@@ -136,9 +136,37 @@ final class SchemaTest extends TestCase {
 	}
 
 	public function test_version_is_two_and_load_strategy_is_gone(): void {
-		$this->assertSame( 3, Schema::VERSION );
+		$this->assertSame( 4, Schema::VERSION );
 		$this->assertNull( Schema::definition( 'advanced.loadStrategy' ) );
 		$this->assertArrayNotHasKey( 'loadStrategy', Schema::defaults()['advanced'] );
+	}
+
+	public function test_v4_panel_and_token_definitions(): void {
+		$defaults = Schema::defaults();
+
+		$this->assertSame( array( 'primaryDark', 'onPrimaryDark', 'headerBg', 'onHeader', 'canvasLight', 'canvasDark' ), Schema::PANEL_TOKENS );
+
+		foreach ( Schema::PANEL_TOKENS as $token ) {
+			$this->assertSame( 'color', Schema::definition( 'tokens.' . $token )['sanitize'] );
+		}
+
+		$this->assertSame( '#7aa7ff', $defaults['tokens']['primaryDark'] );
+		$this->assertSame( '#16181d', $defaults['tokens']['headerBg'] );
+		$this->assertSame( '#101114', $defaults['tokens']['canvasDark'] );
+		$this->assertSame( 3, $defaults['panel']['columns'] );
+		$this->assertSame(
+			array(
+				'profiles'    => true,
+				'content'     => true,
+				'color'       => true,
+				'orientation' => true,
+				'skip'        => true,
+			),
+			$defaults['panel']['sections']
+		);
+		$this->assertTrue( $defaults['panel']['languageSwitcher'] );
+		$this->assertSame( 'classic', $defaults['panel']['preset'] );
+		$this->assertSame( array( 'classic', 'brand', 'soft', 'contrast', 'custom' ), Schema::definition( 'panel.preset' )['enum'] );
 	}
 
 	public function test_performance_and_visibility_additions_have_defaults_and_enums(): void {

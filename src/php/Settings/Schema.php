@@ -7,7 +7,13 @@ use Kotlinskidev\A11y\Frontend\Actions;
 
 final class Schema {
 
-	public const VERSION = 3;
+	public const VERSION = 4;
+
+	public const PANEL_TOKENS = array( 'primaryDark', 'onPrimaryDark', 'headerBg', 'onHeader', 'canvasLight', 'canvasDark' );
+
+	public const PANEL_SECTIONS = array( 'profiles', 'content', 'color', 'orientation', 'skip' );
+
+	public const PANEL_PRESETS = array( 'classic', 'brand', 'soft', 'contrast', 'custom' );
 
 	private const FEATURE_KEYS = array(
 		'biggerText',
@@ -277,14 +283,20 @@ final class Schema {
 		$defs['theme.lightSelector']            = self::def( 'string', 'text', 'html.light-mode, body.light-mode' );
 		$defs['theme.followPrefersColorScheme'] = self::def( 'boolean', 'bool', true );
 
-		$defs['tokens.primary']      = self::def( 'string', 'color', '#0b57d0' );
-		$defs['tokens.onPrimary']    = self::def( 'string', 'color', '#ffffff' );
-		$defs['tokens.surfaceLight'] = self::def( 'string', 'color', '#ffffff' );
-		$defs['tokens.surfaceDark']  = self::def( 'string', 'color', '#1b1b1f' );
-		$defs['tokens.textLight']    = self::def( 'string', 'color', '#1b1b1f' );
-		$defs['tokens.textDark']     = self::def( 'string', 'color', '#f2f2f2' );
-		$defs['tokens.radius']       = self::def( 'string', 'length', '12px' );
-		$defs['tokens.zIndex']       = self::def(
+		$defs['tokens.primary']       = self::def( 'string', 'color', '#0b57d0' );
+		$defs['tokens.onPrimary']     = self::def( 'string', 'color', '#ffffff' );
+		$defs['tokens.primaryDark']   = self::def( 'string', 'color', '#7aa7ff' );
+		$defs['tokens.onPrimaryDark'] = self::def( 'string', 'color', '#0b1a33' );
+		$defs['tokens.headerBg']      = self::def( 'string', 'color', '#16181d' );
+		$defs['tokens.onHeader']      = self::def( 'string', 'color', '#ffffff' );
+		$defs['tokens.canvasLight']   = self::def( 'string', 'color', '#f2f4f7' );
+		$defs['tokens.canvasDark']    = self::def( 'string', 'color', '#101114' );
+		$defs['tokens.surfaceLight']  = self::def( 'string', 'color', '#ffffff' );
+		$defs['tokens.surfaceDark']   = self::def( 'string', 'color', '#1b1b1f' );
+		$defs['tokens.textLight']     = self::def( 'string', 'color', '#1b1b1f' );
+		$defs['tokens.textDark']      = self::def( 'string', 'color', '#f2f2f2' );
+		$defs['tokens.radius']        = self::def( 'string', 'length', '12px' );
+		$defs['tokens.zIndex']        = self::def(
 			'integer',
 			'int',
 			2147483000,
@@ -293,7 +305,24 @@ final class Schema {
 				'max' => 2147483647,
 			)
 		);
-		$defs['tokens.fontFamily']   = self::def( 'string', 'text', 'inherit', array( 'required' => true ) );
+		$defs['tokens.fontFamily']    = self::def( 'string', 'text', 'inherit', array( 'required' => true ) );
+
+		$defs['panel.columns'] = self::def(
+			'integer',
+			'int',
+			3,
+			array(
+				'min' => 2,
+				'max' => 3,
+			)
+		);
+
+		foreach ( self::PANEL_SECTIONS as $section ) {
+			$defs[ "panel.sections.$section" ] = self::def( 'boolean', 'bool', true );
+		}
+
+		$defs['panel.languageSwitcher'] = self::def( 'boolean', 'bool', true );
+		$defs['panel.preset']           = self::def( 'string', 'enum', 'classic', array( 'enum' => self::PANEL_PRESETS ) );
 
 		$defs['customCss'] = self::def( 'string', 'css', '' );
 

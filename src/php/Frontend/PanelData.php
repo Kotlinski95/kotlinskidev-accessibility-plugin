@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Frontend;
 
+use Kotlinskidev\A11y\I18n\LanguageResolver;
 use Kotlinskidev\A11y\I18n\Strings;
 use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Schema;
@@ -14,10 +15,12 @@ final class PanelData {
 
 	private Repository $repository;
 	private Strings $strings;
+	private LanguageResolver $resolver;
 
-	public function __construct( ?Repository $repository = null, ?Strings $strings = null ) {
+	public function __construct( ?Repository $repository = null, ?Strings $strings = null, ?LanguageResolver $resolver = null ) {
 		$this->repository = $repository ?? new Repository();
 		$this->strings    = $strings ?? new Strings( $this->repository );
+		$this->resolver   = $resolver ?? new LanguageResolver();
 	}
 
 	public function payload( string $locale ): array {
@@ -33,9 +36,43 @@ final class PanelData {
 			'statementUrl' => $this->statement_url( $settings ),
 			'customCss'    => (string) ( $settings['customCss'] ?? '' ),
 			'strings'      => $this->strings->for_locale( $locale ),
+			'panel'        => $this->panel( $settings ),
+			'layout'       => array( 'sheetQuery' => InlineConfig::device_queries( $settings )['mobile'] ),
+			'locales'      => $this->locales( $locale ),
+			'icons'        => new \stdClass(),
 		);
 
 		return array( 'hash' => $this->hash( $this->encode( $body ) ) ) + $body;
+	}
+
+	private function panel( array $settings ): array {
+		$panel    = $settings['panel'] ?? array();
+		$sections = array();
+
+		foreach ( Schema::PANEL_SECTIONS as $section ) {
+			$sections[ $section ] = false !== ( $panel['sections'][ $section ] ?? true );
+		}
+
+		return array(
+			'columns'          => (int) ( $panel['columns'] ?? 3 ),
+			'sections'         => $sections,
+			'languageSwitcher' => false !== ( $panel['languageSwitcher'] ?? true ),
+		);
+	}
+
+	private function locales( string $locale ): array {
+		$known = array_values( array_unique( array_merge( array( $locale ), $this->resolver->known_locales() ) ) );
+		$list  = array();
+
+		foreach ( $known as $code ) {
+			$list[] = array(
+				'locale' => $code,
+				'label'  => $this->resolver->locale_label( $code ),
+				'rtl'    => $this->resolver->is_rtl_locale( $code ),
+			);
+		}
+
+		return $list;
 	}
 
 	public function encode( array $payload ): string {

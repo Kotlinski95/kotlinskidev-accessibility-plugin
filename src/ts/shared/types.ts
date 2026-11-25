@@ -56,6 +56,12 @@ export interface ThemeConfig {
 export interface TokensConfig {
   primary: string;
   onPrimary: string;
+  primaryDark: string;
+  onPrimaryDark: string;
+  headerBg: string;
+  onHeader: string;
+  canvasLight: string;
+  canvasDark: string;
   surfaceLight: string;
   surfaceDark: string;
   textLight: string;
@@ -176,6 +182,24 @@ export interface InlineConfig {
   hk?: string;
 }
 
+export type PanelSectionName = 'profiles' | 'content' | 'color' | 'orientation' | 'skip';
+
+export interface PanelConfig {
+  columns: number;
+  sections: Record<PanelSectionName, boolean>;
+  languageSwitcher: boolean;
+}
+
+export interface PanelLayout {
+  sheetQuery: string;
+}
+
+export interface PanelLocale {
+  locale: string;
+  label: string;
+  rtl: boolean;
+}
+
 export interface PanelData {
   hash: string;
   locale: string;
@@ -188,6 +212,10 @@ export interface PanelData {
   statementUrl: string;
   customCss: string;
   strings: Record<string, string>;
+  panel: PanelConfig;
+  layout: PanelLayout;
+  locales: PanelLocale[];
+  icons: Record<string, string>;
 }
 
 export type ChunkFactory = (kernel: KernelExports | undefined) => unknown;

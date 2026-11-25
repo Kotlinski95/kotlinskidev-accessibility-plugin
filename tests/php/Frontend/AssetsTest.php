@@ -304,12 +304,36 @@ final class AssetsTest extends TestCase {
 		$this->assertStringContainsString( '--ka11y-primary:#0b57d0', $css );
 		$this->assertStringContainsString( '--ka11y-on-primary:#ffffff', $css );
 		$this->assertStringContainsString( '--ka11y-size:52px', $css );
-		$this->assertStringContainsString( '@media (min-width:1025px){#ka11y-root{right:20px;left:auto;bottom:20px;top:auto;transform:none;}}', $css );
-		$this->assertStringContainsString( '@media (max-width:768px){#ka11y-root{left:20px;right:auto;top:50%;bottom:auto;transform:translateY(-50%);}}', $css );
+		$this->assertStringContainsString( '@media (min-width:1025px){#ka11y-root{right:calc(20px + env(safe-area-inset-right,0px));left:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));top:auto;}}', $css );
+		$this->assertStringContainsString( '@media (max-width:768px){#ka11y-root{left:calc(20px + env(safe-area-inset-left,0px));right:auto;top:calc(50% - var(--ka11y-size) / 2);bottom:auto;}}', $css );
 		$this->assertStringContainsString( '@media (min-width:769px) and (max-width:1024px){#ka11y-root{', $css );
 		$this->assertStringContainsString( 'display:none!important;', $css );
 		$this->assertStringContainsString( 'html[data-ka11y-hidden] #ka11y-root{display:none!important}', $css );
 		$this->assertStringEndsWith( 'body{outline:0}', $css );
+	}
+
+	public function test_root_variables_exclude_panel_tokens(): void {
+		$css  = $this->assets()->tokens_css( Schema::defaults() );
+		$root = substr( $css, 0, (int) strpos( $css, '}' ) );
+
+		foreach ( array( 'primary-dark', 'on-primary-dark', 'header-bg', 'on-header', 'canvas-light', 'canvas-dark' ) as $name ) {
+			$this->assertStringNotContainsString( '--ka11y-' . $name . ':', $root );
+		}
+
+		$this->assertStringContainsString( '--ka11y-surface-light:#ffffff', $root );
+	}
+
+	public function test_middle_placement_has_no_transform_and_offsets_use_safe_area(): void {
+		$settings                                    = Schema::defaults();
+		$settings['widget']['position']['desktop']   = 'middle-right';
+		$settings['widget']['position']['tablet']    = 'top-left';
+
+		$css = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringNotContainsString( 'transform', $css );
+		$this->assertStringContainsString( 'top:calc(50% - var(--ka11y-size) / 2)', $css );
+		$this->assertStringContainsString( 'top:calc(20px + env(safe-area-inset-top,0px))', $css );
+		$this->assertStringContainsString( 'left:calc(20px + env(safe-area-inset-left,0px))', $css );
 	}
 
 	public function test_tokens_css_cannot_break_out_of_style(): void {

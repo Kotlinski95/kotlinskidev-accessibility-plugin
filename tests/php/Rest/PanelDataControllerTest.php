@@ -80,7 +80,7 @@ final class PanelDataControllerTest extends TestCase {
 		);
 
 		$this->assertSame(
-			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings' ),
+			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings', 'panel', 'layout', 'locales', 'icons' ),
 			array_keys( $response->get_data() )
 		);
 		$this->assertSame( 'public, max-age=31536000, immutable', $response->get_headers()['Cache-Control'] );

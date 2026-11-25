@@ -105,7 +105,7 @@ final class RepositoryTest extends TestCase {
 	public function test_migration_one_is_registered_and_schema_version_stamped(): void {
 		Functions\when( 'get_option' )->justReturn( array( 'schemaVersion' => 0 ) );
 
-		$this->assertSame( array( 1, 2 ), array_keys( Repository::migrations() ) );
+		$this->assertSame( array( 1, 2, 3 ), array_keys( Repository::migrations() ) );
 		$this->assertSame( Schema::VERSION, ( new Repository() )->get()['schemaVersion'] );
 	}
 
@@ -139,7 +139,7 @@ final class RepositoryTest extends TestCase {
 			$result['performance']
 		);
 		$this->assertSame( array( 'excludeSelectors' => '#x' ), $result['advanced'] );
-		$this->assertSame( 3, $result['schemaVersion'] );
+		$this->assertSame( 4, $result['schemaVersion'] );
 	}
 
 	public function test_v1_defer_becomes_custom_defer(): void {
@@ -224,18 +224,39 @@ final class RepositoryTest extends TestCase {
 
 		$result = ( new Repository() )->get();
 
-		$this->assertSame( 3, $result['schemaVersion'] );
+		$this->assertSame( 4, $result['schemaVersion'] );
 		$this->assertSame( 'cookie', $result['storage']['mode'] );
 		$this->assertSame( 'floating', $result['widget']['launcher'] );
 		$this->assertSame( array( 'open', 'feature', 'profile' ), $result['triggers']['urlActions'] );
 	}
 
-	public function test_v1_chains_to_v3(): void {
+	public function test_v1_chains_to_v4(): void {
 		$result = $this->stored_v1( array( 'advanced' => array( 'loadStrategy' => 'idle' ) ) );
 
-		$this->assertSame( 3, $result['schemaVersion'] );
+		$this->assertSame( 4, $result['schemaVersion'] );
 		$this->assertSame( 'idle', $result['performance']['strategy'] );
 		$this->assertSame( array(), $result['triggers']['selectors'] );
+	}
+
+	public function test_v3_option_migrates_to_v4_keeping_every_value_and_adding_defaults(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'schemaVersion' => 3,
+				'storage'       => array( 'mode' => 'cookie' ),
+				'tokens'        => array( 'primary' => '#123456' ),
+				'widget'        => array( 'launcher' => 'inline' ),
+			)
+		);
+
+		$result = ( new Repository() )->get();
+
+		$this->assertSame( 4, $result['schemaVersion'] );
+		$this->assertSame( 'cookie', $result['storage']['mode'] );
+		$this->assertSame( '#123456', $result['tokens']['primary'] );
+		$this->assertSame( 'inline', $result['widget']['launcher'] );
+		$this->assertSame( '#16181d', $result['tokens']['headerBg'] );
+		$this->assertSame( 3, $result['panel']['columns'] );
+		$this->assertTrue( $result['panel']['sections']['skip'] );
 	}
 
 	public function test_empty_url_actions_survive_the_merge(): void {
@@ -265,7 +286,10 @@ final class RepositoryTest extends TestCase {
 		);
 
 		$v2_defaults = Schema::defaults();
-		unset( $v2_defaults['triggers'], $v2_defaults['widget']['launcher'], $v2_defaults['widget']['mount'] );
+		unset( $v2_defaults['triggers'], $v2_defaults['widget']['launcher'], $v2_defaults['widget']['mount'], $v2_defaults['panel'] );
+		foreach ( Schema::PANEL_TOKENS as $token ) {
+			unset( $v2_defaults['tokens'][ $token ] );
+		}
 
 		$merge = static function ( array $defaults, array $stored ) use ( &$merge ): array {
 			$merged = $defaults;

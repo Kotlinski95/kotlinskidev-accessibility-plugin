@@ -49,6 +49,14 @@ const panelData = (customCss: string): PanelData => {
     statementUrl: config.statementUrl,
     customCss,
     strings: config.strings,
+    panel: {
+      columns: 3,
+      sections: { profiles: true, content: true, color: true, orientation: true, skip: true },
+      languageSwitcher: true,
+    },
+    layout: { sheetQuery: '(max-width:768px)' },
+    locales: [],
+    icons: {},
   };
 };
 

@@ -32,6 +32,7 @@ final class PanelDataStoreTest extends TestCase {
 		Functions\when( 'switch_to_locale' )->justReturn( false );
 		Functions\when( 'restore_previous_locale' )->justReturn( 'en_US' );
 		Functions\when( 'get_permalink' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
 		Functions\when( 'wp_json_encode' )->alias( static fn ( $value, int $flags = 0 ) => json_encode( $value, $flags ) );
 		Functions\when( 'trailingslashit' )->alias( static fn ( string $path ): string => rtrim( $path, '/' ) . '/' );
 		Functions\when( 'wp_upload_dir' )->alias(

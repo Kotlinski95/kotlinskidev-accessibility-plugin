@@ -45,6 +45,12 @@ export const panelData = (): PanelData => ({
   tokens: {
     primary: '#000',
     onPrimary: '#fff',
+    primaryDark: '#fff',
+    onPrimaryDark: '#000',
+    headerBg: '#000',
+    onHeader: '#fff',
+    canvasLight: '#fff',
+    canvasDark: '#000',
     surfaceLight: '#fff',
     surfaceDark: '#000',
     textLight: '#000',
@@ -57,6 +63,14 @@ export const panelData = (): PanelData => ({
   statementUrl: '',
   customCss: '',
   strings: { panelTitle: 'Accessibility' },
+  panel: {
+    columns: 3,
+    sections: { profiles: true, content: true, color: true, orientation: true, skip: true },
+    languageSwitcher: true,
+  },
+  layout: { sheetQuery: '(max-width:768px)' },
+  locales: [],
+  icons: {},
 });
 
 export const jsonResponse = (body: unknown, ok = true): Response =>

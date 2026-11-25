@@ -104,4 +104,22 @@ final class LanguageResolverTest extends TestCase {
 		$this->assertNotContains( '', $known );
 		$this->assertSame( $known, array_values( array_unique( $known ) ) );
 	}
+
+	public function test_locale_label_uses_native_name_with_intl(): void {
+		if ( ! class_exists( \Locale::class ) ) {
+			$this->markTestSkipped( 'intl missing' );
+		}
+
+		$this->assertSame( 'polski', ( new LanguageResolver() )->locale_label( 'pl_PL' ) );
+	}
+
+	public function test_locale_label_falls_back_to_the_code_for_unknown_languages(): void {
+		$this->assertSame( 'zz', ( new LanguageResolver() )->locale_label( 'zz' ) );
+	}
+
+	public function test_locale_label_filter_wins(): void {
+		Filters\expectApplied( 'kotlinskidev_a11y_locale_label' )->once()->with( \Mockery::type( 'string' ), 'pl_PL' )->andReturn( 'Polski' );
+
+		$this->assertSame( 'Polski', ( new LanguageResolver() )->locale_label( 'pl_PL' ) );
+	}
 }

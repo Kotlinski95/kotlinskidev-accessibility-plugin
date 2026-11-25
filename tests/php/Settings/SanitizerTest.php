@@ -237,6 +237,56 @@ final class SanitizerTest extends TestCase {
 		$this->assertSame( 'https://example.com/a11y', $result['statement']['url'] );
 	}
 
+	public function test_panel_columns_clamp_and_sections_require_booleans(): void {
+		$high = $this->sanitizer->sanitize( array( 'panel' => array( 'columns' => 9 ) ) );
+		$low  = $this->sanitizer->sanitize( array( 'panel' => array( 'columns' => '1' ) ) );
+		$bad  = $this->sanitizer->sanitize( array( 'panel' => array( 'columns' => 'x' ) ) );
+
+		$this->assertSame( 3, $high['panel']['columns'] );
+		$this->assertSame( 2, $low['panel']['columns'] );
+		$this->assertSame( 3, $bad['panel']['columns'] );
+
+		$sections = $this->sanitizer->sanitize(
+			array(
+				'panel' => array(
+					'sections'         => array(
+						'color'   => false,
+						'content' => 'no',
+					),
+					'languageSwitcher' => false,
+				),
+			)
+		)['panel'];
+
+		$this->assertFalse( $sections['sections']['color'] );
+		$this->assertTrue( $sections['sections']['content'] );
+		$this->assertTrue( $sections['sections']['skip'] );
+		$this->assertFalse( $sections['languageSwitcher'] );
+	}
+
+	public function test_new_panel_tokens_accept_colors_only(): void {
+		$result = $this->sanitizer->sanitize(
+			array(
+				'tokens' => array(
+					'primaryDark' => '#112233',
+					'headerBg'    => 'red',
+					'onHeader'    => 'url(x)',
+					'canvasDark'  => '#abc',
+				),
+			)
+		)['tokens'];
+
+		$this->assertSame( '#112233', $result['primaryDark'] );
+		$this->assertSame( '#16181d', $result['headerBg'] );
+		$this->assertSame( '#ffffff', $result['onHeader'] );
+		$this->assertSame( '#abc', $result['canvasDark'] );
+	}
+
+	public function test_panel_preset_enum(): void {
+		$this->assertSame( 'soft', $this->sanitizer->sanitize( array( 'panel' => array( 'preset' => 'soft' ) ) )['panel']['preset'] );
+		$this->assertSame( 'classic', $this->sanitizer->sanitize( array( 'panel' => array( 'preset' => 'neon' ) ) )['panel']['preset'] );
+	}
+
 	public function test_invalid_performance_and_visibility_enums_fall_back(): void {
 		$result = $this->sanitizer->sanitize(
 			array(

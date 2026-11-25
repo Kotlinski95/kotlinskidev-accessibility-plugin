@@ -21,6 +21,11 @@ final class PanelDataTest extends TestCase {
 		Functions\when( 'restore_previous_locale' )->justReturn( 'en_US' );
 		Functions\when( 'get_permalink' )->justReturn( false );
 		Functions\when( 'wp_json_encode' )->alias( static fn ( $value, int $flags = 0 ) => json_encode( $value, $flags ) );
+		Functions\when( 'pll_current_language' )->justReturn( false );
+		Functions\when( 'pll_languages_list' )->justReturn( array() );
+		Functions\when( 'get_available_languages' )->justReturn( array() );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
+		Functions\when( 'get_locale' )->justReturn( 'en_US' );
 		Functions\when( 'get_option' )->alias( fn ( string $name, mixed $fallback = false ): mixed => $this->options[ $name ] ?? $fallback );
 	}
 
@@ -28,10 +33,54 @@ final class PanelDataTest extends TestCase {
 		$payload = ( new PanelData() )->payload( 'en_US' );
 
 		$this->assertSame(
-			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings' ),
+			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings', 'panel', 'layout', 'locales', 'icons' ),
 			array_keys( $payload )
 		);
 		$this->assertSame( 'en_US', $payload['locale'] );
+	}
+
+	public function test_payload_carries_panel_layout_locales_and_icons(): void {
+		$this->options['kotlinskidev_a11y_settings'] = array(
+			'schemaVersion' => 4,
+			'panel'         => array(
+				'columns'  => 2,
+				'sections' => array( 'color' => false ),
+			),
+			'visibility'    => array( 'breakpoints' => array( 'mobile' => 600 ) ),
+		);
+		Functions\when( 'get_available_languages' )->justReturn( array( 'he_IL' ) );
+		Functions\when( 'get_locale' )->justReturn( 'en_US' );
+
+		$payload = ( new PanelData() )->payload( 'en_US' );
+
+		$this->assertSame( 2, $payload['panel']['columns'] );
+		$this->assertFalse( $payload['panel']['sections']['color'] );
+		$this->assertTrue( $payload['panel']['sections']['skip'] );
+		$this->assertTrue( $payload['panel']['languageSwitcher'] );
+		$this->assertSame( '(max-width:600px)', $payload['layout']['sheetQuery'] );
+		$this->assertSame( array( 'en_US', 'he_IL' ), array_column( $payload['locales'], 'locale' ) );
+		$this->assertSame( array( false, true ), array_column( $payload['locales'], 'rtl' ) );
+		$this->assertArrayHasKey( 'label', $payload['locales'][0] );
+		$this->assertEquals( new \stdClass(), $payload['icons'] );
+	}
+
+	public function test_hash_changes_when_panel_layout_or_locales_change(): void {
+		$before = ( new PanelData() )->payload( 'en_US' )['hash'];
+
+		$this->options['kotlinskidev_a11y_settings'] = array( 'panel' => array( 'columns' => 2 ) );
+		\Kotlinskidev\A11y\Settings\Repository::flush();
+		$columns = ( new PanelData() )->payload( 'en_US' )['hash'];
+
+		$this->options['kotlinskidev_a11y_settings'] = array( 'visibility' => array( 'breakpoints' => array( 'mobile' => 500 ) ) );
+		\Kotlinskidev\A11y\Settings\Repository::flush();
+		$sheet = ( new PanelData() )->payload( 'en_US' )['hash'];
+
+		$this->options['kotlinskidev_a11y_settings'] = array();
+		\Kotlinskidev\A11y\Settings\Repository::flush();
+		Functions\when( 'get_available_languages' )->justReturn( array( 'de_DE' ) );
+		$locales = ( new PanelData() )->payload( 'en_US' )['hash'];
+
+		$this->assertCount( 4, array_unique( array( $before, $columns, $sheet, $locales ) ) );
 	}
 
 	public function test_payload_has_full_strings_with_label_overrides(): void {

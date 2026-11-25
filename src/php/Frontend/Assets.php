@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kotlinskidev\A11y\Frontend;
 
 use Kotlinskidev\A11y\Settings\Repository;
+use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Support\Json;
 
 final class Assets {
@@ -165,6 +166,10 @@ final class Assets {
 		$rules  = array();
 
 		foreach ( $tokens as $name => $value ) {
+			if ( in_array( (string) $name, Schema::PANEL_TOKENS, true ) ) {
+				continue;
+			}
+
 			$rules[] = '--ka11y-' . $this->kebab( (string) $name ) . ':' . $this->css_value( (string) $value );
 		}
 
@@ -202,13 +207,14 @@ final class Assets {
 		$parts      = explode( '-', $position );
 		$vertical   = $parts[0];
 		$horizontal = $parts[1] ?? 'right';
-		$css        = $horizontal . ':' . $offset_x . 'px;' . ( 'left' === $horizontal ? 'right' : 'left' ) . ':auto;';
+		$inset      = 'calc(' . $offset_x . 'px + env(safe-area-inset-' . $horizontal . ',0px))';
+		$css        = $horizontal . ':' . $inset . ';' . ( 'left' === $horizontal ? 'right' : 'left' ) . ':auto;';
 
 		if ( 'middle' === $vertical ) {
-			return $css . 'top:50%;bottom:auto;transform:translateY(-50%);';
+			return $css . 'top:calc(50% - var(--ka11y-size) / 2);bottom:auto;';
 		}
 
-		return $css . $vertical . ':' . $offset_y . 'px;' . ( 'top' === $vertical ? 'bottom' : 'top' ) . ':auto;transform:none;';
+		return $css . $vertical . ':calc(' . $offset_y . 'px + env(safe-area-inset-' . $vertical . ',0px));' . ( 'top' === $vertical ? 'bottom' : 'top' ) . ':auto;';
 	}
 
 	private function kebab( string $name ): string {
