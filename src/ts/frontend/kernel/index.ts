@@ -106,24 +106,7 @@ export const bootKernel = ({ config, groupOf, loadGroup, getData }: KernelBootOp
     applier.sync(store.getState());
   };
 
-  const mergeLegacyConfig = (data: PanelData): void => {
-    const target = window.kotlinskidevA11y;
-    if (!target) return;
-    const moved = {
-      features: data.features,
-      profiles: data.profiles,
-      widget: data.widget,
-      theme: data.theme,
-      tokens: data.tokens,
-      hideToolbar: data.hideToolbar,
-      statementUrl: data.statementUrl,
-      customCss: data.customCss,
-    };
-    Object.assign(target, moved, { strings: { ...target.strings, ...data.strings } });
-  };
-
   const attachData = (panel: PanelData): void => {
-    mergeLegacyConfig(panel);
     profiles = createProfiles(store, panel.profiles, panel.features);
     data = panel;
   };

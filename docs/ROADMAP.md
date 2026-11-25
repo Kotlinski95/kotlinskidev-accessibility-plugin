@@ -75,7 +75,7 @@ Done when: reverting the Phase 0 fix makes the suite fail.
 
 ## Phase 3: loading and performance, v0.2.0
 
-Status: done, release v0.2.0 pending. Spec: [PHASE3-SPEC.md](PHASE3-SPEC.md).
+Status: done, released as v0.2.0. Spec: [PHASE3-SPEC.md](PHASE3-SPEC.md).
 
 Architecture:
 
@@ -105,6 +105,8 @@ Use native `fetchpriority` script arguments on WordPress 6.9 and later, and a sc
 Done when: a CI size budget enforces the targets, and Lighthouse shows no change in LCP, CLS and TBT between widget on and off.
 
 ## Phase 4: triggers and public API, v0.3.0
+
+Status: done, release v0.3.0 pending. Spec: [PHASE4-SPEC.md](PHASE4-SPEC.md). Public API: [API.md](API.md).
 
 One action vocabulary: `open`, `close`, `toggle`, `reset`, `feature:<key>[:<level>]`, `profile:<key>`, `statement`, `hide`, `show`.
 

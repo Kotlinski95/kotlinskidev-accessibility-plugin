@@ -113,14 +113,10 @@ describe('kernel', () => {
     expect(document.head.querySelector('link#kotlinskidev-a11y-frontend-css')).not.toBeNull();
   });
 
-  it('attachData merges legacy fields and strings, and creates profiles', () => {
+  it('attachData creates profiles', () => {
     const { kernel } = boot();
     expect(kernel.profiles()).toBeNull();
     kernel.attachData(panelData());
-    const merged = window.kotlinskidevA11y as KotlinskidevA11yConfig;
-    expect(merged.statementUrl).toBe('https://example.test/s');
-    expect(merged.customCss).toBe('.y{}');
-    expect(merged.strings).toEqual({ open: 'Open', panelTitle: 'Title' });
     expect(kernel.profiles()?.keys()).toEqual(['visionImpaired']);
   });
 

@@ -30,7 +30,6 @@ final class InlineConfig {
 	private Repository $repository;
 	private LanguageResolver $resolver;
 	private PanelDataStore $store;
-	private PanelData $panel_data;
 
 	public function __construct(
 		?Repository $repository = null,
@@ -40,8 +39,7 @@ final class InlineConfig {
 	) {
 		$this->repository = $repository ?? new Repository();
 		$this->resolver   = $resolver ?? new LanguageResolver();
-		$this->panel_data = $panel_data ?? new PanelData( $this->repository );
-		$this->store      = $store ?? new PanelDataStore( $this->panel_data );
+		$this->store      = $store ?? new PanelDataStore( $panel_data ?? new PanelData( $this->repository ) );
 	}
 
 	public static function device_queries( array $settings ): array {
@@ -160,10 +158,6 @@ final class InlineConfig {
 
 		$config = array_merge( $config, $this->trigger_fields( $settings ) );
 
-		if ( true === apply_filters( 'kotlinskidev_a11y_legacy_config', false ) ) {
-			return $this->with_legacy_fields( $config, $locale );
-		}
-
 		return $config;
 	}
 
@@ -192,14 +186,6 @@ final class InlineConfig {
 		}
 
 		return $fields;
-	}
-
-	private function with_legacy_fields( array $config, string $locale ): array {
-		$payload = $this->panel_data->payload( $locale );
-
-		unset( $payload['hash'], $payload['locale'] );
-
-		return array_merge( $config, $payload );
 	}
 
 	private function versions(): array {

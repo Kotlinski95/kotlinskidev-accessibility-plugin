@@ -285,21 +285,6 @@ final class InlineConfigTest extends TestCase {
 		$this->assertLessThanOrEqual( 1536, strlen( $script ) );
 	}
 
-	public function test_legacy_filter_inlines_the_moved_fields_and_full_strings(): void {
-		Functions\when( 'restore_previous_locale' )->justReturn( 'en_US' );
-		Filters\expectApplied( 'kotlinskidev_a11y_legacy_config' )->once()->andReturn( true );
-
-		$config = $this->config();
-
-		foreach ( array( 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss' ) as $moved ) {
-			$this->assertArrayHasKey( $moved, $config );
-		}
-
-		$this->assertArrayHasKey( 'panelTitle', $config['strings'] );
-		$this->assertArrayHasKey( 'biggerText', $config['features'] );
-		$this->assertArrayNotHasKey( 'hash', $config );
-	}
-
 	public function test_schema_defaults_produce_the_recommended_load_section(): void {
 		$this->assertSame( Schema::defaults()['performance']['strategy'], $this->config()['load']['strategy'] );
 	}

@@ -7,16 +7,36 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` dynamic block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`, and the `kotlinskidev_a11y_button_html` filter. Default trigger labels are new strings.
-- Launcher modes `floating`, `inline` and `hidden` in the server markup, `ka11y:open` and `ka11y:close` events, `aria-expanded` sync on open and toggle triggers, and focus return to the opener, the previously focused element, the launcher or the page when the launcher is hidden.
+- One action vocabulary: `open`, `close`, `toggle`, `reset`, `feature:<key>[:<level>]`, `profile:<key>`, `statement`, `hide`, `show`. See `docs/API.md`.
+- Triggers from `data-ka11y`, `#ka11y/<action>` links, the `.ka11y-open` class, custom selectors, `?ka11y=<action>` and landing hashes. URL actions are allowlisted, applied only to enabled features, never saved by themselves and removed from the address bar.
+- Public JavaScript API `kotlinskidevA11y.open()`, `close()`, `toggle()`, `set()`, `reset()`, `getState()` and `on()`, plus the events `ka11y:ready`, `ka11y:open`, `ka11y:close` and `ka11y:change`.
+- Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`. Default trigger labels are new strings.
+- Launcher modes `floating`, `inline` and `hidden`, and settings schema v3 for them.
+- Triggers tab in the admin with a snippet generator, a no-trigger check of the home page and URL action settings.
+- Filters `kotlinskidev_a11y_button_html`, `kotlinskidev_a11y_trigger_selectors` and `kotlinskidev_a11y_url_actions`, and the `GET kotlinskidev-a11y/v1/trigger-options` route.
+- `docs/API.md` with the versioned public API and the deprecation policy.
+- E2E trigger matrix across every load strategy.
+
+### Changed
+
+- Triggers get `role="button"`, `aria-haspopup`, `aria-controls`, `aria-expanded` or `aria-pressed` automatically, and focus returns to the opener, the previously focused element, the launcher or the page.
+- Custom trigger selectors are checked for balanced brackets, parentheses and quotes, and are emitted as one forgiving `:is()` list so one invalid selector no longer disables the others.
+- The trigger block wraps itself in a navigation list item inside the Navigation block and no longer narrows its allowed blocks.
+- Page footprint budgets raised for the trigger code. See `docs/PHASE4-SPEC.md`.
+
+### Removed
+
+- The `kotlinskidev_a11y_legacy_config` filter and the front-end merge of `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` and the full `strings` into `window.kotlinskidevA11y`, deprecated in v0.2.0. Read them from the panel data (`GET kotlinskidev-a11y/v1/panel-data` or the per-locale JSON file) instead.
 
 ### Fixed
 
-- Hash, `.ka11y-open` and custom selector triggers get `role="button"`, `aria-haspopup`, `aria-controls` and `aria-expanded`, and non-native ones get `tabindex="0"` plus Enter and Space handling that ignores key repeat, modifiers and handled events. A markup value such as `data-ka11y="constructor"` no longer aborts the loader.
-- Custom trigger selectors are rejected when brackets, parentheses or quotes are unbalanced or when they start with `*`, `html`, `body` or `:not(`, and are emitted as one forgiving `:is()` list so one invalid selector no longer disables the others.
-- The trigger block lists features and profiles through the new `GET kotlinskidev-a11y/v1/trigger-options` route for editors, wraps itself in a navigation list item inside the Navigation block, and no longer narrows the allowed blocks of Navigation.
+- A markup value such as `data-ka11y="constructor"` no longer aborts the loader.
 - Trigger buttons never render without an accessible name, and a statement button without a statement URL renders nothing.
-- With a hidden launcher, focus returns to the element focused before the panel opened before it falls back to the page.
+- The plugin text domain loads on WordPress 6.4.
+
+### Security
+
+- URL actions cannot reach disabled features, `close`, `toggle`, `reset`, `statement`, `hide` or `show`, and trigger markup is built with escaped values and filtered through `wp_kses`.
 
 ## [0.2.0] - 2026-11-25
 

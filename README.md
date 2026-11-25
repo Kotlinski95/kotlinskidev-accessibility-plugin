@@ -46,6 +46,23 @@ add_action( 'kotlinskidev_a11y_cache_invalidated', static fn () => do_action( 'l
 
 These are WP Rocket, W3 Total Cache and LiteSpeed Cache. For Super Page Cache, call its purge function from the same callback in place of `my_cache_purge()`; its exact hook name is not verified here, so check its documentation. Cloudflare edge caching is left to the cache plugin.
 
+## Triggers
+
+Anything can open the panel or change a feature. Pick the surface that fits:
+
+```html
+<button data-ka11y="open">Accessibility</button>
+<a href="#ka11y/profile:adhdFriendly">Focus mode</a>
+<button class="ka11y-open">Accessibility</button>
+```
+
+```text
+[kotlinskidev_a11y_button action="feature:darkContrast" label="Dark mode"]
+<?php kotlinskidev_a11y_button( array( 'action' => 'open' ) ); ?>
+```
+
+There is also a block, "Accessibility trigger", for the editor and Navigation menus. The Triggers tab holds the launcher mode (`floating`, `inline`, `hidden`), custom selectors, the URL action allowlist and a snippet generator. Full reference, including the JavaScript API, events and deprecation policy: [docs/API.md](docs/API.md).
+
 ## Performance
 
 Only a loader of at most 2 KB gzip runs on every page. The panel, the features and the page CSS load on first use. Visitors with saved settings still get them before first paint, whatever the strategy. Settings live in the Performance tab, which also shows the estimated cost per page.
@@ -73,14 +90,6 @@ Panel data is served as a versioned JSON file per locale from uploads, with a RE
 ### Content Security Policy
 
 The launcher is server-rendered in a declarative shadow root and page CSS is applied as a stylesheet, so a strict policy needs `style-src 'unsafe-inline'`, as WordPress core already does. Scripts carry the request nonce when your CSP plugin provides one.
-
-### Legacy config
-
-`window.kotlinskidevA11y` holds only what the loader needs. Reading `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` or the full `strings` at page load is deprecated. Keep them inline until v0.3.0:
-
-```php
-add_filter( 'kotlinskidev_a11y_legacy_config', '__return_true' );
-```
 
 ### Upgrading and downgrading
 
@@ -131,6 +140,14 @@ add_filter( 'kotlinskidev_a11y_update_token', static fn (): string => 'token-fro
 
 Source keys: `repository`, `slug`, `asset_pattern`, `branch`. The token is read only from the filter and is never stored by the plugin. `Update\Updater` is a thin class, so it can also be replaced entirely.
 
+## Frontend hooks
+
+| Hook | Purpose |
+| --- | --- |
+| `kotlinskidevA11y.open()`, `close()`, `toggle()`, `set()`, `reset()`, `getState()`, `on()` | JavaScript API, available after the `ka11y:ready` event. |
+| `window.kotlinskidevA11yQueue.push( { action } )` | Send an action before any script has loaded. It is replayed in order. |
+| `ka11y:ready`, `ka11y:open`, `ka11y:close`, `ka11y:change` | Events on `document`. |
+
 ## Filters
 
 | Filter | Purpose |
@@ -141,7 +158,9 @@ Source keys: `repository`, `slug`, `asset_pattern`, `branch`. The token is read 
 | `kotlinskidev_a11y_strings` | Adjust the strings sent to the front end. |
 | `kotlinskidev_a11y_update_source` | Swap repository, slug, asset pattern or branch for updates. |
 | `kotlinskidev_a11y_update_token` | Supply an authentication token for private update sources. |
-| `kotlinskidev_a11y_legacy_config` | Return `true` to keep the moved config fields inline until v0.3.0. |
+| `kotlinskidev_a11y_button_html` | Change the markup of a trigger button. The result is filtered again. |
+| `kotlinskidev_a11y_trigger_selectors` | Add custom trigger selectors from code. |
+| `kotlinskidev_a11y_url_actions` | Narrow the actions allowed from `?ka11y=` and `#ka11y/` URLs. |
 
 ## Privacy and storage (GDPR)
 
