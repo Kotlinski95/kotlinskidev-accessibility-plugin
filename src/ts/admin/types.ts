@@ -21,6 +21,9 @@ export interface SchemaPayload {
   presets: Record<string, Record<string, unknown>>;
   locked?: string[];
   sources?: Record<string, string>;
+  access?: 'full' | 'customer';
+  editable?: string[] | null;
+  scope?: 'site' | 'network';
 }
 
 export interface SettingChange {
@@ -86,7 +89,9 @@ export interface MediaSelection {
 export interface MediaFrame {
   on: (event: string, callback: () => void) => MediaFrame;
   open: () => void;
-  state: () => { get: (name: string) => { first: () => { toJSON: () => MediaSelection } } };
+  state: () => {
+    get: (name: string) => { first: () => { toJSON: () => MediaSelection } };
+  };
 }
 
 export interface MediaFrameOptions {

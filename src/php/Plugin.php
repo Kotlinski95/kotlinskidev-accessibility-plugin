@@ -30,6 +30,7 @@ final class Plugin {
 		add_action( 'rest_api_init', array( new Rest\AltTextController( $counter ), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\PanelDataController(), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\TriggerOptionsController(), 'register_routes' ) );
+		self::register_update_tools();
 		( new Statement\Shortcode() )->register();
 		( new Triggers\ButtonShortcode() )->register();
 		( new Triggers\Block() )->register();
@@ -45,6 +46,7 @@ final class Plugin {
 			( new Admin\AltTextPage() )->register();
 			( new Admin\DashboardWidget( $counter ) )->register();
 			( new Admin\PerformanceNotice() )->register();
+			( new Admin\UnverifiedPackageNotice() )->register();
 		}
 
 		if ( is_admin() || wp_doing_cron() ) {
@@ -56,7 +58,28 @@ final class Plugin {
 		}
 	}
 
+	private static function register_update_tools(): void {
+		$updater = new Update\Updater( KOTLINSKIDEV_A11Y_FILE );
+
+		if ( ! $updater->enabled() ) {
+			return;
+		}
+
+		$channel  = new Update\Channel();
+		$rollback = new Update\Rollback( $updater, $channel, KOTLINSKIDEV_A11Y_VERSION );
+
+		add_action( 'rest_api_init', array( new Rest\UpdateController( $updater, $channel, $rollback ), 'register_routes' ) );
+
+		if ( is_admin() ) {
+			( new Admin\RollbackPage( $rollback ) )->register();
+		}
+
+		if ( self::should_check_updates() ) {
+			( new Update\PackageVerifier( $updater, plugin_basename( KOTLINSKIDEV_A11Y_FILE ) ) )->register();
+		}
+	}
+
 	public static function should_check_updates(): bool {
-		return is_admin() || wp_doing_cron();
+		return is_admin() || wp_doing_cron() || ( defined( 'WP_CLI' ) && true === constant( 'WP_CLI' ) );
 	}
 }

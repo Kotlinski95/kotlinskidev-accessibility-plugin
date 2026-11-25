@@ -11,6 +11,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Versioned export envelope and import with a version check. `POST /settings`, `/import` and `/reset` take `dry_run` and return the changes, `/reset` takes `paths`, locked paths return 409, bodies over 262144 B return 413, and `/schema` lists `effectiveDefaults`, `locked` and `sources`. `maintenance.keepDataOnUninstall` is added to the schema.
 - Golden payload tests prove the inline config, panel data, bootstrap prefix and token CSS are byte-identical to v0.4.0, and a CI guard fails pull requests that touch front-end source unless they carry the `frontend-change` label.
 - A change to locks or network defaults purges page caches, detected by a fingerprint checked on admin requests and cron.
+- Update channels: a Maintenance tab Updates card (for `update_plugins` users) switches between stable and beta, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and the `kotlinskidev_a11y_update_channel` filter override it. `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` or the `kotlinskidev_a11y_enable_updater` filter turn the updater, rollback and update routes off.
+- Plugin zips are checked against their `.sha256` before unzipping, and the release workflow now writes the checksum, attests build provenance, pins every action by commit SHA, uses `CHANGELOG.md` as the release notes and marks `-beta` and `-rc` tags as pre-releases. `npm run release` takes `--pre beta|rc`.
+- Rollback to the 3 newest older releases (not below v0.4.0) from the Updates card, via `GET /releases`, `GET` and `POST /update-channel` and a confirmation page. It backs settings up to `kotlinskidev_a11y_settings_backup` and downloads the zip only after the checksum check.
 
 ### Fixed
 

@@ -112,7 +112,7 @@ final class ChecksTest extends TestCase {
 		$this->assertIsArray( $result['actions'] );
 	}
 
-	public function test_all_runs_the_six_ids_in_order(): void {
+	public function test_all_runs_the_seven_ids_in_order(): void {
 		$ids = array_column( $this->checks()->all(), 'id' );
 
 		$this->assertSame(
@@ -123,6 +123,7 @@ final class ChecksTest extends TestCase {
 				'kotlinskidev_a11y_page_cache_language',
 				'kotlinskidev_a11y_locked_settings',
 				'kotlinskidev_a11y_panel_data_store',
+				'kotlinskidev_a11y_unverified_package',
 			),
 			$ids
 		);
@@ -360,6 +361,19 @@ final class ChecksTest extends TestCase {
 		$this->assert_shape( $this->checks()->panel_data_store(), Checks::PANEL_DATA_STORE, Checks::RECOMMENDED );
 	}
 
+	public function test_unverified_package_passes_without_a_flag(): void {
+		$this->assert_shape( $this->checks()->unverified_package(), Checks::UNVERIFIED_PACKAGE, Checks::GOOD );
+	}
+
+	public function test_unverified_package_recommended_when_flag_is_set(): void {
+		Functions\when( 'get_site_option' )->alias( static fn ( $key, $default = false ) => 'kotlinskidev_a11y_unverified_package' === $key ? 'https://example.test/a.zip' : $default );
+
+		$result = $this->checks()->unverified_package();
+
+		$this->assert_shape( $result, Checks::UNVERIFIED_PACKAGE, Checks::RECOMMENDED );
+		$this->assertContains( Checks::UNVERIFIED_PACKAGE, $this->checks()->ids() );
+	}
+
 	public function test_site_health_registers_direct_tests_only(): void {
 		$health = new SiteHealth( $this->checks() );
 
@@ -375,7 +389,7 @@ final class ChecksTest extends TestCase {
 		);
 
 		$this->assertArrayNotHasKey( 'async', $tests );
-		$this->assertCount( 7, $tests['direct'] );
+		$this->assertCount( 8, $tests['direct'] );
 
 		foreach ( ( new Checks() )->ids() as $id ) {
 			$this->assertIsCallable( $tests['direct'][ $id ]['test'] );

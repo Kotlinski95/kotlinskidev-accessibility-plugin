@@ -5,6 +5,18 @@ if ( ! class_exists( 'WP_Error' ) ) {
 	class WP_Error {
 
 		public function __construct( public string $code = '', public string $message = '', public mixed $data = '' ) {}
+
+		public function get_error_code(): string {
+			return $this->code;
+		}
+
+		public function get_error_message(): string {
+			return $this->message;
+		}
+
+		public function add_data( mixed $data ): void {
+			$this->data = $data;
+		}
 	}
 }
 
@@ -44,6 +56,12 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 
 		public function get_param( string $key ): mixed {
 			return $this->params[ $key ] ?? null;
+		}
+
+		public function get_header( string $key ): ?string {
+			$value = $this->params[ 'header:' . $key ] ?? null;
+
+			return is_string( $value ) ? $value : null;
 		}
 
 		public function get_json_params(): mixed {

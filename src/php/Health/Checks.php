@@ -8,6 +8,7 @@ use Kotlinskidev\A11y\Admin\SettingsPage;
 use Kotlinskidev\A11y\Frontend\Manifest;
 use Kotlinskidev\A11y\Frontend\PanelDataStore;
 use Kotlinskidev\A11y\Settings\Repository;
+use Kotlinskidev\A11y\Update\PackageVerifier;
 use Kotlinskidev\A11y\Update\Updater;
 
 final class Checks {
@@ -22,6 +23,7 @@ final class Checks {
 	public const PAGE_CACHE_LANGUAGE = 'kotlinskidev_a11y_page_cache_language';
 	public const LOCKED_SETTINGS     = 'kotlinskidev_a11y_locked_settings';
 	public const PANEL_DATA_STORE    = 'kotlinskidev_a11y_panel_data_store';
+	public const UNVERIFIED_PACKAGE  = 'kotlinskidev_a11y_unverified_package';
 
 	public const UPDATE_STALE_AFTER = 172800;
 
@@ -61,6 +63,7 @@ final class Checks {
 			self::PAGE_CACHE_LANGUAGE,
 			self::LOCKED_SETTINGS,
 			self::PANEL_DATA_STORE,
+			self::UNVERIFIED_PACKAGE,
 		);
 	}
 
@@ -72,6 +75,7 @@ final class Checks {
 			self::PAGE_CACHE_LANGUAGE => $this->page_cache_language(),
 			self::LOCKED_SETTINGS     => $this->locked_settings(),
 			self::PANEL_DATA_STORE    => $this->panel_data_store(),
+			self::UNVERIFIED_PACKAGE  => $this->unverified_package(),
 			default                   => null,
 		};
 	}
@@ -234,6 +238,24 @@ final class Checks {
 			self::RECOMMENDED,
 			__( 'Panel data folder is not writable', 'kotlinskidev-accessibility' ),
 			__( 'The uploads folder kotlinskidev-a11y cannot be written, so panel data falls back to the REST API.', 'kotlinskidev-accessibility' )
+		);
+	}
+
+	public function unverified_package(): array {
+		$flag = get_site_option( PackageVerifier::UNVERIFIED_FLAG, '' );
+
+		if ( ! is_string( $flag ) || '' === $flag ) {
+			return $this->result( self::UNVERIFIED_PACKAGE, self::GOOD, __( 'The installed update was verified', 'kotlinskidev-accessibility' ), __( 'No plugin update was installed without a SHA-256 checksum.', 'kotlinskidev-accessibility' ) );
+		}
+
+		return $this->result(
+			self::UNVERIFIED_PACKAGE,
+			self::RECOMMENDED,
+			__( 'A plugin update was installed without a checksum', 'kotlinskidev-accessibility' ),
+			__( 'The last update came from a release that publishes no SHA-256 checksum, so its integrity was not checked. Install the latest release to restore verified updates.', 'kotlinskidev-accessibility' ),
+			array(
+				$this->action( __( 'Check for updates', 'kotlinskidev-accessibility' ), $this->admin_url( 'update-core.php' ) ),
+			)
 		);
 	}
 

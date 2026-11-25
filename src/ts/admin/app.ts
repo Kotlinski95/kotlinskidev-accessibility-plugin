@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { isCustomerMode } from './access';
 import type { Api } from './api';
 import { previewChanges } from './change-preview';
 import { failingPairs } from './contrast';
@@ -15,6 +16,7 @@ import { createSaveBar } from './save-bar';
 import { createFormState } from './state';
 import { tokenLabel } from './labels';
 import { createTriggerNotice } from './panels/triggers';
+import type { TriggerNotice } from './panels/triggers';
 import type { FormState } from './state';
 import type { AdminConfig, SchemaPayload, SettingsTree } from './types';
 
@@ -46,7 +48,7 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   const context: FormContext = { state, schema, config, api, notices, locked, reload: () => mountForm(true) };
   const search = createSearch(() => tabs);
 
-  const triggerNotice = createTriggerNotice(context);
+  const triggerNotice: TriggerNotice = isCustomerMode(schema) ? { element: h('div'), refresh: () => Promise.resolve() } : createTriggerNotice(context);
 
   const saveBar = createSaveBar(
     state,

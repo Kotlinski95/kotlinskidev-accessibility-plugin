@@ -25,6 +25,7 @@ final class SettingsControllerTest extends TestCase {
 		$this->stored = array();
 
 		Functions\when( '__' )->returnArg( 1 );
+		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'get_option' )->alias( fn ( string $name, mixed $fallback = false ): mixed => $this->stored[ $name ] ?? $fallback );
 		Functions\when( 'update_option' )->alias(
 			function ( string $name, mixed $value ): bool {
@@ -43,9 +44,18 @@ final class SettingsControllerTest extends TestCase {
 	}
 
 	public function test_permission_uses_default_capability(): void {
-		Functions\expect( 'current_user_can' )->once()->with( 'manage_options' )->andReturn( true );
+		$asked = array();
+
+		Functions\when( 'current_user_can' )->alias(
+			static function ( string $cap ) use ( &$asked ): bool {
+				$asked[] = $cap;
+
+				return true;
+			}
+		);
 
 		$this->assertTrue( ( new SettingsController() )->check_permission() );
+		$this->assertSame( array( 'manage_options' ), $asked );
 	}
 
 	public function test_permission_denied_without_capability(): void {
@@ -56,9 +66,18 @@ final class SettingsControllerTest extends TestCase {
 
 	public function test_permission_capability_is_filterable(): void {
 		Filters\expectApplied( 'kotlinskidev_a11y_capability' )->once()->with( 'manage_options' )->andReturn( 'edit_theme_options' );
-		Functions\expect( 'current_user_can' )->once()->with( 'edit_theme_options' )->andReturn( true );
+		$asked = array();
+
+		Functions\when( 'current_user_can' )->alias(
+			static function ( string $cap ) use ( &$asked ): bool {
+				$asked[] = $cap;
+
+				return true;
+			}
+		);
 
 		$this->assertTrue( ( new SettingsController() )->check_permission() );
+		$this->assertSame( array( 'edit_theme_options' ), $asked );
 	}
 
 	public function test_register_routes_attaches_permission_callback_to_every_endpoint(): void {
@@ -86,9 +105,11 @@ final class SettingsControllerTest extends TestCase {
 			array_keys( $registered )
 		);
 
-		foreach ( $registered as $endpoints ) {
+		foreach ( $registered as $route => $endpoints ) {
+			$customer_route = in_array( $route, array( 'kotlinskidev-a11y/v1/settings', 'kotlinskidev-a11y/v1/schema' ), true );
+
 			foreach ( $endpoints as $endpoint ) {
-				$this->assertSame( array( $controller, 'check_permission' ), $endpoint['permission_callback'] );
+				$this->assertSame( array( $controller, $customer_route ? 'check_customer_permission' : 'check_permission' ), $endpoint['permission_callback'] );
 			}
 		}
 	}

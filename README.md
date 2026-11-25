@@ -149,14 +149,50 @@ vendor/bin/phpcs --standard=phpcs.xml.dist
 
 1. Add entries under `[Unreleased]` in `CHANGELOG.md`.
 2. Run `npm run release -- --patch` (or `--minor`, `--major`). Add `--dry-run` to preview. It bumps the plugin header, `KOTLINSKIDEV_A11Y_VERSION`, `package.json`, `package-lock.json` and moves `[Unreleased]` under the new dated heading.
+   For a prerelease add `--pre beta` or `--pre rc` (for example `npm run release -- --major --pre beta` gives `1.0.0-beta.1`, running `--pre beta` again gives `beta.2`, and a plain `npm run release` on a prerelease gives the stable version).
 3. Commit, then tag and push: `git tag vX.Y.Z && git push --follow-tags`.
-4. The `Release` workflow builds assets, installs production Composer dependencies, checks versions with `bin/check-version.mjs`, generates `.pot` and JSON translations, packages `kotlinskidev-accessibility.zip` using `.distignore`, publishes the GitHub release and fails if the zip asset is missing.
+4. The `Release` workflow builds assets, installs production Composer dependencies, checks versions with `bin/check-version.mjs`, generates `.pot` and JSON translations, packages `kotlinskidev-accessibility.zip` using `.distignore`, writes `kotlinskidev-accessibility.zip.sha256`, attests build provenance, publishes the GitHub release with the `CHANGELOG.md` section as its notes (a tag with a hyphen, such as `v1.0.0-beta.1`, is marked as a pre-release) and fails if the zip or checksum asset is missing.
 
 `npm run check-version` fails unless every version source matches; on tag builds it also compares against `GITHUB_REF_NAME`.
 
 ## Updates on customer sites
 
-The plugin embeds Plugin Update Checker v5 pointed at the GitHub repository. WordPress checks in the admin and via cron (never on front-end requests). When a newer release exists, the standard update notice appears and installs the `kotlinskidev-accessibility.zip` release asset.
+The plugin embeds Plugin Update Checker v5 pointed at the GitHub repository. WordPress checks in the admin and via cron (never on front-end requests). When a newer release exists, the standard update notice appears and installs the `kotlinskidev-accessibility.zip` release asset. "View details" shows the release notes taken from `CHANGELOG.md`.
+
+Every download of the plugin zip is checked against the release's `kotlinskidev-accessibility.zip.sha256` before WordPress unzips it. A mismatch aborts the update with a `kotlinskidev_a11y_checksum_mismatch` error. Releases made before the checksum existed have no `.sha256` file; updates from them still proceed.
+
+### Update channel
+
+The Maintenance tab has an Updates card, visible only to users with the `update_plugins` capability. The channel is one network-wide setting stored with `update_site_option`, separate from the plugin settings, so it is never exported or imported.
+
+- `stable` (default): stable releases only.
+- `beta`: also offers `-beta.N` and `-rc.N` pre-releases.
+
+Switching from beta back to stable never downgrades; the site waits for the next stable release that is newer. Changing the channel clears the cached update state.
+
+Precedence: the `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` constant (`'stable'` or `'beta'`) wins over the saved setting, then the `kotlinskidev_a11y_update_channel` filter runs last.
+
+### Rolling back
+
+The Updates card lists the 3 newest stable releases older than the installed one, never below v0.4.0 (pre-releases too on the beta channel). The list is fetched from the GitHub API only when you press the button and is cached for 12 hours. Roll back asks for confirmation, copies your settings to the `kotlinskidev_a11y_settings_backup` option, downloads the release zip, checks its SHA-256 and installs it. No old zip is kept on the site. A release without a `.sha256` asset is not offered.
+
+To restore the backup after returning to a newer version: `wp option get kotlinskidev_a11y_settings_backup --format=json`, then import it from the Import and Export tab.
+
+### Turning the updater off
+
+Set `define( 'KOTLINSKIDEV_A11Y_DISABLE_UPDATER', true );` in `wp-config.php`, or return `false` from the `kotlinskidev_a11y_enable_updater` filter. The update check, checksum verification, rollback page and the `/update-channel` and `/releases` REST routes are then all off.
+
+## Verifying a release
+
+The release workflow publishes a build provenance attestation for the zip (from `v1.0.0-beta.1` on; older releases have none). With the GitHub CLI:
+
+```bash
+gh release download v1.0.0 --repo Kotlinski95/kotlinskidev-accessibility-plugin --pattern 'kotlinskidev-accessibility.zip*'
+sha256sum --check kotlinskidev-accessibility.zip.sha256
+gh attestation verify kotlinskidev-accessibility.zip --repo Kotlinski95/kotlinskidev-accessibility-plugin
+```
+
+The checksum the plugin checks comes from the same release as the zip, so it catches corrupted or swapped downloads but not a compromised GitHub account. The attestation covers that case and is checked out of band, not by the plugin.
 
 ## Pointing updates at a private server
 

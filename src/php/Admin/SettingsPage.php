@@ -22,10 +22,12 @@ final class SettingsPage {
 	private const JSON_FLAGS   = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS;
 
 	private Strings $strings;
+	private Access $access;
 	private string|false $hook_suffix = false;
 
-	public function __construct( ?Strings $strings = null ) {
+	public function __construct( ?Strings $strings = null, ?Access $access = null ) {
 		$this->strings = $strings ?? new Strings();
+		$this->access  = $access ?? new Access();
 	}
 
 	public function register(): void {
@@ -35,14 +37,14 @@ final class SettingsPage {
 	}
 
 	public function capability(): string {
-		return (string) apply_filters( 'kotlinskidev_a11y_capability', 'manage_options' );
+		return $this->access->admin_capability();
 	}
 
 	public function add_menu(): void {
 		$this->hook_suffix = add_options_page(
 			__( 'Accessibility', 'kotlinskidev-accessibility' ),
 			__( 'Accessibility', 'kotlinskidev-accessibility' ),
-			$this->capability(),
+			$this->access->menu_capability(),
 			self::SLUG,
 			array( $this, 'render' )
 		);
@@ -59,7 +61,7 @@ final class SettingsPage {
 	}
 
 	public function render(): void {
-		if ( ! current_user_can( $this->capability() ) ) {
+		if ( Access::NONE === $this->access->level() ) {
 			return;
 		}
 

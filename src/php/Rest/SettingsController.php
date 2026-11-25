@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Rest;
 
+use Kotlinskidev\A11y\Admin\Access;
 use Kotlinskidev\A11y\Settings\Importer;
 use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Schema;
@@ -20,10 +21,12 @@ final class SettingsController {
 
 	private Repository $repository;
 	private Importer $importer;
+	private Access $access;
 
-	public function __construct( ?Repository $repository = null, ?Importer $importer = null ) {
+	public function __construct( ?Repository $repository = null, ?Importer $importer = null, ?Access $access = null ) {
 		$this->repository = $repository ?? new Repository();
 		$this->importer   = $importer ?? new Importer( $this->repository );
+		$this->access     = $access ?? new Access();
 	}
 
 	public function register_routes(): void {
@@ -76,16 +79,23 @@ final class SettingsController {
 		);
 
 		foreach ( $routes as $route => $endpoints ) {
-			register_rest_route( self::REST_NAMESPACE, $route, $this->with_permission( $endpoints ) );
+			register_rest_route( self::REST_NAMESPACE, $route, $this->with_permission( $route, $endpoints ) );
 		}
 	}
 
 	public function check_permission(): bool {
-		return current_user_can( apply_filters( 'kotlinskidev_a11y_capability', 'manage_options' ) );
+		return Access::FULL === $this->access->level();
+	}
+
+	public function check_customer_permission(): bool {
+		return Access::NONE !== $this->access->level();
 	}
 
 	public function get_settings(): WP_REST_Response {
-		return new WP_REST_Response( $this->repository->get() );
+		$settings = $this->repository->get();
+		$editable = $this->access->editable_paths();
+
+		return new WP_REST_Response( null === $editable ? $settings : $this->access->subtree( $settings, $editable ) );
 	}
 
 	public function update_settings( WP_REST_Request $request ): WP_REST_Response|WP_Error {
@@ -101,7 +111,12 @@ final class SettingsController {
 			return $this->invalid_body();
 		}
 
-		$report = $this->importer->inspect( $posted );
+		$report   = $this->importer->inspect( $posted );
+		$editable = $this->access->editable_paths();
+
+		if ( null !== $editable ) {
+			return $this->update_as_customer( $request, $posted, $report, $editable );
+		}
 
 		if ( array() !== $report['conflicts'] ) {
 			return new WP_Error(
@@ -133,22 +148,23 @@ final class SettingsController {
 	}
 
 	public function get_schema(): WP_REST_Response {
-		return new WP_REST_Response(
-			array(
-				'version'           => Schema::VERSION,
-				'definitions'       => Schema::definitions(),
-				'defaults'          => Schema::defaults(),
-				'features'          => Schema::feature_keys(),
-				'profiles'          => Schema::profile_keys(),
-				'presets'           => Schema::performance_presets(),
-				'effectiveDefaults' => $this->repository->effective_defaults(),
-				'locked'            => array_keys( $this->repository->locked() ),
-				'sources'           => $this->repository->sources(),
-				'access'            => 'full',
-				'editable'          => null,
-				'scope'             => 'site',
-			)
+		$editable = $this->access->editable_paths();
+		$schema   = array(
+			'version'           => Schema::VERSION,
+			'definitions'       => Schema::definitions(),
+			'defaults'          => Schema::defaults(),
+			'features'          => Schema::feature_keys(),
+			'profiles'          => Schema::profile_keys(),
+			'presets'           => Schema::performance_presets(),
+			'effectiveDefaults' => $this->repository->effective_defaults(),
+			'locked'            => array_keys( $this->repository->locked() ),
+			'sources'           => $this->repository->sources(),
+			'access'            => Access::FULL,
+			'editable'          => null,
+			'scope'             => 'site',
 		);
+
+		return new WP_REST_Response( null === $editable ? $schema : $this->narrow_schema( $schema, $editable ) );
 	}
 
 	public function export_settings(): WP_REST_Response {
@@ -201,6 +217,84 @@ final class SettingsController {
 		);
 	}
 
+	private function update_as_customer( WP_REST_Request $request, array $posted, array $report, array $editable ): WP_REST_Response|WP_Error {
+		$before  = $this->repository->get();
+		$sparse  = $this->repository->resolve_save( $this->deep_merge( $before, $posted ) );
+		$after   = $this->repository->effective_from( $sparse );
+		$changes = $this->repository->changes( $before, $after, $sparse );
+		$denied  = array_merge( $report['conflicts'], $this->outside_edits( $posted, $before, $editable ) );
+
+		foreach ( $changes as $change ) {
+			if ( ! Access::covers( $editable, $change['path'] ) ) {
+				$denied[] = $change['path'];
+			}
+		}
+
+		if ( array() !== $denied ) {
+			return new WP_Error(
+				'kotlinskidev_a11y_forbidden_paths',
+				__( 'You are not allowed to change some of these settings.', 'kotlinskidev-accessibility' ),
+				array(
+					'status' => 403,
+					'paths'  => array_values( array_unique( $denied ) ),
+				)
+			);
+		}
+
+		if ( ! $this->is_dry_run( $request ) ) {
+			return new WP_REST_Response( $this->access->subtree( $this->repository->commit( $sparse ), $editable ) );
+		}
+
+		return new WP_REST_Response(
+			array(
+				'settings' => $this->access->subtree( $after, $editable ),
+				'changes'  => $changes,
+				'adjusted' => $this->within( $report['adjusted'], $editable ),
+				'locked'   => $this->within( $report['locked'], $editable ),
+			)
+		);
+	}
+
+	private function outside_edits( array $posted, array $before, array $editable ): array {
+		$paths = array();
+
+		foreach ( array_keys( Schema::definitions() ) as $path ) {
+			$found = false;
+			$value = Schema::read( $posted, $path, $found );
+
+			if ( $found && 'schemaVersion' !== $path && ! Access::covers( $editable, $path ) && Schema::read( $before, $path ) !== $value ) {
+				$paths[] = $path;
+			}
+		}
+
+		return $paths;
+	}
+
+	private function narrow_schema( array $schema, array $editable ): array {
+		$schema['defaults']          = $this->access->subtree( $schema['defaults'], $editable );
+		$schema['effectiveDefaults'] = $this->access->subtree( $schema['effectiveDefaults'], $editable );
+		$schema['locked']            = $this->within( $schema['locked'], $editable );
+		$schema['sources']           = array_filter(
+			$schema['sources'],
+			static fn ( string $path ): bool => Access::covers( $editable, $path ),
+			ARRAY_FILTER_USE_KEY
+		);
+		$schema['presets']           = array();
+		$schema['access']            = Access::CUSTOMER;
+		$schema['editable']          = $editable;
+
+		return $schema;
+	}
+
+	private function within( array $paths, array $editable ): array {
+		return array_values(
+			array_filter(
+				$paths,
+				static fn ( string $path ): bool => Access::covers( $editable, $path )
+			)
+		);
+	}
+
 	private function reset_prefixes( mixed $body ): array|WP_Error {
 		if ( null === $body || array() === $body ) {
 			return array();
@@ -249,10 +343,11 @@ final class SettingsController {
 		);
 	}
 
-	private function with_permission( array $endpoints ): array {
+	private function with_permission( string $route, array $endpoints ): array {
 		return array_map(
-			function ( array $endpoint ): array {
-				$endpoint['permission_callback'] = array( $this, 'check_permission' );
+			function ( array $endpoint ) use ( $route ): array {
+				$customer_allowed                = in_array( $route, array( '/schema', '/settings' ), true );
+				$endpoint['permission_callback'] = array( $this, $customer_allowed ? 'check_customer_permission' : 'check_permission' );
 
 				return $endpoint;
 			},
