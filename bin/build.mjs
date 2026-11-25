@@ -1,7 +1,7 @@
 import { build } from 'esbuild';
 import * as sass from 'sass';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -135,6 +135,37 @@ const buildAdminScript = async ({ entry, file }) => {
   await writeFile(resolve(out, file.replace(/\.js$/, '.asset.php')), php);
 };
 
+const blockGlobals = {
+  'wp-blocks': 'wp.blocks',
+  'wp-block-editor': 'wp.blockEditor',
+  'wp-components': 'wp.components',
+  'wp-element': 'wp.element',
+  'wp-i18n': 'wp.i18n',
+  'wp-api-fetch': 'wp.apiFetch',
+  'wp-hooks': 'wp.hooks',
+};
+
+const buildTriggerBlock = async () => {
+  const dir = resolve(out, 'blocks/trigger');
+  await mkdir(dir, { recursive: true });
+  await copyFile(resolve(root, 'src/blocks/trigger/block.json'), resolve(dir, 'block.json'));
+  const outfile = resolve(dir, 'index.js');
+  await build({
+    ...sharedBuildOptions,
+    entryPoints: [resolve(root, 'src/ts/blocks/trigger/index.ts')],
+    outfile,
+    format: 'iife',
+  });
+  const content = await readFile(outfile);
+  const dependencies = Object.keys(blockGlobals)
+    .map((handle) => `'${handle}'`)
+    .join(', ');
+  await writeFile(
+    resolve(dir, 'index.asset.php'),
+    `<?php return array( 'dependencies' => array( ${dependencies} ), 'version' => '${hashOf(content)}' );\n`
+  );
+};
+
 const buildBootstrap = () =>
   build({
     ...sharedBuildOptions,
@@ -213,6 +244,7 @@ const run = async () => {
 
   await buildBootstrap();
   await Promise.all(bundles.map(buildAdminScript));
+  await buildTriggerBlock();
 
   const scriptNames = ['loader', ...chunks.map((chunk) => chunk.name)];
   const scripts = Object.fromEntries(

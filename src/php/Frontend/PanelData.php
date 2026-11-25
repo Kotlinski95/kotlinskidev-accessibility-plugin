@@ -52,7 +52,7 @@ final class PanelData {
 		return substr( sha1( $json . KOTLINSKIDEV_A11Y_VERSION . Schema::VERSION ), 0, 12 );
 	}
 
-	private function statement_url( array $settings ): string {
+	public function statement_url( array $settings ): string {
 		$statement = $settings['statement'] ?? array();
 		$page_id   = (int) ( $statement['pageId'] ?? 0 );
 

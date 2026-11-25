@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "kotlinskidev-a11y/trigger",
+  "title": "Accessibility trigger",
+  "category": "widgets",
+  "description": "A button or link that opens the accessibility panel or runs an accessibility action.",
+  "textdomain": "kotlinskidev-accessibility",
+  "attributes": {
+    "action": { "type": "string", "default": "open" },
+    "label": { "type": "string", "default": "" },
+    "element": { "type": "string", "enum": ["button", "link"], "default": "button" },
+    "showIcon": { "type": "boolean", "default": false }
+  },
+  "supports": {
+    "html": false,
+    "className": true,
+    "color": { "background": true, "text": true },
+    "typography": { "fontSize": true, "lineHeight": true },
+    "spacing": { "padding": true, "margin": true },
+    "__experimentalBorder": { "color": true, "radius": true, "style": true, "width": true }
+  },
+  "editorScript": "file:./index.js"
+}

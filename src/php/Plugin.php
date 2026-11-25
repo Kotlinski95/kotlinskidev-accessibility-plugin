@@ -30,6 +30,8 @@ final class Plugin {
 		add_action( 'rest_api_init', array( new Rest\AltTextController( $counter ), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\PanelDataController(), 'register_routes' ) );
 		( new Statement\Shortcode() )->register();
+		( new Triggers\ButtonShortcode() )->register();
+		( new Triggers\Block() )->register();
 
 		$visibility = new Frontend\Visibility();
 

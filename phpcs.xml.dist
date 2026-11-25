@@ -32,6 +32,9 @@
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
 		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
 	</rule>
+	<rule ref="WordPress.Security.EscapeOutput.OutputNotEscaped">
+		<exclude-pattern>src/php/functions.php</exclude-pattern>
+	</rule>
 	<rule ref="WordPress.DB.SlowDBQuery.slow_db_query_meta_query">
 		<severity>0</severity>
 	</rule>

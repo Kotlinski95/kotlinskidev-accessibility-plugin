@@ -30,5 +30,6 @@ if ( ! kotlinskidev_a11y_requirements_met( KOTLINSKIDEV_A11Y_DIR ) ) {
 }
 
 require_once KOTLINSKIDEV_A11Y_DIR . 'vendor/autoload.php';
+require_once KOTLINSKIDEV_A11Y_DIR . 'src/php/functions.php';
 
 \Kotlinskidev\A11y\Plugin::boot();

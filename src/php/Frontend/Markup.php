@@ -10,7 +10,7 @@ use Kotlinskidev\A11y\Settings\Repository;
 final class Markup {
 
 	private const DEVICES = array( 'desktop', 'tablet', 'mobile' );
-	private const ICON    = '<svg class="ka11y-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false" fill="currentColor"><circle cx="12" cy="4.5" r="2.2"/><path d="M4 8.5h16v2.2h-6.4v3.1l2.5 6.2-2 .8L12 15.8l-2.1 5-2-.8 2.5-6.2v-3.1H4z"/></svg>';
+	public const ICON     = '<svg class="ka11y-icon" viewBox="0 0 24 24" width="28" height="28" aria-hidden="true" focusable="false" fill="currentColor"><circle cx="12" cy="4.5" r="2.2"/><path d="M4 8.5h16v2.2h-6.4v3.1l2.5 6.2-2 .8L12 15.8l-2.1 5-2-.8 2.5-6.2v-3.1H4z"/></svg>';
 
 	private Visibility $visibility;
 	private Repository $repository;
@@ -100,8 +100,8 @@ final class Markup {
 		return self::ICON;
 	}
 
-	private function allowed_html(): array {
-		$svg_attributes = array(
+	public static function svg_allowed_html(): array {
+		$attributes = array(
 			'class'       => true,
 			'viewbox'     => true,
 			'width'       => true,
@@ -115,6 +115,14 @@ final class Markup {
 			'd'           => true,
 		);
 
+		return array(
+			'svg'    => $attributes,
+			'circle' => $attributes,
+			'path'   => $attributes,
+		);
+	}
+
+	private function allowed_html(): array {
 		return array(
 			'div'      => array(
 				'id'                          => true,
@@ -143,9 +151,6 @@ final class Markup {
 				'height'   => true,
 				'decoding' => true,
 			),
-			'svg'      => $svg_attributes,
-			'circle'   => $svg_attributes,
-			'path'     => $svg_attributes,
-		);
+		) + self::svg_allowed_html();
 	}
 }

@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` dynamic block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`, and the `kotlinskidev_a11y_button_html` filter. Default trigger labels are new strings.
+
 ## [0.2.0] - 2026-11-25
 
 ### Added
