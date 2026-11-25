@@ -136,4 +136,13 @@ describe('kernel', () => {
     expect(on).toHaveBeenCalledWith(true);
     unregisterFeature('kernelTestFeature');
   });
+
+  it('exposes run and state, and drops feature commands without panel data', async () => {
+    const { kernel } = boot();
+    expect(kernel.state()).toEqual({ api: 1, open: false, profile: null, features: {} });
+    await kernel.run({ action: 'feature:biggerText', source: 'api' });
+    expect(kernel.state().features).toEqual({});
+    await kernel.run({ action: 'reset', source: 'api' });
+    expect(kernel.state().features).toEqual({});
+  });
 });

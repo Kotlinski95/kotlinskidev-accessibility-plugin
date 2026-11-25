@@ -45,7 +45,7 @@ export const startLoader = (options: StartOptions = scriptOptions()): void => {
   const ensureKernel = (): Promise<KernelApi> =>
     chunks.once('boot', async () => {
       const exports = (await chunks.load('kernel', 'high')) as KernelExports;
-      return exports.bootKernel({ config, groupOf: (key) => groups[key] || null, loadGroup });
+      return exports.bootKernel({ config, groupOf: (key) => groups[key] || null, loadGroup, getData: () => chunks.fetchData() });
     });
 
   const loadGroup = (name: GroupName): Promise<void> =>
