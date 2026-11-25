@@ -25,3 +25,7 @@ Read this, then `CLAUDE.md` (project profile). Plans: `docs/ROADMAP.md` (phases 
 - Updater: PUC checks every ~12 h; `?puc_check_for_updates` or the "Check for updates" link forces it. The updater loads only in admin and cron.
 - Page caches: no coupling to cache plugins; use the generic `kotlinskidev_a11y_cache_invalidated` action only.
 - Translations flow: `npm run i18n:pot`, `msgmerge` into `languages/*pl_PL.po`, translate, `msgfmt` to `.mo`, `npm run i18n:json` (runs `bin/fix-i18n-json.mjs`), check `msgfmt --statistics`.
+
+## Known gap: layout shift for returning visitors
+
+- A saved `biggerText` state applies per-element font scaling after the kernel chunk loads, so returning visitors with it on see a layout shift (measured 0.046 CLS in e2e, 0.01 is the nightly gate). The nightly saved-state run therefore seeds a non-reflowing state (readingLine, highlightLinks). Fix idea: apply the scale through a CSS variable pre-paint from the bootstrap.

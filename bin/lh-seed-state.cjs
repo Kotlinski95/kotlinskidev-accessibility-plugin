@@ -1,7 +1,7 @@
 const STATE = {
-  classes: ['ka11y-bigger-text', 'ka11y-reading-line'],
-  vars: { '--ka11y-font-scale': '1.25' },
-  levels: { readingLine: true, biggerText: 2 },
+  classes: ['ka11y-reading-line', 'ka11y-highlight-links'],
+  vars: {},
+  levels: { readingLine: true, highlightLinks: true },
 };
 
 module.exports = async (browser, context) => {
