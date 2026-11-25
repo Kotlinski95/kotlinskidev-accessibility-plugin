@@ -1,6 +1,6 @@
-import type { Store, StoreState } from '../store';
-import type { Translator } from '../translate';
-import type { IconFactory } from './icons';
+import type { Store, StoreState } from "../store";
+import type { Translator } from "../translate";
+import type { IconFactory } from "./icons";
 
 export interface PanelContext {
   doc: Document;

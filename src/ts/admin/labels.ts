@@ -186,3 +186,46 @@ export const dialogActionLabel = (action: string): string =>
     },
     action
   );
+
+export const tokenLabel = (token: string): string =>
+  lookup(
+    {
+      primary: __('Primary color', 'kotlinskidev-accessibility'),
+      onPrimary: __('Text on primary color', 'kotlinskidev-accessibility'),
+      primaryDark: __('Primary color (dark)', 'kotlinskidev-accessibility'),
+      onPrimaryDark: __('Text on primary color (dark)', 'kotlinskidev-accessibility'),
+      headerBg: __('Header background', 'kotlinskidev-accessibility'),
+      onHeader: __('Header text', 'kotlinskidev-accessibility'),
+      canvasLight: __('Light canvas', 'kotlinskidev-accessibility'),
+      canvasDark: __('Dark canvas', 'kotlinskidev-accessibility'),
+      surfaceLight: __('Light surface', 'kotlinskidev-accessibility'),
+      surfaceDark: __('Dark surface', 'kotlinskidev-accessibility'),
+      textLight: __('Text on light surface', 'kotlinskidev-accessibility'),
+      textDark: __('Text on dark surface', 'kotlinskidev-accessibility'),
+    },
+    token
+  );
+
+export const panelPresetLabel = (preset: string): string =>
+  lookup(
+    {
+      classic: __('Classic', 'kotlinskidev-accessibility'),
+      brand: __('Brand header', 'kotlinskidev-accessibility'),
+      soft: __('Soft', 'kotlinskidev-accessibility'),
+      contrast: __('High contrast', 'kotlinskidev-accessibility'),
+      custom: __('Custom', 'kotlinskidev-accessibility'),
+    },
+    preset
+  );
+
+export const panelSectionLabel = (section: string): string =>
+  lookup(
+    {
+      profiles: __('Show the profiles card', 'kotlinskidev-accessibility'),
+      content: __('Show the content card', 'kotlinskidev-accessibility'),
+      color: __('Show the color card', 'kotlinskidev-accessibility'),
+      orientation: __('Show the orientation card', 'kotlinskidev-accessibility'),
+      skip: __('Show the skip to content card', 'kotlinskidev-accessibility'),
+    },
+    section
+  );

@@ -99,9 +99,25 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['theme.darkSelector'] = definition('string', 'text', 'html.dark-mode');
   defs['theme.lightSelector'] = definition('string', 'text', 'html.light-mode');
   defs['theme.followPrefersColorScheme'] = definition('boolean', 'bool', true);
-  for (const token of ['primary', 'onPrimary', 'surfaceLight', 'surfaceDark', 'textLight', 'textDark']) {
-    defs[`tokens.${token}`] = definition('string', 'color', '#0b57d0');
-  }
+  const tokenDefaults: Record<string, string> = {
+    primary: '#0b57d0',
+    onPrimary: '#ffffff',
+    primaryDark: '#7aa7ff',
+    onPrimaryDark: '#0b1a33',
+    headerBg: '#16181d',
+    onHeader: '#ffffff',
+    canvasLight: '#f2f4f7',
+    canvasDark: '#101114',
+    surfaceLight: '#ffffff',
+    surfaceDark: '#1b1b1f',
+    textLight: '#1b1b1f',
+    textDark: '#f2f2f2',
+  };
+  for (const [token, value] of Object.entries(tokenDefaults)) defs[`tokens.${token}`] = definition('string', 'color', value);
+  defs['panel.columns'] = definition('integer', 'int', 3, { min: 2, max: 3 });
+  for (const section of ['profiles', 'content', 'color', 'orientation', 'skip']) defs[`panel.sections.${section}`] = definition('boolean', 'bool', true);
+  defs['panel.languageSwitcher'] = definition('boolean', 'bool', true);
+  defs['panel.preset'] = definition('string', 'enum', 'classic', { enum: ['classic', 'brand', 'soft', 'contrast', 'custom'] });
   defs['tokens.radius'] = definition('string', 'length', '12px');
   defs['tokens.zIndex'] = definition('integer', 'int', 2147483000, { min: 0, max: 2147483647 });
   defs['tokens.fontFamily'] = definition('string', 'text', 'inherit');

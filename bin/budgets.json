@@ -3,7 +3,7 @@
     "inline.bootstrap": 1152,
     "scripts.loader": 4200,
     "scripts.kernel": 5632,
-    "scripts.panel": 8192,
+    "scripts.panel": 8704,
     "scripts.content": 4096,
     "scripts.color": 1536,
     "scripts.orientation": 3584,

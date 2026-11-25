@@ -1,0 +1,31 @@
+@media (forced-colors: active) {
+  .ka11y-tile,
+  .ka11y-stepper,
+  .ka11y-card,
+  .ka11y-select,
+  .ka11y-step,
+  .ka11y-reset,
+  .ka11y-lang {
+    border: 1px solid ButtonText;
+  }
+
+  .ka11y-tile[aria-pressed='true'] {
+    border: 3px solid Highlight;
+  }
+
+  .ka11y-tile[aria-pressed='true'] .ka11y-tile__check {
+    color: Highlight;
+  }
+
+  .ka11y-dots i {
+    border-color: ButtonText;
+  }
+
+  .ka11y-dots i[data-on] {
+    background: ButtonText;
+  }
+
+  .ka11y-panel :focus-visible {
+    outline-color: Highlight;
+  }
+}

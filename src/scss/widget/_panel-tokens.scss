@@ -1,36 +1,31 @@
 @use 'tokens';
 
 :host {
-  --ka11y-w-primary: #{tokens.$primary};
-  --ka11y-w-on-primary: #{tokens.$on-primary};
   --ka11y-w-shadow: #{tokens.$shadow};
-  --ka11y-w-size: #{tokens.$size};
   --ka11y-w-target: #{tokens.$target};
   --ka11y-w-duration: 160ms;
-  --ka11y-w-surface-light: var(--ka11y-surface-light, #fff);
-  --ka11y-w-surface-dark: var(--ka11y-surface-dark, #14171c);
-  --ka11y-w-text-light: var(--ka11y-text-light, #14171c);
-  --ka11y-w-text-dark: var(--ka11y-text-dark, #f4f6fa);
-  --ka11y-w-muted-light: #4a5260;
-  --ka11y-w-muted-dark: #b4bcc9;
-  --ka11y-w-border-light: #cfd5df;
-  --ka11y-w-border-dark: #3a4150;
-  --ka11y-w-subtle-light: #f1f3f7;
-  --ka11y-w-subtle-dark: #1f242c;
   --ka11y-w-radius: var(--ka11y-radius, 0.75rem);
-  --ka11y-w-gap: 0.75rem;
-  --ka11y-w-bg: var(--ka11y-w-surface-light);
-  --ka11y-w-text: var(--ka11y-w-text-light);
-  --ka11y-w-muted: var(--ka11y-w-muted-light);
-  --ka11y-w-border: var(--ka11y-w-border-light);
-  --ka11y-w-subtle: var(--ka11y-w-subtle-light);
+  --ka11y-w-glass: #{'#fff3'};
+  --ka11y-w-bg: var(--ka11y-surface-light, #fff);
+  --ka11y-w-text: var(--ka11y-text-light, #1b1b1f);
+  --ka11y-w-canvas: var(--ka11y-canvas-light, #f2f4f7);
+  --ka11y-w-tile: #f5f6f8;
+  --ka11y-w-muted: #4a5260;
+  --ka11y-w-pressed: var(--ka11y-primary, #0b57d0);
+  --ka11y-w-on-pressed: var(--ka11y-on-primary, #fff);
+  --ka11y-w-btn: var(--ka11y-header-bg, #16181d);
+  --ka11y-w-on-btn: var(--ka11y-on-header, #fff);
 }
 
 :host([data-theme='dark']) {
-  --ka11y-w-bg: var(--ka11y-w-surface-dark);
-  --ka11y-w-text: var(--ka11y-w-text-dark);
-  --ka11y-w-muted: var(--ka11y-w-muted-dark);
-  --ka11y-w-border: var(--ka11y-w-border-dark);
-  --ka11y-w-subtle: var(--ka11y-w-subtle-dark);
+  --ka11y-w-bg: var(--ka11y-surface-dark, #1b1b1f);
+  --ka11y-w-text: var(--ka11y-text-dark, #f2f2f2);
+  --ka11y-w-canvas: var(--ka11y-canvas-dark, #101114);
+  --ka11y-w-tile: #262a31;
+  --ka11y-w-muted: #b4bcc9;
+  --ka11y-w-pressed: var(--ka11y-primary-dark, #7aa7ff);
+  --ka11y-w-on-pressed: var(--ka11y-on-primary-dark, #0b1a33);
+  --ka11y-w-btn: var(--ka11y-text-dark, #f2f2f2);
+  --ka11y-w-on-btn: var(--ka11y-header-bg, #16181d);
   color-scheme: dark;
 }

@@ -56,7 +56,7 @@ describe('form renderer', () => {
     const form = renderForm(ctx);
     const root = form.element;
     expect(root.querySelectorAll('.ka11y-panel--visibility .ka11y-field--list')).toHaveLength(10);
-    expect(root.querySelectorAll('.ka11y-panel--appearance .ka11y-field--color')).toHaveLength(6);
+    expect(root.querySelectorAll('.ka11y-panel--appearance .ka11y-field--color')).toHaveLength(12);
     expect(root.querySelector('.ka11y-panel--appearance textarea')).not.toBeNull();
     expect(root.querySelectorAll('.ka11y-panel--languages .ka11y-field--locale-map')).toHaveLength(2);
     expect(root.querySelector('.ka11y-panel--behavior .ka11y-gdpr')).not.toBeNull();
@@ -121,6 +121,18 @@ describe('admin app', () => {
     const clean = new Event('beforeunload', { cancelable: true });
     window.dispatchEvent(clean);
     expect(clean.defaultPrevented).toBe(false);
+    app.destroy();
+  });
+
+  it('warns after saving color pairs below the minimum contrast', async () => {
+    const api = fakeApi();
+    const root = document.createElement('div');
+    const app = buildApp(root, sampleConfig(), api, sampleSchema(), sampleDefaults());
+    app.state.set('tokens.onHeader', '#16181e');
+    await app.save();
+    expect(api.saveSettings).toHaveBeenCalled();
+    expect(root.querySelector('.notice-warning')?.textContent).toContain('Header text on Header background');
+    expect(root.querySelector('.notice-success')).toBeNull();
     app.destroy();
   });
 

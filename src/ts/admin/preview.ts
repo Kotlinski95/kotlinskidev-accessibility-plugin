@@ -16,6 +16,12 @@ const FRAME_WIDTH: Readonly<Record<string, number>> = { desktop: 320, tablet: 20
 const TOKEN_VARIABLES: Readonly<Record<string, string>> = {
   primary: '--ka11y-primary',
   onPrimary: '--ka11y-on-primary',
+  primaryDark: '--ka11y-primary-dark',
+  onPrimaryDark: '--ka11y-on-primary-dark',
+  headerBg: '--ka11y-header-bg',
+  onHeader: '--ka11y-on-header',
+  canvasLight: '--ka11y-canvas-light',
+  canvasDark: '--ka11y-canvas-dark',
   surfaceLight: '--ka11y-surface-light',
   surfaceDark: '--ka11y-surface-dark',
   textLight: '--ka11y-text-light',
@@ -57,6 +63,23 @@ const stringAt = (state: FormState, path: string, fallback: string): string => {
   return typeof value === 'string' && value !== '' ? value : fallback;
 };
 
+const createSample = (scheme: 'light' | 'dark', title: string): HTMLElement =>
+  h(
+    'div',
+    { class: `ka11y-preview__sample ka11y-preview__sample--${scheme}`, 'aria-hidden': 'true' },
+    h('div', { class: 'ka11y-preview__sample-head' }, h('span', { class: 'ka11y-preview__sample-title' }, title)),
+    h(
+      'div',
+      { class: 'ka11y-preview__sample-body' },
+      h(
+        'div',
+        { class: 'ka11y-preview__sample-card' },
+        h('span', { class: 'ka11y-preview__sample-text' }, 'Aa'),
+        h('span', { class: 'ka11y-preview__sample-tile' }, h('span', { class: 'ka11y-preview__sample-tile-text' }, 'Aa'))
+      )
+    )
+  );
+
 export interface Preview {
   element: HTMLElement;
   device: () => string;
@@ -84,6 +107,12 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     h('label', { class: 'ka11y-field__label', for: `${id}-device` }, __('Preview device', 'kotlinskidev-accessibility')),
     select,
     h('div', { class: 'ka11y-preview__stage' }, frame),
+    h(
+      'div',
+      { class: 'ka11y-preview__samples' },
+      createSample('light', __('Light', 'kotlinskidev-accessibility')),
+      createSample('dark', __('Dark', 'kotlinskidev-accessibility'))
+    ),
     hidden,
     caption
   );

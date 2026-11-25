@@ -1,13 +1,15 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { Api } from './api';
+import { failingPairs } from './contrast';
 import type { FormContext } from './context';
-import { errorMessage, h } from './dom';
+import { errorMessage, h, isRecord } from './dom';
 import { renderForm } from './form-renderer';
 import { installUnsavedGuard } from './guard';
 import { createNotices } from './notices';
 import { createPreview } from './preview';
 import { createSaveBar } from './save-bar';
 import { createFormState } from './state';
+import { tokenLabel } from './labels';
 import { createTriggerNotice } from './panels/triggers';
 import type { FormState } from './state';
 import type { AdminConfig, SchemaPayload, SettingsTree } from './types';
@@ -41,6 +43,19 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   });
   const preview = createPreview(state);
 
+  const reportSaved = (saved: SettingsTree): void => {
+    const tokens = saved.tokens;
+    const failing = failingPairs(isRecord(tokens) ? tokens : {});
+    if (failing.length === 0) {
+      notices.success(__('Settings saved.', 'kotlinskidev-accessibility'));
+      return;
+    }
+    const pairs = failing.map((pair) => sprintf(__('%1$s on %2$s', 'kotlinskidev-accessibility'), tokenLabel(pair.foreground), tokenLabel(pair.background)));
+    notices.warning(
+      sprintf(__('Settings saved, but these color pairs are below the minimum contrast: %s.', 'kotlinskidev-accessibility'), pairs.join(', '))
+    );
+  };
+
   const save = async (): Promise<void> => {
     saveBar.setBusy(true);
     try {
@@ -48,7 +63,7 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
       state.load(saved);
       mountForm();
       void triggerNotice.refresh();
-      notices.success(__('Settings saved.', 'kotlinskidev-accessibility'));
+      reportSaved(saved);
     } catch (error) {
       notices.error(errorMessage(error, __('Settings could not be saved.', 'kotlinskidev-accessibility')));
     } finally {

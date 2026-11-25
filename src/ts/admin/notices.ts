@@ -1,11 +1,12 @@
 import { h } from './dom';
 
-export type NoticeKind = 'success' | 'error';
+export type NoticeKind = 'success' | 'error' | 'warning';
 
 export interface Notices {
   element: HTMLElement;
   success: (message: string) => void;
   error: (message: string) => void;
+  warning: (message: string) => void;
   clear: () => void;
 }
 
@@ -20,6 +21,7 @@ export const createNotices = (): Notices => {
     element,
     success: (message) => show('success', message),
     error: (message) => show('error', message),
+    warning: (message) => show('warning', message),
     clear: () => element.replaceChildren(),
   };
 };

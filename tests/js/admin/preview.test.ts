@@ -22,6 +22,9 @@ describe('preview', () => {
     expect(launcher.style.top).not.toBe('auto');
     state.set('tokens.primary', '#123456');
     expect(preview.element.style.getPropertyValue('--ka11y-primary')).toBe('#123456');
+    state.set('tokens.headerBg', '#222222');
+    expect(preview.element.style.getPropertyValue('--ka11y-header-bg')).toBe('#222222');
+    expect(preview.element.querySelectorAll('.ka11y-preview__sample')).toHaveLength(2);
     state.set('widget.iconBorder', true);
     expect(launcher.classList.contains('has-border')).toBe(true);
     const select = preview.element.querySelector('select') as HTMLSelectElement;

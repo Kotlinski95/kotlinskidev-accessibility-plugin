@@ -107,6 +107,7 @@ export interface KotlinskidevA11yConfig {
   hideToolbar: HideToolbarConfig;
   statementUrl: string;
   strings: Record<string, string>;
+  data?: string[];
   locale: string;
   rtl: boolean;
   customCss: string;

@@ -5,6 +5,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Panel redesign: header with language switcher, section cards, icon tiles, steppers and a skip-to-content select; the dialog is non-modal and uses a side panel on desktop and a bottom sheet on mobile. The panel chunk budget is 8704 B gzip (was 7168): the chunk loads only on first open and the redesign, icons and language switcher account for the growth.
+
+
 ## [0.3.0] - 2026-11-25
 
 ### Added

@@ -1,0 +1,51 @@
+.ka11y-card {
+  padding: 1rem;
+  border-radius: calc(var(--ka11y-w-radius) + 0.5rem);
+  background: var(--ka11y-w-bg);
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.ka11y-card__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.0625rem;
+}
+
+.ka11y-select {
+  inline-size: 100%;
+  min-block-size: var(--ka11y-w-target);
+  padding-inline: 0.75rem;
+  border: 1px solid var(--ka11y-w-muted);
+  border-radius: var(--ka11y-w-radius);
+  background: var(--ka11y-w-tile);
+  color: inherit;
+  font: inherit;
+}
+
+.ka11y-foot {
+  position: sticky;
+  inset-block-end: 0;
+  z-index: 1;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-block-start: 1px solid var(--ka11y-w-tile);
+  background: var(--ka11y-w-bg);
+}
+
+.ka11y-reset {
+  min-block-size: var(--ka11y-w-target);
+  border-radius: var(--ka11y-w-radius);
+  background: var(--ka11y-w-btn);
+  color: var(--ka11y-w-on-btn);
+  font-weight: 600;
+}
+
+.ka11y-hint {
+  margin: 0;
+  color: var(--ka11y-w-muted);
+  font-size: 0.8125rem;
+  text-align: center;
+}
