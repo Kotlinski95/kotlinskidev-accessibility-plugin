@@ -49,6 +49,7 @@ final class BlockTest extends TestCase {
 		$this->assertSame( 3, $json['apiVersion'] );
 		$this->assertSame( 'open', $json['attributes']['action']['default'] );
 		$this->assertSame( array( 'button', 'link' ), $json['attributes']['element']['enum'] );
+		$this->assertContains( 'showSubmenuIcon', $json['usesContext'] );
 		$this->assertArrayNotHasKey( 'save', $json );
 	}
 
@@ -75,5 +76,23 @@ final class BlockTest extends TestCase {
 
 		$this->assertStringNotContainsString( 'evil', ( new Block() )->render( array( 'evil' => '"><b>' ) ) );
 		$this->assertSame( '', ( new Block() )->render( array( 'action' => '"><b>' ) ) );
+	}
+
+	public function test_wraps_in_list_item_inside_navigation(): void {
+		Functions\when( 'get_block_wrapper_attributes' )->justReturn( 'class="wp-block-kotlinskidev-a11y-trigger"' );
+		$block = (object) array( 'context' => array( 'showSubmenuIcon' => true ) );
+
+		$html = ( new Block() )->render( array( 'label' => 'A11y' ), '', $block );
+
+		$this->assertStringStartsWith( '<li class="wp-block-navigation-item"><button', $html );
+		$this->assertStringEndsWith( '</button></li>', $html );
+	}
+
+	public function test_no_list_item_outside_navigation_or_when_empty(): void {
+		Functions\when( 'get_block_wrapper_attributes' )->justReturn( 'class="wp-block-kotlinskidev-a11y-trigger"' );
+
+		$this->assertStringStartsWith( '<button', ( new Block() )->render( array(), '', (object) array( 'context' => array() ) ) );
+		$this->assertStringStartsWith( '<button', ( new Block() )->render( array() ) );
+		$this->assertSame( '', ( new Block() )->render( array( 'action' => '"><b>' ), '', (object) array( 'context' => array( 'showSubmenuIcon' => true ) ) ) );
 	}
 }

@@ -315,13 +315,13 @@ final class SanitizerTest extends TestCase {
 	}
 
 	public function test_selector_accepts_common_forms(): void {
-		foreach ( array( '.menu-item-a11y > a', '#a11y-link', 'a[href="#a11y"]', "a[data-x='y']", 'li.a + li:not(.b) ~ a', 'a[href^="#x"], button.open', '  .trim  ' ) as $selector ) {
+		foreach ( array( '.menu-item-a11y > a', '#a11y-link', 'a[href="#a11y"]', "a[data-x='y']", 'li.a + li:not(.b) ~ a', 'a[href^="#x"], button.open', 'a[title="]"]', 'a:not(.b, .c)', 'bodyx', 'htmlx > a', '  .trim  ' ) as $selector ) {
 			$this->assertSame( trim( $selector ), $this->mount( $selector ), $selector );
 		}
 	}
 
 	public function test_selector_rejects_unsafe_values(): void {
-		foreach ( array( 'a<b', 'a{b}', 'a;b', '@media', 'a\\b', 'a/*b*/', 'html', 'BODY', '*', '.ok, body', 'a, *', str_repeat( 'a', 201 ), '', 5, null ) as $selector ) {
+		foreach ( array( 'a<b', 'a{b}', 'a;b', '@media', 'a\\b', 'a/*b*/', 'html', 'BODY', '*', '.ok, body', 'a, *', 'html.dark', 'body *', '* > a', ':not(.x)', '.ok, :not(.x)', 'a[href', 'a(', 'a)', 'a]', 'a[href="x]', "a[x='y", 'a[(])', 'a:not(.b', str_repeat( 'a', 201 ), '', 5, null ) as $selector ) {
 			$this->assertSame( '', $this->mount( $selector ), var_export( $selector, true ) );
 		}
 		$this->assertSame( str_repeat( 'a', 200 ), $this->mount( str_repeat( 'a', 200 ) ) );

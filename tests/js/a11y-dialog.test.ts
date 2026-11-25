@@ -79,6 +79,40 @@ describe('a11y-dialog focus return', () => {
     expect(document.activeElement).toBe(document.body);
   });
 
+  it('returns to the last focused page element in hidden launcher mode without an opener', () => {
+    const { dialog, host, outside } = setup();
+    host.setAttribute('data-ka11y-launcher', 'hidden');
+    outside.focus();
+    outside.blur();
+    expect(document.activeElement).toBe(document.body);
+    dialog.open();
+    dialog.close();
+    expect(document.activeElement).toBe(outside);
+  });
+
+  it('returns to the previously focused element when the opener is gone', () => {
+    const { dialog, host, outside } = setup();
+    host.setAttribute('data-ka11y-launcher', 'hidden');
+    const opener = document.createElement('button');
+    document.body.append(opener);
+    outside.focus();
+    dialog.open(opener);
+    opener.remove();
+    dialog.close();
+    expect(document.activeElement).toBe(outside);
+  });
+
+  it('stops tracking focus after destroy', () => {
+    const { dialog, host, outside } = setup();
+    host.setAttribute('data-ka11y-launcher', 'hidden');
+    dialog.destroy();
+    outside.focus();
+    outside.blur();
+    dialog.open();
+    dialog.close();
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it('syncs aria-expanded on the launcher', () => {
     const { dialog, launcher } = setup();
     expect(launcher.getAttribute('aria-expanded')).toBe('false');

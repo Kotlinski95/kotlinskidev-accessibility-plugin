@@ -318,7 +318,7 @@ final class InlineConfigTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				's' => '.a,#b',
+				's' => ':is(.a,#b)',
 				'u' => array( 'open' ),
 			),
 			$this->config( $settings )['triggers']
@@ -357,7 +357,7 @@ final class InlineConfigTest extends TestCase {
 
 		$triggers = $this->config()['triggers'];
 
-		$this->assertSame( '.a,.c', $triggers['s'] );
+		$this->assertSame( ':is(.a,.c)', $triggers['s'] );
 		$this->assertSame( array( 'open' ), $triggers['u'] );
 	}
 

@@ -74,7 +74,9 @@ final class InlineConfig {
 		$filtered  = apply_filters( 'kotlinskidev_a11y_trigger_selectors', $stored );
 		$sanitized = ( new Sanitizer() )->sanitize_value( is_array( $filtered ) ? $filtered : $stored, (array) Schema::definition( 'triggers.selectors' ) );
 
-		return implode( ',', (array) $sanitized );
+		$selectors = array_values( array_filter( (array) $sanitized, 'is_string' ) );
+
+		return array() === $selectors ? '' : ':is(' . implode( ',', $selectors ) . ')';
 	}
 
 	public static function url_actions( array $settings ): array {

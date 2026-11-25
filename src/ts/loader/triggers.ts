@@ -45,20 +45,18 @@ export const resolveTrigger = (element: Element | null | undefined, config: Inli
   }
 };
 
-const ARIA: Record<string, string[]> = {
-  open: ['aria-controls', 'ka11y-root', 'aria-expanded', 'false', 'aria-haspopup', 'dialog'],
-  close: ['aria-controls', 'ka11y-root'],
-  feature: ['aria-pressed', 'false'],
-};
-
 export const wireAria = (config: InlineConfig): void => {
-  document.querySelectorAll('[data-ka11y]:not(html),a[href^="#ka11y/"]').forEach((element) => {
-    const action = resolveTrigger(element, config) ?? '';
-    const name = action.split(':')[0] as string;
-    const pairs = [...(element.localName === 'a' ? ['role', 'button'] : []), ...(ARIA[name === 'toggle' ? 'open' : name === 'profile' ? 'feature' : name] ?? [])];
-    for (let index = 0; index < pairs.length; index += 2) {
-      if (!element.hasAttribute(pairs[index] as string)) element.setAttribute(pairs[index] as string, pairs[index + 1] as string);
-    }
+  document.querySelectorAll<HTMLElement>(`${window.kotlinskidevA11yRuntime?.q ?? '[data-ka11y]'},${config.triggers?.s || '#ka11y-root'}`).forEach((element) => {
+    const name = resolveTrigger(element, config)?.split(':')[0];
+    if (!name) return;
+    const attributes = {
+      ...(element.localName === 'button' ? {} : { role: 'button' }),
+      ...(element.tabIndex < 0 ? { tabindex: '0' } : {}),
+      ...(/^(open|toggle|close)$/.test(name) && { 'aria-controls': 'ka11y-root' }),
+      ...(/^(open|toggle)$/.test(name) && { 'aria-expanded': 'false', 'aria-haspopup': 'dialog' }),
+      ...(/^(feature|profile)$/.test(name) && { 'aria-pressed': 'false' }),
+    };
+    Object.entries(attributes).forEach(([key, value]) => element.hasAttribute(key) || element.setAttribute(key, value));
   });
 };
 
@@ -103,10 +101,10 @@ export const bindTriggers = ({ config, host, push, prefetch, hiddenKey }: Trigge
   };
 
   const onKeydown = (event: KeyboardEvent): void => {
-    const target = event.target;
-    if (event.key === ' ' && target instanceof Element && target.matches('a[role="button"]') && resolveTrigger(target, config)) {
+    const target = event.target as HTMLElement;
+    if ([' ', 'Enter'].includes(event.key) && !(event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.defaultPrevented) && target.matches?.('[role=button]:not(button)') && resolveTrigger(target, config)) {
       event.preventDefault();
-      (target as HTMLElement).click();
+      target.click();
       return;
     }
     if (!shortcut || !matchesCombo(shortcut, event)) return;

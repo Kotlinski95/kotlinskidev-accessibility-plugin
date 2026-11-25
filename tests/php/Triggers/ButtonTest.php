@@ -146,11 +146,25 @@ final class ButtonTest extends TestCase {
 		);
 	}
 
-	public function test_statement_without_url_is_a_button(): void {
-		$this->assertSame(
-			'<button type="button" class="ka11y-trigger" data-ka11y="statement">Accessibility statement</button>',
-			( new Button() )->render( array( 'action' => 'statement' ) )
-		);
+	public function test_statement_without_url_renders_nothing(): void {
+		$this->assertSame( '', ( new Button() )->render( array( 'action' => 'statement' ) ) );
+		$this->assertSame( '', ( new Button() )->render( array( 'action' => 'statement', 'element' => 'link' ) ) );
+	}
+
+	public function test_empty_label_falls_back_to_default_string(): void {
+		$html = ( new Button() )->render( array( 'action' => 'close', 'label' => '   ', 'show_icon' => true ) );
+
+		$this->assertStringContainsString( 'Close accessibility settings</button>', $html );
+	}
+
+	public function test_missing_strings_fall_back_to_the_action_key(): void {
+		Filters\expectApplied( 'kotlinskidev_a11y_strings' )->andReturn( array() );
+
+		foreach ( array( 'open', 'reset', 'feature:biggerText:2', 'profile:adhdFriendly' ) as $action ) {
+			$html = ( new Button() )->render( array( 'action' => $action, 'show_icon' => true ) );
+
+			$this->assertStringContainsString( $action . '</button>', $html, $action );
+		}
 	}
 
 	public function test_filter_output_is_refiltered(): void {

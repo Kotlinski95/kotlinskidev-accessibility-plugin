@@ -12,6 +12,7 @@
     "element": { "type": "string", "enum": ["button", "link"], "default": "button" },
     "showIcon": { "type": "boolean", "default": false }
   },
+  "usesContext": ["showSubmenuIcon"],
   "supports": {
     "html": false,
     "className": true,

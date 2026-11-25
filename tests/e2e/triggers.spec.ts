@@ -56,14 +56,15 @@ type TriggerCase = DialogCase | StateCase;
 
 const STRATEGIES: readonly Strategy[] = ['interaction', 'idle', 'defer', 'async', 'eager'];
 const SMOKE_STRATEGIES: ReadonlySet<Strategy> = new Set<Strategy>(['interaction', 'eager']);
-const SMOKE_CASES: ReadonlySet<string> = new Set(['hash-open', 'data-feature', 'php-function']);
+const SMOKE_EFFECT_CASES: ReadonlySet<string> = new Set(['hash-open', 'data-feature']);
+const SMOKE_ARIA_CASES: ReadonlySet<string> = new Set(['hash-open']);
 
 const FIXTURE_COOKIE = { name: 'ka11y_fixture_triggers', value: '1' };
 const CUSTOM_SELECTOR = '.fixture-a11y-menu > a';
+const BROKEN_SELECTOR = '..broken';
 const OPENED = 'aria-expanded';
 const WIRING_TIMEOUT = 2_000;
 const TOGGLE_GUARD_MS = 80;
-const KNOWN_PRODUCT_BUGS: ReadonlySet<string> = new Set(['hash-open', 'class-open', 'custom-selector']);
 
 const CASES: readonly TriggerCase[] = [
   { kind: 'dialog', id: 'hash-open', selector: '#t-hash', link: true, expanded: true },
@@ -230,14 +231,14 @@ for (const strategy of STRATEGIES) {
       await settings.patch({
         performance: { preset: 'custom', strategy },
         widget: { launcher: 'hidden' },
-        triggers: { selectors: [CUSTOM_SELECTOR] },
+        triggers: { selectors: [BROKEN_SELECTOR, CUSTOM_SELECTOR] },
       });
       await context.addCookies([{ ...FIXTURE_COOKIE, url: BASE_URL }]);
       await installEventLog(page);
     });
 
     for (const spec of CASES) {
-      test(`${spec.id} takes effect by click and Enter${tag(SMOKE_CASES.has(spec.id))}`, async ({ page }) => {
+      test(`${spec.id} takes effect by click and Enter${tag(SMOKE_EFFECT_CASES.has(spec.id))}`, async ({ page }) => {
         const errors = collectErrors(page);
         const widget = await gotoFixture(page);
         await expect(widget.launcher).toBeHidden();
@@ -247,15 +248,14 @@ for (const strategy of STRATEGIES) {
         expect(errors).toEqual([]);
       });
 
-      test(`${spec.id} wires ARIA and activates by Space${tag(SMOKE_CASES.has(spec.id))}`, async ({ page }) => {
-        test.fail(KNOWN_PRODUCT_BUGS.has(spec.id), 'wireAria in src/ts/loader/triggers.ts skips this trigger kind');
+      test(`${spec.id} wires ARIA and activates by Space${tag(SMOKE_ARIA_CASES.has(spec.id))}`, async ({ page }) => {
         const widget = await gotoFixture(page);
         if (spec.kind === 'dialog') await assertDialogAria(page, widget, spec);
         else await assertStatePressed(page, spec);
       });
     }
 
-    test(`unknown and disabled actions are ignored${tag()}`, async ({ page, settings }) => {
+    test(`unknown and disabled actions are ignored${tag(strategy === 'interaction')}`, async ({ page, settings }) => {
       await settings.patch({ features: { highContrast: { enabled: false } } });
       const errors = collectErrors(page);
       const widget = await gotoFixture(page);
@@ -275,7 +275,7 @@ for (const strategy of STRATEGIES) {
       expect(errors).toEqual([]);
     });
 
-    test(`URL query applies a profile once and never stores it on its own${tag()}`, async ({ page }) => {
+    test(`URL query applies a profile once and never stores it on its own${tag(strategy === 'eager')}`, async ({ page }) => {
       const errors = collectErrors(page);
       await page.goto('/?foo=1&ka11y=profile:adhdFriendly#keep');
       await waitForApi(page);
@@ -301,7 +301,7 @@ for (const strategy of STRATEGIES) {
       expect(errors).toEqual([]);
     });
 
-    test(`URL feature, landing hash, off and reset${tag()}`, async ({ page }) => {
+    test(`URL feature, landing hash, off and reset${tag(false)}`, async ({ page }) => {
       const errors = collectErrors(page);
       await page.goto('/?ka11y=feature:darkContrast');
       await waitForApi(page);
@@ -328,7 +328,7 @@ for (const strategy of STRATEGIES) {
       expect(errors).toEqual([]);
     });
 
-    test(`URL actions outside the allowlist or disabled are ignored${tag()}`, async ({ page, settings }) => {
+    test(`URL actions outside the allowlist or disabled are ignored${tag(false)}`, async ({ page, settings }) => {
       await settings.patch({ features: { highContrast: { enabled: false } } });
       const errors = collectErrors(page);
       for (const action of ['toggle', 'close', 'statement', 'hide', 'explode', 'feature:highContrast', 'feature:__proto__']) {
@@ -346,7 +346,7 @@ for (const strategy of STRATEGIES) {
       expect(errors).toEqual([]);
     });
 
-    test(`JS API methods and events${tag()}`, async ({ page }) => {
+    test(`JS API methods and events${tag(strategy === 'interaction')}`, async ({ page }) => {
       const errors = collectErrors(page);
       const widget = await gotoFixture(page);
 
@@ -418,7 +418,7 @@ for (const strategy of STRATEGIES) {
       expect(errors).toEqual([]);
     });
 
-    test(`focus returns to the opener, the previous element or the page body${tag()}`, async ({ page }) => {
+    test(`focus returns to the opener, the previous element or the page body${tag(strategy === 'interaction')}`, async ({ page }) => {
       const errors = collectErrors(page);
       const widget = await gotoFixture(page);
 
@@ -440,13 +440,19 @@ for (const strategy of STRATEGIES) {
       await page.evaluate(() => (window as unknown as FixtureWindow).kotlinskidevA11y.open());
       await expectOpen(widget);
       await closeWithEscape(page);
+      await expect(page.locator('#t-before')).toBeFocused();
+
+      const fresh = await gotoFixture(page);
+      await page.evaluate(() => (window as unknown as FixtureWindow).kotlinskidevA11y.open());
+      await expectOpen(fresh);
+      await closeWithEscape(page);
       await expect.poll(() => page.evaluate(() => document.activeElement === document.body)).toBe(true);
       await expect.poll(() => page.evaluate(() => document.body.hasAttribute('tabindex'))).toBe(false);
       await expect(widget.launcher).toBeHidden();
       expect(errors).toEqual([]);
     });
 
-    test(`page and open panel have no serious axe violations${tag()}`, async ({ page }) => {
+    test(`page and open panel have no serious axe violations${tag(false)}`, async ({ page }) => {
       const widget = await gotoFixture(page);
       await expect(page.locator('#t-profile')).toHaveAttribute('role', 'button');
       const scan = async (selector: string): Promise<string[]> => {
@@ -459,7 +465,7 @@ for (const strategy of STRATEGIES) {
       expect(await scan('#ka11y-root')).toEqual([]);
     });
 
-    test(`triggers clicked before the loader arrives apply exactly once${tag()}`, async ({ page }) => {
+    test(`triggers clicked before the loader arrives apply exactly once${tag(strategy === 'eager')}`, async ({ page }) => {
       let release: () => void = () => undefined;
       const gate = new Promise<void>((resolve) => {
         release = resolve;

@@ -95,7 +95,7 @@ Flake notes: the median test is the only timing-sensitive one. If it flakes on a
 | axe | No serious or critical violations on the fixture block and the open panel |
 | before the loader | Profile link, data button and shortcode button clicked while `loader.js` is held apply exactly once after release |
 
-`@smoke` marks the `interaction` and `eager` strategies, and within each the hash open, data feature and PHP function cases plus every non-case test. Run it alone with `npx playwright test tests/e2e/triggers.spec.ts --grep @smoke`.
+`@smoke` marks a handful of cases on the `interaction` and `eager` strategies: hash open and data feature effects, the hash open ARIA test, and a few single tests per strategy. Run it alone with `npx playwright test tests/e2e/triggers.spec.ts --grep @smoke`.
 
 Known product bug: `wireAria` in `src/ts/loader/triggers.ts` selects only `[data-ka11y]:not(html),a[href^="#ka11y/"]`, so `a[href="#kotlinskidev-a11y"]`, `.ka11y-open` and custom selector elements get no `role`, `aria-expanded` or `aria-controls`, and Space does nothing on the links among them. The three affected `wires ARIA and activates by Space` tests are wrapped in `test.fail` through `KNOWN_PRODUCT_BUGS`; remove those ids from the set when the loader is fixed.
 

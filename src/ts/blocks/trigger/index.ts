@@ -35,7 +35,7 @@ interface WpGlobal {
 const wp = (window as unknown as { wp: WpGlobal }).wp;
 const NAME = 'kotlinskidev-a11y/trigger';
 const DOMAIN = 'kotlinskidev-accessibility';
-const SCHEMA_PATH = '/kotlinskidev-a11y/v1/schema';
+const OPTIONS_PATH = '/kotlinskidev-a11y/v1/trigger-options';
 const BASE_ACTIONS = ['open', 'close', 'toggle', 'reset', 'statement', 'hide', 'show'];
 const LEVELS = ['1', '2', '3', '4'];
 const { createElement: h, useState, useEffect } = wp.element;
@@ -54,8 +54,8 @@ const keyOf = (action: string): string => action.split(':').slice(0, 2).join(':'
 const useSchema = (): SchemaLists => {
   const [lists, setLists] = useState<SchemaLists>({ features: [], profiles: [] });
   useEffect(() => {
-    wp.apiFetch<SchemaLists>({ path: SCHEMA_PATH })
-      .then((schema) => setLists({ features: schema.features, profiles: schema.profiles }))
+    wp.apiFetch<SchemaLists>({ path: OPTIONS_PATH })
+      .then((options) => setLists({ features: options.features, profiles: options.profiles }))
       .catch(() => undefined);
   }, []);
   return lists;
@@ -114,7 +114,8 @@ const edit = ({ attributes, setAttributes }: EditProps): unknown => {
 wp.blocks.registerBlockType(NAME, { edit, save: () => null });
 
 wp.hooks.addFilter('blocks.registerBlockType', `${NAME}/navigation`, (settings, name) =>
-  name === 'core/navigation'
-    ? { ...settings, allowedBlocks: [...((settings.allowedBlocks as string[] | undefined) ?? []), NAME] }
+  name === 'core/navigation' && Array.isArray(settings.allowedBlocks) && !settings.allowedBlocks.includes(NAME)
+    ? { ...settings, allowedBlocks: [...(settings.allowedBlocks as string[]), NAME] }
     : settings
 );
+export {};

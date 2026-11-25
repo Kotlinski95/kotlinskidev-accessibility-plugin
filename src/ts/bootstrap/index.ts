@@ -13,6 +13,7 @@ const recovery = new URLSearchParams(location.search).get('ka11y');
 const root = document.documentElement;
 const runtime: RuntimeHandoff = (window.kotlinskidevA11yRuntime = window.kotlinskidevA11yRuntime || { s: [], c: [] });
 const SELECTOR = '[data-ka11y]:not(html),a[href^="#ka11y/"],a[href="#kotlinskidev-a11y"],.ka11y-open,#ka11y-root';
+runtime.q = SELECTOR;
 const unsafe = /url|set\(|expr|[;{}]|[^]{201}/i;
 
 if (recovery === 'off') {

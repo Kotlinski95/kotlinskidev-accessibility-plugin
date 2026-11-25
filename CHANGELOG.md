@@ -10,6 +10,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` dynamic block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`, and the `kotlinskidev_a11y_button_html` filter. Default trigger labels are new strings.
 - Launcher modes `floating`, `inline` and `hidden` in the server markup, `ka11y:open` and `ka11y:close` events, `aria-expanded` sync on open and toggle triggers, and focus return to the opener, the previously focused element, the launcher or the page when the launcher is hidden.
 
+### Fixed
+
+- Hash, `.ka11y-open` and custom selector triggers get `role="button"`, `aria-haspopup`, `aria-controls` and `aria-expanded`, and non-native ones get `tabindex="0"` plus Enter and Space handling that ignores key repeat, modifiers and handled events. A markup value such as `data-ka11y="constructor"` no longer aborts the loader.
+- Custom trigger selectors are rejected when brackets, parentheses or quotes are unbalanced or when they start with `*`, `html`, `body` or `:not(`, and are emitted as one forgiving `:is()` list so one invalid selector no longer disables the others.
+- The trigger block lists features and profiles through the new `GET kotlinskidev-a11y/v1/trigger-options` route for editors, wraps itself in a navigation list item inside the Navigation block, and no longer narrows the allowed blocks of Navigation.
+- Trigger buttons never render without an accessible name, and a statement button without a statement URL renders nothing.
+- With a hidden launcher, focus returns to the element focused before the panel opened before it falls back to the page.
+
 ## [0.2.0] - 2026-11-25
 
 ### Added

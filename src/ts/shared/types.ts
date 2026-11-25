@@ -202,6 +202,7 @@ export interface RuntimeHandoff {
   s: string[];
   c: ChunkRecord[] | ChunkSink;
   e?: (event: MouseEvent) => void;
+  q?: string;
 }
 
 export type CommandSource = 'early' | 'launcher' | 'hash' | 'shortcut' | 'api' | 'trigger' | 'url';

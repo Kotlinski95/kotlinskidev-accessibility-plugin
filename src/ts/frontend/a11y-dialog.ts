@@ -25,6 +25,8 @@ const usable = (element: HTMLElement): boolean =>
 export const createDialog = ({ panel, launcher, shadow, doc = document, onChange }: DialogOptions): Dialog => {
   let opened = false;
   let returnTarget: HTMLElement = launcher;
+  let previous: HTMLElement | null = null;
+  let lastFocused: HTMLElement | null = null;
 
   const focusables = (): HTMLElement[] => [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(isFocusable);
 
@@ -69,9 +71,15 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     doc.body.removeAttribute('tabindex');
   };
 
+  const rememberFocus = (event: FocusEvent): void => {
+    const target = event.target;
+    if (!opened && target instanceof HTMLElement && target !== doc.body && target !== shadow.host) lastFocused = target;
+  };
+
   const restoreFocus = (): void => {
     if (returnTarget === launcher ? launcherUsable() : usable(returnTarget)) returnTarget.focus();
     else if (launcherUsable()) launcher.focus();
+    else if (previous && usable(previous)) previous.focus();
     else focusBody();
   };
 
@@ -85,6 +93,7 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
   function open(opener?: HTMLElement | null): void {
     if (opened) return;
     opened = true;
+    previous = lightActive() ?? (lastFocused && usable(lastFocused) ? lastFocused : null);
     returnTarget = opener ?? lightActive() ?? launcher;
     render();
     doc.addEventListener('keydown', onKeydown);
@@ -108,11 +117,13 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
 
   const destroy = (): void => {
     doc.removeEventListener('keydown', onKeydown);
+    doc.removeEventListener('focusin', rememberFocus);
     launcher.removeEventListener('click', onLauncherClick);
   };
 
   launcher.setAttribute('aria-controls', panel.id);
   launcher.addEventListener('click', onLauncherClick);
+  doc.addEventListener('focusin', rememberFocus);
   render();
 
   return { open, close, toggle, isOpen: () => opened, destroy };

@@ -230,6 +230,50 @@ describe('loader triggers', () => {
       expect(event.defaultPrevented).toBe(true);
     });
 
+    it.each([{ repeat: true }, { ctrlKey: true }, { metaKey: true }, { altKey: true }])('ignores space with %o', (init) => {
+      setup(inlineConfig());
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<a href="#kotlinskidev-a11y" role="button">x</a>';
+      document.body.append(wrapper);
+      const target = wrapper.firstElementChild as HTMLElement;
+      const click = jest.fn();
+      target.addEventListener('click', click);
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true, ...init }));
+      expect(click).not.toHaveBeenCalled();
+    });
+
+    it('ignores space already handled by another listener', () => {
+      setup(inlineConfig());
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<a href="#kotlinskidev-a11y" role="button">x</a>';
+      document.body.append(wrapper);
+      const target = wrapper.firstElementChild as HTMLElement;
+      const click = jest.fn();
+      target.addEventListener('click', click);
+      target.addEventListener('keydown', (event) => event.preventDefault());
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
+      expect(click).not.toHaveBeenCalled();
+    });
+
+    it('activates a non-native custom trigger and a link trigger with Enter and Space once each', () => {
+      setup({ ...inlineConfig(), triggers: { s: '.menu', u: ['open'] } });
+      const item = spaceOn('<li class="menu" role="button">x</li>');
+      expect(item.click).toHaveBeenCalledTimes(1);
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = '<li class="menu" role="button">x</li><a href="#kotlinskidev-a11y" role="button">y</a>';
+      document.body.append(wrapper);
+      const click = jest.fn();
+      wrapper.addEventListener('click', click);
+      const enter = (index: number): KeyboardEvent => {
+        const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+        (wrapper.children[index] as HTMLElement).dispatchEvent(event);
+        return event;
+      };
+      expect(enter(0).defaultPrevented).toBe(true);
+      expect(enter(1).defaultPrevented).toBe(true);
+      expect(click).toHaveBeenCalledTimes(2);
+    });
+
     it('does nothing on a plain link or a non-trigger role button', () => {
       setup(inlineConfig());
       expect(spaceOn('<a href="#ka11y/open">x</a>').click).not.toHaveBeenCalled();
@@ -238,8 +282,11 @@ describe('loader triggers', () => {
   });
 
   describe('wireAria', () => {
+    const BASE = '[data-ka11y]:not(html),a[href^="#ka11y/"],a[href="#kotlinskidev-a11y"],.ka11y-open,#ka11y-root';
+
     const wire = (markup: string): Element => {
       document.body.innerHTML = markup;
+      window.kotlinskidevA11yRuntime = { s: [], c: [], q: BASE };
       wireAria(inlineConfig());
       return document.body.firstElementChild as Element;
     };
@@ -261,6 +308,33 @@ describe('loader triggers', () => {
 
     it.each(['feature:biggerText', 'profile:visionImpaired'])('wires aria-pressed for %s', (action) => {
       expect(wire(`<button data-ka11y="${action}">x</button>`).getAttribute('aria-pressed')).toBe('false');
+    });
+
+    it('does not throw on prototype-named actions', () => {
+      expect(() => wire('<button data-ka11y="constructor">x</button>')).not.toThrow();
+      expect(() => wire('<button data-ka11y="__proto__">x</button>')).not.toThrow();
+      expect(wire('<button data-ka11y="constructor">x</button>').getAttributeNames()).toEqual(['data-ka11y']);
+    });
+
+    it('wires hash links, class opens and custom selector elements', () => {
+      document.body.innerHTML =
+        '<a href="#kotlinskidev-a11y">a</a><span class="ka11y-open">b</span><ul><li class="menu"><a href="/x">c</a></li></ul><i class="menu">d</i>';
+      window.kotlinskidevA11yRuntime = { s: [], c: [], q: BASE };
+      wireAria({ ...inlineConfig(), triggers: { s: '.menu a, i.menu', u: ['open'] } });
+      const hash = document.body.children[0] as HTMLElement;
+      const klass = document.body.children[1] as HTMLElement;
+      const custom = document.querySelector('.menu a') as HTMLElement;
+      const plain = document.querySelector('i.menu') as HTMLElement;
+      [hash, klass, custom, plain].forEach((element) => {
+        expect(element.getAttribute('role')).toBe('button');
+        expect(element.getAttribute('aria-haspopup')).toBe('dialog');
+        expect(element.getAttribute('aria-controls')).toBe('ka11y-root');
+        expect(element.getAttribute('aria-expanded')).toBe('false');
+      });
+      expect(hash.hasAttribute('tabindex')).toBe(false);
+      expect(custom.hasAttribute('tabindex')).toBe(false);
+      expect(klass.getAttribute('tabindex')).toBe('0');
+      expect(plain.getAttribute('tabindex')).toBe('0');
     });
 
     it('never overwrites existing attributes and skips other actions', () => {

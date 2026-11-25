@@ -66,14 +66,18 @@ final class Button {
 			return '';
 		}
 
+		$statement_url = 'statement' === $action ? $this->statement_url( $settings ) : '';
+
+		if ( 'statement' === $action && '' === $statement_url ) {
+			return '';
+		}
+
 		$locale  = $this->resolver->current_locale();
 		$strings = $this->strings->for_locale( $locale );
 		$label   = $this->label( $args['label'], $action, $strings );
 		$classes = $this->classes( $args['class'] );
 		$style   = is_string( $args['style'] ) ? $args['style'] : '';
 		$icon    = $this->is_true( $args['show_icon'] ) ? Markup::ICON : '';
-
-		$statement_url = 'statement' === $action ? $this->statement_url( $settings ) : '';
 
 		if ( '' !== $statement_url ) {
 			$html = '<a href="' . esc_url( $statement_url ) . '"' . $this->common_attributes( $classes, $style ) . '>' . $icon . esc_html( $label ) . '</a>';
@@ -100,15 +104,14 @@ final class Button {
 		$name   = (string) ( $parsed['name'] ?? '' );
 		$key    = (string) ( $parsed['key'] ?? '' );
 
-		if ( 'feature' === $name ) {
-			return (string) ( $strings[ 'features.' . $key . '.label' ] ?? '' );
-		}
+		$default = match ( $name ) {
+			'feature' => $strings[ 'features.' . $key . '.label' ] ?? '',
+			'profile' => $strings[ 'profiles.' . $key ] ?? '',
+			default   => $strings[ self::LABEL_KEYS[ $name ] ?? 'triggerOpen' ] ?? '',
+		};
+		$default = is_string( $default ) ? trim( $default ) : '';
 
-		if ( 'profile' === $name ) {
-			return (string) ( $strings[ 'profiles.' . $key ] ?? '' );
-		}
-
-		return (string) ( $strings[ self::LABEL_KEYS[ $name ] ?? 'open' ] ?? '' );
+		return '' !== $default ? $default : $action;
 	}
 
 	private function classes( mixed $requested ): string {

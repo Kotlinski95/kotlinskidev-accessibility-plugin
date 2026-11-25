@@ -363,7 +363,7 @@ final class AssetsTest extends TestCase {
 		$this->printed_scripts = array();
 		$this->head();
 
-		$this->assertStringContainsString( '"t":".menu-a11y \\u003E a,#x"', $this->printed_scripts[0][0] );
+		$this->assertStringContainsString( '"t":":is(.menu-a11y \\u003E a,#x)"', $this->printed_scripts[0][0] );
 	}
 
 	public function test_device_rules_hide_triggers_on_hidden_devices_only(): void {

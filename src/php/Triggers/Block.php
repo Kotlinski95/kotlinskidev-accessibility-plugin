@@ -24,11 +24,11 @@ final class Block {
 		);
 	}
 
-	public function render( mixed $attributes = array() ): string {
+	public function render( mixed $attributes = array(), string $content = '', mixed $block = null ): string {
 		$attributes = is_array( $attributes ) ? $attributes : array();
 		$wrapper    = $this->wrapper( get_block_wrapper_attributes() );
 
-		return $this->button->render(
+		$html = $this->button->render(
 			array(
 				'action'    => $attributes['action'] ?? 'open',
 				'label'     => $attributes['label'] ?? '',
@@ -38,6 +38,14 @@ final class Block {
 				'style'     => $wrapper['style'],
 			)
 		);
+
+		return '' !== $html && $this->in_navigation( $block ) ? '<li class="wp-block-navigation-item">' . $html . '</li>' : $html;
+	}
+
+	private function in_navigation( mixed $block ): bool {
+		$context = is_object( $block ) && isset( $block->context ) && is_array( $block->context ) ? $block->context : array();
+
+		return array_key_exists( 'showSubmenuIcon', $context );
 	}
 
 	private function wrapper( string $attributes ): array {

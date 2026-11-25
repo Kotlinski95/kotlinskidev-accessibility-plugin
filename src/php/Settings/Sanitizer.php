@@ -12,7 +12,7 @@ final class Sanitizer {
 	private const SELECTOR_PATTERN    = '/^[A-Za-z0-9 _#.:,>+~*=\[\]"\'()^$|-]+$/';
 	private const SELECTOR_MAX_LENGTH = 200;
 	private const SELECTOR_LIST_MAX   = 300;
-	private const BARE_SELECTORS      = array( 'html', 'body', '*' );
+	private const BROAD_START         = '/^(?:\*|html(?![A-Za-z0-9_-])|body(?![A-Za-z0-9_-])|:not\()/i';
 	private const STRING_KEY_PATTERN  = '/^[A-Za-z0-9_.-]{1,80}$/';
 
 	public function sanitize( array $input ): array {
@@ -121,13 +121,42 @@ final class Sanitizer {
 			return $fallback;
 		}
 
+		if ( ! $this->balanced( $trimmed ) ) {
+			return $fallback;
+		}
+
 		foreach ( explode( ',', $trimmed ) as $item ) {
-			if ( in_array( strtolower( trim( $item ) ), self::BARE_SELECTORS, true ) ) {
+			if ( 1 === preg_match( self::BROAD_START, trim( $item ) ) ) {
 				return $fallback;
 			}
 		}
 
 		return $trimmed;
+	}
+
+	private function balanced( string $selector ): bool {
+		$closers = array(
+			'[' => ']',
+			'(' => ')',
+		);
+		$stack   = array();
+		$quote   = '';
+
+		foreach ( str_split( $selector ) as $char ) {
+			if ( '' !== $quote ) {
+				$quote = $char === $quote ? '' : $quote;
+			} elseif ( '"' === $char || "'" === $char ) {
+				$quote = $char;
+			} elseif ( isset( $closers[ $char ] ) ) {
+				$stack[] = $closers[ $char ];
+			} elseif ( ']' === $char || ')' === $char ) {
+				if ( array_pop( $stack ) !== $char ) {
+					return false;
+				}
+			}
+		}
+
+		return '' === $quote && array() === $stack;
 	}
 
 	private function selector_list( mixed $value, array $definition ): array {
