@@ -1,10 +1,12 @@
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { applyVersion, bumpVersion, findMismatch, readVersions } from './lib-version.mjs';
+import { applyVersion, bumpVersion, findMismatch, isPromotion, readVersions } from './lib-version.mjs';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const preIndex = args.indexOf('--pre');
+const pre = preIndex === -1 ? null : (args[preIndex + 1] ?? '');
 const level = ['--major', '--minor', '--patch'].find((flag) => args.includes(flag))?.slice(2) ?? 'patch';
 
 const versions = readVersions(root);
@@ -16,10 +18,17 @@ if (problem) {
 }
 
 const current = Object.values(versions)[0];
-const next = bumpVersion(current, level);
+let next;
+try {
+  next = bumpVersion(current, level, pre);
+} catch (error) {
+  console.error(error.message);
+  process.exit(1);
+}
+const promoted = isPromotion(current, next);
 const date = new Date().toISOString().slice(0, 10);
 
-console.log(`${dryRun ? 'Dry run: would bump' : 'Bumping'} ${current} -> ${next} (${level}) dated ${date}`);
+console.log(`${dryRun ? 'Dry run: would bump' : 'Bumping'} ${current} -> ${next} (${pre === null ? level : `${level}, ${pre}`}) dated ${date}`);
 console.log('Files: kotlinskidev-accessibility.php, package.json, package-lock.json, CHANGELOG.md');
 
 if (dryRun) {
@@ -27,7 +36,7 @@ if (dryRun) {
 }
 
 try {
-  applyVersion(root, next, date);
+  applyVersion(root, next, date, promoted ? `- Stable release of ${next}, promoted from ${current}.` : null);
 } catch (error) {
   console.error(error.message);
   process.exit(1);

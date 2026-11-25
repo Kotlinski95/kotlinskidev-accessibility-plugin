@@ -74,4 +74,73 @@ describe('release', () => {
     expect(changelog).toMatch(/## \[Unreleased\]\n\n## \[2\.0\.0\] - \d{4}-\d{2}-\d{2}\n\n### Added\n\n- Thing\./);
     expect(changelog).toContain('## [1.2.3] - 2026-01-01');
   });
+
+  it('accepts prerelease versions everywhere', () => {
+    const root = makeRoot({ header: '1.0.0-beta.1', pkg: '1.0.0-beta.1', changelog: '1.0.0-beta.1' });
+    expect(run(root, 'check-version.mjs', [], { GITHUB_REF_NAME: 'v1.0.0-beta.1' }).status).toBe(0);
+  });
+
+  it('rejects unknown prerelease labels', () => {
+    expect(run(makeRoot({ header: '1.0.0-alpha.1' }), 'check-version.mjs').status).toBe(1);
+  });
+
+  it('fails when the tag differs from a prerelease', () => {
+    const bad = run(makeRoot({ header: '1.0.0-beta.1', pkg: '1.0.0-beta.1', changelog: '1.0.0-beta.1' }), 'check-version.mjs', [], { GITHUB_REF_NAME: 'v1.0.0-beta.2' });
+    expect(bad.status).toBe(1);
+    expect(bad.stderr).toContain('git tag=1.0.0-beta.2');
+  });
+
+  it('reads a prerelease changelog heading', () => {
+    const root = makeRoot({ header: '1.0.0-beta.1', pkg: '1.0.0-beta.1', changelog: '1.0.0-beta.1' });
+    expect(run(root, 'check-version.mjs').status).toBe(0);
+  });
+});
+
+const planned = (current: string, args: string[]): { status: number | null; stdout: string; stderr: string } =>
+  run(makeRoot({ header: current, pkg: current, changelog: current }), 'release.mjs', ['--dry-run', ...args]);
+
+describe('release prereleases', () => {
+  it.each([
+    ['0.4.0', ['--major', '--pre', 'beta'], '0.4.0 -> 1.0.0-beta.1'],
+    ['0.4.0', ['--minor', '--pre', 'rc'], '0.4.0 -> 0.5.0-rc.1'],
+    ['0.4.0', ['--pre', 'beta'], '0.4.0 -> 0.4.1-beta.1'],
+    ['1.0.0-beta.1', ['--pre', 'beta'], '1.0.0-beta.1 -> 1.0.0-beta.2'],
+    ['1.0.0-beta.2', ['--pre', 'rc'], '1.0.0-beta.2 -> 1.0.0-rc.1'],
+    ['1.0.0-rc.1', ['--pre', 'rc'], '1.0.0-rc.1 -> 1.0.0-rc.2'],
+    ['1.0.0-beta.2', ['--major'], '1.0.0-beta.2 -> 1.0.0'],
+    ['1.0.0-rc.1', [], '1.0.0-rc.1 -> 1.0.0'],
+  ])('%s with %j plans %s', (current, args, expected) => {
+    const result = planned(current, args);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain(expected);
+  });
+
+  it('refuses to go from rc back to beta', () => {
+    const result = planned('1.0.0-rc.1', ['--pre', 'beta']);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('back to beta');
+  });
+
+  it('refuses unknown labels and a missing label', () => {
+    expect(planned('0.4.0', ['--pre', 'alpha']).status).toBe(1);
+    expect(planned('0.4.0', ['--pre']).status).toBe(1);
+  });
+
+  it.each(['constructor', 'toString', '__proto__', 'hasOwnProperty'])('refuses the inherited property name %s as a label', (label) => {
+    const result = planned('0.4.0', ['--pre', label]);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Unknown prerelease label');
+  });
+
+  it('cuts a beta, then promotes it with an empty unreleased section', () => {
+    const root = makeRoot();
+    expect(run(root, 'release.mjs', ['--major', '--pre', 'beta']).status).toBe(0);
+    expect(run(root, 'check-version.mjs').status).toBe(0);
+    expect(readFileSync(join(root, 'kotlinskidev-accessibility.php'), 'utf8')).toContain("'KOTLINSKIDEV_A11Y_VERSION', '2.0.0-beta.1'");
+    expect(run(root, 'release.mjs', ['--major']).status).toBe(0);
+    expect(run(root, 'check-version.mjs').status).toBe(0);
+    const changelog = readFileSync(join(root, 'CHANGELOG.md'), 'utf8');
+    expect(changelog).toMatch(/## \[2\.0\.0\] - \d{4}-\d{2}-\d{2}\n\n- Stable release of 2\.0\.0, promoted from 2\.0\.0-beta\.1\./);
+    expect(changelog).toContain('## [2.0.0-beta.1]');
+  });
 });

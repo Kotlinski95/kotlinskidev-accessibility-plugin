@@ -1,10 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const SEMVER = /^\d+\.\d+\.\d+$/;
+const SEMVER = /^\d+\.\d+\.\d+(-(beta|rc)\.\d+)?$/;
+const PARTS = /^(\d+)\.(\d+)\.(\d+)(?:-(beta|rc)\.(\d+))?$/;
+const PRE_ORDER = { beta: 0, rc: 1 };
 const HEADER_PATTERN = /^(\s*\*\s*Version:\s*)(\S+)/m;
 const CONSTANT_PATTERN = /(define\(\s*'KOTLINSKIDEV_A11Y_VERSION',\s*')([^']+)(')/;
-const CHANGELOG_HEADING = /^## \[(\d+\.\d+\.\d+)\]/m;
+const CHANGELOG_HEADING = /^## \[(\d+\.\d+\.\d+(?:-(?:beta|rc)\.\d+)?)\]/m;
 
 export const files = (root) => ({
   plugin: join(root, 'kotlinskidev-accessibility.php'),
@@ -44,18 +46,69 @@ export const findMismatch = (versions) => {
   return null;
 };
 
-export const bumpVersion = (current, level) => {
-  const [major, minor, patch] = current.split('.').map(Number);
-  if (level === 'major') {
-    return `${major + 1}.0.0`;
+export const parseVersion = (version) => {
+  const match = PARTS.exec(version);
+  if (!match) {
+    throw new Error(`Not a release version: ${version}`);
   }
-  if (level === 'minor') {
-    return `${major}.${minor + 1}.0`;
-  }
-  return `${major}.${minor}.${patch + 1}`;
+  const [, major, minor, patch, label, number] = match;
+  return { major: Number(major), minor: Number(minor), patch: Number(patch), label: label ?? null, number: number === undefined ? null : Number(number) };
 };
 
-export const releaseChangelog = (changelog, version, date) => {
+const baseOf = ({ major, minor, patch }) => `${major}.${minor}.${patch}`;
+
+export const bumpVersion = (current, level, pre = null) => {
+  const parts = parseVersion(current);
+  if (pre !== null && !Object.hasOwn(PRE_ORDER, pre)) {
+    throw new Error(`Unknown prerelease label: ${pre}`);
+  }
+  if (parts.label !== null) {
+    if (pre === null) {
+      return baseOf(parts);
+    }
+    if (pre === parts.label) {
+      return `${baseOf(parts)}-${pre}.${parts.number + 1}`;
+    }
+    if (PRE_ORDER[pre] < PRE_ORDER[parts.label]) {
+      throw new Error(`Cannot go from ${parts.label} back to ${pre}`);
+    }
+    return `${baseOf(parts)}-${pre}.1`;
+  }
+  const { major, minor, patch } = parts;
+  let next = `${major}.${minor}.${patch + 1}`;
+  if (level === 'major') {
+    next = `${major + 1}.0.0`;
+  } else if (level === 'minor') {
+    next = `${major}.${minor + 1}.0`;
+  }
+  return pre === null ? next : `${next}-${pre}.1`;
+};
+
+export const isPromotion = (current, next) => {
+  const from = parseVersion(current);
+  return from.label !== null && baseOf(from) === next;
+};
+
+export const extractReleaseNotes = (changelog, version) => {
+  if (!SEMVER.test(version)) {
+    throw new Error(`Not a release version: ${version}`);
+  }
+  const marker = `## [${version}]`;
+  const lines = changelog.split('\n');
+  const start = lines.findIndex((line) => line.startsWith(marker));
+  if (start === -1) {
+    throw new Error(`CHANGELOG.md has no section for ${version}`);
+  }
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => line.startsWith('## ['));
+  const body = (end === -1 ? rest : rest.slice(0, end)).join('\n').trim();
+  if (body === '') {
+    throw new Error(`CHANGELOG.md section for ${version} is empty`);
+  }
+  return body;
+};
+
+export const releaseChangelog = (changelog, version, date, emptyFallback = null) => {
   const marker = '## [Unreleased]';
   const start = changelog.indexOf(marker);
   if (start === -1) {
@@ -66,13 +119,14 @@ export const releaseChangelog = (changelog, version, date) => {
   const nextHeading = rest.search(/^## \[/m);
   const body = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
   const tail = nextHeading === -1 ? '' : rest.slice(nextHeading);
-  if (body.trim() === '') {
+  const text = body.trim() === '' && emptyFallback !== null ? emptyFallback : body.trim();
+  if (text === '') {
     throw new Error('[Unreleased] section is empty');
   }
-  return `${changelog.slice(0, start)}${marker}\n\n## [${version}] - ${date}\n\n${body.trim()}\n\n${tail}`.replace(/\n+$/, '\n');
+  return `${changelog.slice(0, start)}${marker}\n\n## [${version}] - ${date}\n\n${text}\n\n${tail}`.replace(/\n+$/, '\n');
 };
 
-export const applyVersion = (root, version, date) => {
+export const applyVersion = (root, version, date, emptyFallback = null) => {
   const paths = files(root);
   const plugin = readFileSync(paths.plugin, 'utf8')
     .replace(HEADER_PATTERN, `$1${version}`)
@@ -84,7 +138,7 @@ export const applyVersion = (root, version, date) => {
   if (lock.packages?.['']) {
     lock.packages[''].version = version;
   }
-  const changelog = releaseChangelog(readFileSync(paths.changelog, 'utf8'), version, date);
+  const changelog = releaseChangelog(readFileSync(paths.changelog, 'utf8'), version, date, emptyFallback);
   writeFileSync(paths.plugin, plugin);
   writeFileSync(paths.pkg, `${JSON.stringify(pkg, null, 2)}\n`);
   writeFileSync(paths.lock, `${JSON.stringify(lock, null, 2)}\n`);
