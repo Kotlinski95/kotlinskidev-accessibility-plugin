@@ -47,4 +47,21 @@ test.describe('admin settings page', () => {
     const blocking = results.violations.filter((violation) => BLOCKING_IMPACTS.includes(violation.impact ?? ''));
     expect(blocking.map((violation) => `${violation.id}: ${violation.help}`)).toEqual([]);
   });
+
+  test('performance presets fill the fields and editing flips to Custom', async ({ page }) => {
+    await page.goto(SETTINGS_PAGE);
+    await page.getByRole('tab', { name: 'Performance' }).click();
+    const panel = page.getByRole('tabpanel', { name: 'Performance' });
+    await expect(panel.getByLabel('Performance preset').locator('option:checked')).toHaveText('Recommended');
+    await expect(panel.getByLabel('Script loading').locator('option:checked')).toHaveText('On first interaction');
+
+    await panel.getByLabel('Performance preset').selectOption({ label: 'Compatibility' });
+    const refreshed = page.getByRole('tabpanel', { name: 'Performance' });
+    await expect(refreshed.getByLabel('Script loading').locator('option:checked')).toHaveText('Immediately');
+    await expect(refreshed.getByLabel('Page adjustment styles').locator('option:checked')).toHaveText('Linked stylesheet');
+    await expect(refreshed.getByLabel('Skip downloads on devices where the widget is hidden')).not.toBeChecked();
+
+    await refreshed.getByLabel('Script loading').selectOption({ label: 'On first interaction' });
+    await expect(page.getByRole('tabpanel', { name: 'Performance' }).getByLabel('Performance preset').locator('option:checked')).toHaveText('Custom');
+  });
 });

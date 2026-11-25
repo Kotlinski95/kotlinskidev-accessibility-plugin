@@ -18,11 +18,31 @@ export interface SchemaPayload {
   defaults: SettingsTree;
   features: string[];
   profiles: string[];
+  presets: Record<string, Record<string, unknown>>;
 }
 
 export interface LocaleOption {
   code: string;
   name: string;
+}
+
+export interface ManifestEntry {
+  file: string;
+  ver: string;
+  raw: number;
+  gzip: number;
+}
+
+export interface CostManifest {
+  scripts: Record<string, ManifestEntry>;
+  styles: Record<string, ManifestEntry>;
+  inline: Record<string, ManifestEntry>;
+}
+
+export interface CostData {
+  manifest: CostManifest;
+  panelData: number;
+  config: number;
 }
 
 export interface AdminConfig {
@@ -33,6 +53,7 @@ export interface AdminConfig {
   profiles: string[];
   features: string[];
   version: string;
+  cost: CostData;
 }
 
 export interface MediaSelection {

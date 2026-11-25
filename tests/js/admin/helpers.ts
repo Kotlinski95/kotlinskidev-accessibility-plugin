@@ -35,6 +35,13 @@ export const FEATURES = [
 
 export const PROFILES = ['visionImpaired', 'seizureSafe'];
 
+export const OPTIMIZERS = ['cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup'];
+
+export const samplePresets = (): SchemaPayload['presets'] => ({
+  recommended: { strategy: 'interaction', position: 'footer', fetchPriority: 'low', prefetch: 'hover', pageCss: 'lazy', deviceSkip: true, optOut: [] },
+  compatibility: { strategy: 'eager', position: 'footer', fetchPriority: 'auto', prefetch: 'none', pageCss: 'linked', deviceSkip: false, optOut: OPTIMIZERS },
+});
+
 const POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left'];
 const DEVICES = ['desktop', 'tablet', 'mobile'];
 
@@ -111,9 +118,16 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['hideToolbar.days'] = definition('array', 'int_list', [1, 7, 30]);
   defs.labels = definition('object', 'label_map', {});
   defs['advanced.excludeSelectors'] = definition('string', 'text', '#wpadminbar');
+  defs['performance.preset'] = definition('string', 'enum', 'recommended', { enum: ['recommended', 'compatibility', 'custom'] });
   defs['performance.strategy'] = definition('string', 'enum', 'interaction', {
     enum: ['interaction', 'idle', 'defer', 'async', 'eager'],
   });
+  defs['performance.position'] = definition('string', 'enum', 'footer', { enum: ['head', 'footer'] });
+  defs['performance.fetchPriority'] = definition('string', 'enum', 'low', { enum: ['low', 'auto', 'high'] });
+  defs['performance.prefetch'] = definition('string', 'enum', 'hover', { enum: ['none', 'hover', 'idle'] });
+  defs['performance.pageCss'] = definition('string', 'enum', 'lazy', { enum: ['lazy', 'linked', 'inline'] });
+  defs['performance.deviceSkip'] = definition('boolean', 'bool', true);
+  defs['performance.optOut'] = definition('array', 'enum_list', [], { enum: OPTIMIZERS });
   return defs;
 };
 
@@ -129,6 +143,27 @@ export const sampleSchema = (): SchemaPayload => ({
   defaults: sampleDefaults(),
   features: FEATURES,
   profiles: PROFILES,
+  presets: samplePresets(),
+});
+
+export const sampleCost = (): AdminConfig['cost'] => ({
+  manifest: {
+    scripts: {
+      loader: { file: 'loader.js', ver: '1', raw: 3000, gzip: 1000 },
+      kernel: { file: 'kernel.js', ver: '1', raw: 6000, gzip: 2000 },
+      panel: { file: 'panel.js', ver: '1', raw: 9000, gzip: 3000 },
+      content: { file: 'content.js', ver: '1', raw: 3000, gzip: 1000 },
+      color: { file: 'color.js', ver: '1', raw: 1500, gzip: 500 },
+      orientation: { file: 'orientation.js', ver: '1', raw: 600, gzip: 200 },
+    },
+    styles: {
+      page: { file: 'frontend.css', ver: '1', raw: 6000, gzip: 1500 },
+      launcher: { file: 'launcher.css', ver: '1', raw: 1200, gzip: 400 },
+    },
+    inline: { bootstrap: { file: 'bootstrap.js', ver: '1', raw: 600, gzip: 300 } },
+  },
+  panelData: 2500,
+  config: 800,
 });
 
 export const sampleConfig = (): AdminConfig => ({
@@ -150,6 +185,7 @@ export const sampleConfig = (): AdminConfig => ({
   profiles: PROFILES,
   features: FEATURES,
   version: '0.1.0',
+  cost: sampleCost(),
 });
 
 export const fakeApi = (overrides: Partial<Api> = {}): Api => ({

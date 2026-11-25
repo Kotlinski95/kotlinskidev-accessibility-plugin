@@ -7,7 +7,7 @@ import { createSelectField, enumChoices } from '../fields/select';
 import { createTextField } from '../fields/text';
 import { createTextListField } from '../fields/text-list';
 import { createToggleField } from '../fields/toggle';
-import { loadStrategyLabel, storageModeLabel } from '../labels';
+import { storageModeLabel } from '../labels';
 
 export const buildBehaviorPanel = (ctx: FormContext): HTMLElement =>
   h(
@@ -56,11 +56,6 @@ export const buildBehaviorPanel = (ctx: FormContext): HTMLElement =>
         path: 'advanced.excludeSelectors',
         label: __('Exclude selectors', 'kotlinskidev-accessibility'),
         help: __('Elements matching these selectors are left untouched by the adjustments.', 'kotlinskidev-accessibility'),
-      }),
-      createSelectField(ctx, {
-        path: 'performance.strategy',
-        label: __('Script loading', 'kotlinskidev-accessibility'),
-        choices: enumChoices(ctx, 'performance.strategy', loadStrategyLabel),
       })
     )
   );

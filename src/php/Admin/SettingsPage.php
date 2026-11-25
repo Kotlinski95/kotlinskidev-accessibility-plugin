@@ -3,8 +3,12 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Admin;
 
+use Kotlinskidev\A11y\Frontend\InlineConfig;
+use Kotlinskidev\A11y\Frontend\Manifest;
+use Kotlinskidev\A11y\Frontend\PanelData;
 use Kotlinskidev\A11y\I18n\Strings;
 use Kotlinskidev\A11y\Rest\SettingsController;
+use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Support\Json;
 
@@ -100,7 +104,31 @@ final class SettingsPage {
 			'profiles' => Schema::profile_keys(),
 			'features' => Schema::feature_keys(),
 			'version'  => KOTLINSKIDEV_A11Y_VERSION,
+			'cost'     => $this->cost(),
 		);
+	}
+
+	public function cost(): array {
+		$repository = new Repository();
+		$panel_data = new PanelData( $repository, $this->strings );
+
+		return array(
+			'manifest'  => Manifest::data(),
+			'panelData' => $this->compressed_size( $panel_data->encode( $panel_data->payload( get_locale() ) ) ),
+			'config'    => $this->compressed_size( ( new InlineConfig( $repository, null, null, $panel_data ) )->script( $repository->get() ) ),
+		);
+	}
+
+	private function compressed_size( string $body ): int {
+		if ( function_exists( 'gzencode' ) ) {
+			$compressed = gzencode( $body );
+
+			if ( is_string( $compressed ) ) {
+				return strlen( $compressed );
+			}
+		}
+
+		return (int) round( strlen( $body ) / 3 );
 	}
 
 	public function locales(): array {

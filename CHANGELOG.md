@@ -7,6 +7,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Admin notice for sites migrated from v0.1 (custom preset, defer or idle, linked page CSS) recommending the Recommended performance preset, with a nonce-checked per-user dismissal.
 - E2E: hostile fixture theme and cookie-driven theme switch (mu-plugin), every page invariant runs on `stock` and `hostile`, pairwise feature-level combinations, hostile-only checks, and a Pixel 5 `@smoke` project. See `docs/TESTING.md`.
 - CI: PHPStan level 8 (`composer run analyse`), WordPress Plugin Check on the packaged plugin, smoke E2E on pull requests, nightly WordPress and PHP matrix with Firefox and WebKit smoke, CodeQL and Dependabot.
 - Settings schema v2: `performance.*` (preset, strategy, position, fetch priority, prefetch, page CSS, device skip, optimizer opt-out) with Recommended and Compatibility presets, `visibility.mode` with include lists, a v1 migration that maps `advanced.loadStrategy`, and `presets` in `GET /schema`.

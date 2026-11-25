@@ -7,9 +7,13 @@ use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use Kotlinskidev\A11y\Admin\SettingsPage;
+use Kotlinskidev\A11y\Frontend\Manifest;
+use Kotlinskidev\A11y\Tests\Frontend\FrontendEnvironment;
 use Kotlinskidev\A11y\Tests\TestCase;
 
 final class SettingsPageTest extends TestCase {
+
+	use FrontendEnvironment;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -31,7 +35,8 @@ final class SettingsPageTest extends TestCase {
 				'current_user_can'      => true,
 			)
 		);
-		Functions\when( 'get_option' )->justReturn( array() );
+		$this->frontend_environment();
+		Manifest::flush();
 		Functions\when( 'wp_enqueue_media' )->justReturn();
 	}
 
@@ -96,6 +101,15 @@ final class SettingsPageTest extends TestCase {
 		$this->assertStringStartsWith( 'kotlinskidev-a11y-admin|before|window.kotlinskidevA11yAdmin = ', $inline );
 	}
 
+	public function test_config_carries_cost_data(): void {
+		$cost = ( new SettingsPage() )->config()['cost'];
+
+		$this->assertSame( array( 'manifest', 'panelData', 'config' ), array_keys( $cost ) );
+		$this->assertArrayHasKey( 'scripts', $cost['manifest'] );
+		$this->assertGreaterThan( 0, $cost['panelData'] );
+		$this->assertGreaterThan( 0, $cost['config'] );
+	}
+
 	public function test_config_shape(): void {
 		$config = ( new SettingsPage() )->config();
 
@@ -117,7 +131,7 @@ final class SettingsPageTest extends TestCase {
 	}
 
 	public function test_config_strings_are_untranslated_override_defaults(): void {
-		Functions\when( 'get_option' )->justReturn( array( 'labels' => array( 'en_US' => array( 'panelTitle' => 'Overridden' ) ) ) );
+		$this->store_settings( array( 'labels' => array( 'en_US' => array( 'panelTitle' => 'Overridden' ) ) ) );
 
 		$config = ( new SettingsPage() )->config();
 

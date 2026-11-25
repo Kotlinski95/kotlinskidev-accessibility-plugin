@@ -13,9 +13,9 @@ describe('form renderer', () => {
     const form = renderForm(ctx);
     document.body.replaceChildren(form.element);
     const ids = panelSpecs().map((spec) => spec.id);
-    expect(ids).toEqual(['general', 'features', 'profiles', 'visibility', 'appearance', 'languages', 'behavior', 'import-export']);
-    expect(form.buttons).toHaveLength(8);
-    expect(form.element.querySelectorAll(':scope > [role="tabpanel"]')).toHaveLength(8);
+    expect(ids).toEqual(['general', 'features', 'profiles', 'visibility', 'appearance', 'languages', 'behavior', 'performance', 'import-export']);
+    expect(form.buttons).toHaveLength(9);
+    expect(form.element.querySelectorAll(':scope > [role="tabpanel"]')).toHaveLength(9);
     for (const spec of panelSpecs()) {
       const panel = spec.build(ctx);
       expect(panel.children.length).toBeGreaterThan(0);

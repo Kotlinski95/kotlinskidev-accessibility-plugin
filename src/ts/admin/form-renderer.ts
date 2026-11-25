@@ -8,6 +8,7 @@ import { buildFeaturesPanel } from './panels/features';
 import { buildGeneralPanel } from './panels/general';
 import { buildImportExportPanel } from './panels/import-export';
 import { buildLanguagesPanel } from './panels/languages';
+import { buildPerformancePanel } from './panels/performance';
 import { buildProfilesPanel } from './panels/profiles';
 import { buildVisibilityPanel } from './panels/visibility';
 
@@ -25,6 +26,7 @@ export const panelSpecs = (): PanelSpec[] => [
   { id: 'appearance', label: __('Appearance', 'kotlinskidev-accessibility'), build: buildAppearancePanel },
   { id: 'languages', label: __('Languages', 'kotlinskidev-accessibility'), build: buildLanguagesPanel },
   { id: 'behavior', label: __('Behavior', 'kotlinskidev-accessibility'), build: buildBehaviorPanel },
+  { id: 'performance', label: __('Performance', 'kotlinskidev-accessibility'), build: buildPerformancePanel },
   { id: 'import-export', label: __('Import / Export', 'kotlinskidev-accessibility'), build: buildImportExportPanel },
 ];
 

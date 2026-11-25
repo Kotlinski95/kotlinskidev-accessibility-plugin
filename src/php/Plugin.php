@@ -39,6 +39,7 @@ final class Plugin {
 			( new Admin\SettingsPage() )->register();
 			( new Admin\AltTextPage() )->register();
 			( new Admin\DashboardWidget( $counter ) )->register();
+			( new Admin\PerformanceNotice() )->register();
 		}
 
 		if ( self::should_check_updates() ) {

@@ -67,14 +67,75 @@ export const storageModeLabel = (mode: string): string =>
     mode
   );
 
-export const loadStrategyLabel = (strategy: string): string =>
+export const presetLabel = (preset: string): string =>
+  lookup(
+    {
+      recommended: __('Recommended', 'kotlinskidev-accessibility'),
+      compatibility: __('Compatibility', 'kotlinskidev-accessibility'),
+      custom: __('Custom', 'kotlinskidev-accessibility'),
+    },
+    preset
+  );
+
+export const strategyLabel = (strategy: string): string =>
   lookup(
     {
       interaction: __('On first interaction', 'kotlinskidev-accessibility'),
-      defer: __('Deferred script', 'kotlinskidev-accessibility'),
       idle: __('When the browser is idle', 'kotlinskidev-accessibility'),
+      defer: __('Deferred script', 'kotlinskidev-accessibility'),
       async: __('Asynchronous script', 'kotlinskidev-accessibility'),
       eager: __('Immediately', 'kotlinskidev-accessibility'),
     },
     strategy
+  );
+
+export const scriptPositionLabel = (position: string): string =>
+  lookup(
+    {
+      head: __('In the head', 'kotlinskidev-accessibility'),
+      footer: __('In the footer', 'kotlinskidev-accessibility'),
+    },
+    position
+  );
+
+export const fetchPriorityLabel = (priority: string): string =>
+  lookup(
+    {
+      low: __('Low', 'kotlinskidev-accessibility'),
+      auto: __('Automatic', 'kotlinskidev-accessibility'),
+      high: __('High', 'kotlinskidev-accessibility'),
+    },
+    priority
+  );
+
+export const prefetchLabel = (prefetch: string): string =>
+  lookup(
+    {
+      none: __('Never', 'kotlinskidev-accessibility'),
+      hover: __('When the pointer nears the button', 'kotlinskidev-accessibility'),
+      idle: __('When the browser is idle', 'kotlinskidev-accessibility'),
+    },
+    prefetch
+  );
+
+export const pageCssLabel = (mode: string): string =>
+  lookup(
+    {
+      lazy: __('Load when the panel opens', 'kotlinskidev-accessibility'),
+      linked: __('Linked stylesheet', 'kotlinskidev-accessibility'),
+      inline: __('Inline in the page', 'kotlinskidev-accessibility'),
+    },
+    mode
+  );
+
+export const optOutLabel = (optimizer: string): string =>
+  lookup(
+    {
+      cloudflare: __('Cloudflare Rocket Loader', 'kotlinskidev-accessibility'),
+      'wp-rocket': __('WP Rocket', 'kotlinskidev-accessibility'),
+      litespeed: __('LiteSpeed Cache', 'kotlinskidev-accessibility'),
+      'jetpack-boost': __('Jetpack Boost', 'kotlinskidev-accessibility'),
+      'asset-cleanup': __('Asset CleanUp', 'kotlinskidev-accessibility'),
+    },
+    optimizer
   );
