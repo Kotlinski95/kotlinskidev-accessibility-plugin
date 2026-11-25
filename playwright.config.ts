@@ -21,7 +21,15 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'chromium', testIgnore: ['**/visual.spec.ts'], use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'visual',
+      testMatch: ['**/visual.spec.ts'],
+      grep: /@visual/,
+      snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{testFileName}/{arg}{ext}',
+      expect: { toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 } },
+      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
+    },
     {
       name: 'mobile-smoke',
       testMatch: ['**/invariants.spec.ts'],

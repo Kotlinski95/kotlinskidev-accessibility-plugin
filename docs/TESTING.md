@@ -36,6 +36,7 @@ The mu-plugin does nothing unless `WP_ENVIRONMENT_TYPE` is `local` (wp-env sets 
 | --- | --- |
 | `chromium` | Every spec on desktop Chrome |
 | `mobile-smoke` | `invariants.spec.ts` on Pixel 5, only tests tagged `@smoke` |
+| `visual` | `visual.spec.ts` only, tests tagged `@visual`. Never part of `chromium`, the default run or CI |
 
 Specs that loop over `FIXTURE_NAMES` wrap their tests in `test.describe('[stock]')` and `test.describe('[hostile]')`, each with `test.use({ fixture })`.
 
@@ -102,3 +103,21 @@ Flake notes: the median test is the only timing-sensitive one. If it flakes on a
 Known product bug: `wireAria` in `src/ts/loader/triggers.ts` selects only `[data-ka11y]:not(html),a[href^="#ka11y/"]`, so `a[href="#kotlinskidev-a11y"]`, `.ka11y-open` and custom selector elements get no `role`, `aria-expanded` or `aria-controls`, and Space does nothing on the links among them. The three affected `wires ARIA and activates by Space` tests are wrapped in `test.fail` through `KNOWN_PRODUCT_BUGS`; remove those ids from the set when the loader is fixed.
 
 Flake note: the loader queue drops a `toggle` from the same source within 50 ms of the previous one (`isDoubleToggle` in `src/ts/loader/queue.ts`), so the dialog cases wait `TOGGLE_GUARD_MS` (80 ms) before each activation. The triggers `@smoke` subset takes about 21 s of the whole `@smoke` run.
+
+### Panel UI and visual specs
+
+`panel-ui.spec.ts` covers the Phase 5 panel: non-modal behaviour, focus and Escape rules, tiles (pressed state, check badge, level dots, described state), steppers for `biggerText` and `lineHeight` (bounds, Enter and Space), the skip select, reset status and focus, the language switcher including an RTL locale, the hide toolbar chip, `panel.sections`, `panel.columns` and `panel.languageSwitcher` set through the settings helper, side docking for `bottom-left`, `bottom-right` and `middle-right`, the 390 by 844 bottom sheet, reduced motion, forced colors, 320 by 640 overflow, 44 px targets and axe in light, dark, sheet and RTL. `@smoke` marks one case per area and adds about 4 s.
+
+A fifth mu-plugin, `tests/e2e/fixtures/mu-plugins/ka11y-fixture-locale.php`, does nothing unless `WP_ENVIRONMENT_TYPE` is `local`, `KOTLINSKIDEV_A11Y_E2E` is true and the cookie `ka11y_fixture_locale` holds a locale such as `en_US`, `pl_PL` or `he_IL`. It filters `kotlinskidev_a11y_current_locale` to that value, adds `en_US`, `pl_PL` and `he_IL` to `kotlinskidev_a11y_known_locales` (so the language select always lists three languages) and pins their labels through `kotlinskidev_a11y_locale_label`. Specs set it with `setFixtureLocale` from `tests/e2e/support/locale.ts`. A saved locale is applied when the panel chunk mounts, so a test that reloads must open the panel before asserting `lang` or `dir` on the host.
+
+`visual.spec.ts` takes `toHaveScreenshot` snapshots of the panel element (animations disabled, `maxDiffPixelRatio` 0.01): desktop 1280 by 800 and mobile 390 by 844, light and dark, `en_US` and `pl_PL`; `he_IL` light desktop and dark mobile; forced colors; one active-state panel; and the launcher in light, dark and forced colors. The skip select is masked because its options depend on page landmarks.
+
+Snapshots depend on the platform fonts and rasteriser, so the `visual` project writes them to `tests/e2e/__screenshots__/{platform}/visual.spec.ts/` (`darwin`, `linux`, `win32`) and CI never compares them.
+
+```bash
+npm run wp-env:start
+npx playwright test --project=visual                      # compare against the baselines of this platform
+npx playwright test --project=visual --update-snapshots   # write or replace them
+```
+
+Review the changed PNGs before committing a new baseline. Generate the `linux` set inside the Playwright Docker image when it is needed.
