@@ -95,10 +95,12 @@ const installEventLog = async (page: Page): Promise<void> => {
   });
 };
 
+const BROWSER_NOISE = /^Prefetch request denied: URL must be secure/;
+
 const collectErrors = (page: Page): string[] => {
   const errors: string[] = [];
   page.on('console', (message) => {
-    if (message.type() === 'error') errors.push(message.text());
+    if (message.type() === 'error' && !BROWSER_NOISE.test(message.text())) errors.push(message.text());
   });
   page.on('pageerror', (error) => errors.push(error.message));
   return errors;

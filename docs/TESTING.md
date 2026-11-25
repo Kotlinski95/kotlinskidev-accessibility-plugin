@@ -15,6 +15,8 @@ Plugin Check runs without the `plugin_updater` and `plugin_readme` checks becaus
 
 Nightly sets the WordPress and PHP version through a generated `.wp-env.override.json` (git-ignored, not packaged). Cross-browser jobs need `firefox` and `webkit` projects in `playwright.config.ts`.
 
+WebKit notes: it does not paint or run `requestAnimationFrame` while a deferred script is pending, so Playwright's visible and stable check never resolves for a test that holds `loader.js`; those tests click with `force: true`. WebKit logs `Prefetch request denied: URL must be secure (HTTPS)` for `rel=prefetch` over plain HTTP, which `collectErrors` in `tests/e2e/triggers.spec.ts` ignores. The Lighthouse job sets `CHROME_PATH` to the runner's Chrome because `lhci` with a `puppeteerScript` otherwise fails its healthcheck with `Chrome installation not found`.
+
 Run PHPStan locally with `composer run analyse`. Run Plugin Check locally by packaging the plugin as in `release.yml`, mounting the folder in a throwaway wp-env, then `wp plugin install plugin-check --activate` and `wp plugin check kotlinskidev-accessibility`.
 
 ## End-to-end fixtures and projects

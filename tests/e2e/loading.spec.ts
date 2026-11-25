@@ -94,7 +94,7 @@ test.describe('open triggers before the loader runs', () => {
   test('a launcher click opens the panel once the loader is released @smoke', async ({ page }) => {
     const release = await holdLoader(page);
     await page.goto('/', { waitUntil: 'commit' });
-    await widgetFor(page).launcher.click();
+    await widgetFor(page).launcher.click({ force: true });
     release();
     await waitForPanel(widgetFor(page));
   });

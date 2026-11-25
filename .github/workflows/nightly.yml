@@ -123,6 +123,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run wp-env:start
+      - name: Locate Chrome
+        run: echo "CHROME_PATH=$(command -v google-chrome || command -v chromium || command -v chromium-browser)" >> "$GITHUB_ENV"
       - name: Widget off
         run: |
           npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" off
