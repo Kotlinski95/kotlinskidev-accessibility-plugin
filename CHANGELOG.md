@@ -5,8 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Settings core, schema v5: settings resolve in layers (defaults, network defaults, site values, locks) and the site option stores only values that differ from the defaults below it. Locks come from `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, the `kotlinskidev_a11y_locked_settings` filter or network locks; invalid locks are dropped.
+- Versioned export envelope and import with a version check. `POST /settings`, `/import` and `/reset` take `dry_run` and return the changes, `/reset` takes `paths`, locked paths return 409, bodies over 262144 B return 413, and `/schema` lists `effectiveDefaults`, `locked` and `sources`. `maintenance.keepDataOnUninstall` is added to the schema.
+- Golden payload tests prove the inline config, panel data, bootstrap prefix and token CSS are byte-identical to v0.4.0, and a CI guard fails pull requests that touch front-end source unless they carry the `frontend-change` label.
+- A change to locks or network defaults purges page caches, detected by a fingerprint checked on admin requests and cron.
+
 ### Fixed
 
+- Sparse storage no longer flips a site value that equals the plugin default but differs from a network default, saving keeps the stored value of locked paths, and `POST /import` of a version-less tree is no longer treated as v1. `/reset` rejects empty `paths` and oversized bodies, `dry_run` must be a boolean, and a real import with conflicting locked paths returns 409.
 - Language switcher returns the shipped translation for locales without an installed core language pack: `Strings::for_locale()` loads `languages/kotlinskidev-accessibility-{locale}.mo` when `switch_to_locale()` does nothing, then restores the previous text domain.
 
 ## [0.4.0] - 2026-11-25

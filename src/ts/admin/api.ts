@@ -27,7 +27,7 @@ export const createApi = ({ restRoot, nonce }: Pick<AdminConfig, 'restRoot' | 'n
     saveSettings: (settings) => request<SettingsTree>('settings', 'POST', settings),
     getSchema: () => request<SchemaPayload>('schema', 'GET'),
     exportSettings: () => request<SettingsTree>('export', 'GET'),
-    importSettings: (settings) => request<SettingsTree>('import', 'POST', settings),
+    importSettings: async (settings) => (await request<{ settings: SettingsTree }>('import', 'POST', settings)).settings,
     resetSettings: () => request<SettingsTree>('reset', 'POST', {}),
   };
 };

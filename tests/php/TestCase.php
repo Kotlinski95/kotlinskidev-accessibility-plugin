@@ -16,11 +16,13 @@ abstract class TestCase extends PhpUnitTestCase {
 		parent::setUp();
 		Monkey\setUp();
 		Repository::flush();
+		Repository::reset_request_state();
 		Invalidation::reset_request_state();
 		Visibility::reset_request_state();
 
 		Functions\stubs(
 			array(
+				'is_multisite'        => false,
 				'sanitize_text_field' => static fn ( $value ): string => trim( strip_tags( (string) $value ) ),
 				'sanitize_key'        => static fn ( $value ): string => strtolower( (string) preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $value ) ),
 				'wp_strip_all_tags'   => static fn ( $value ): string => trim( strip_tags( (string) $value ) ),
@@ -33,6 +35,7 @@ abstract class TestCase extends PhpUnitTestCase {
 	protected function tearDown(): void {
 		Monkey\tearDown();
 		Repository::flush();
+		Repository::reset_request_state();
 		Invalidation::reset_request_state();
 		Visibility::reset_request_state();
 		parent::tearDown();

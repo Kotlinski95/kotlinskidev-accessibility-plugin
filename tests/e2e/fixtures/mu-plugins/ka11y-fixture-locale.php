@@ -7,19 +7,6 @@ if ( ! defined( 'KOTLINSKIDEV_A11Y_E2E' ) || ! KOTLINSKIDEV_A11Y_E2E ) {
 	return;
 }
 
-$ka11y_fixture_locale = isset( $_COOKIE['ka11y_fixture_locale'] ) ? (string) $_COOKIE['ka11y_fixture_locale'] : '';
-
-if ( 1 !== preg_match( '/^[a-z]{2,3}_[A-Z]{2}$/', $ka11y_fixture_locale ) ) {
-	return;
-}
-
-add_filter(
-	'kotlinskidev_a11y_current_locale',
-	static function () use ( $ka11y_fixture_locale ): string {
-		return $ka11y_fixture_locale;
-	}
-);
-
 add_filter(
 	'kotlinskidev_a11y_known_locales',
 	static function ( $locales ): array {
@@ -41,3 +28,14 @@ add_filter(
 	10,
 	2
 );
+
+$ka11y_fixture_locale = isset( $_COOKIE['ka11y_fixture_locale'] ) ? (string) $_COOKIE['ka11y_fixture_locale'] : '';
+
+if ( 1 === preg_match( '/^[a-z]{2,3}_[A-Z]{2}$/', $ka11y_fixture_locale ) ) {
+	add_filter(
+		'kotlinskidev_a11y_current_locale',
+		static function () use ( $ka11y_fixture_locale ): string {
+			return $ka11y_fixture_locale;
+		}
+	);
+}

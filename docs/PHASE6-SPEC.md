@@ -438,6 +438,8 @@ Files: `src/php/Settings/Schema.php`, `Repository.php`, `Sanitizer.php` (no chan
 
 Acceptance: 13.1 settings, locks, importer, REST and golden cases green; golden files captured before the first code change; `check-budget` identical to v0.4.0.
 
+Note: sparse storage means a value a user explicitly set equal to today's default is not stored and follows future default changes. The strip migration compares against the effective defaults (network layer included), a locked path keeps the site's stored value untouched, and the layer fingerprint (effective defaults plus locks) is checked on `admin_init` and cron to fire the settings invalidation when it changes.
+
 Rollback: revert. v0.4 code reads the sparse option correctly (proved by test), so sites that saved in between keep their values.
 
 ### M6.2 Admin management UX (kd-core:coder, then kd-web:accessibility-reviewer)

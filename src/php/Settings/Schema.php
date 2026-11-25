@@ -7,7 +7,7 @@ use Kotlinskidev\A11y\Frontend\Actions;
 
 final class Schema {
 
-	public const VERSION = 4;
+	public const VERSION = 5;
 
 	public const PANEL_TOKENS = array( 'primaryDark', 'onPrimaryDark', 'headerBg', 'onHeader', 'canvasLight', 'canvasDark' );
 
@@ -154,6 +154,24 @@ final class Schema {
 		$cursor[ $last ] = $value;
 	}
 
+	public static function remove( array &$tree, string $path ): void {
+		self::remove_segments( $tree, explode( '.', $path ) );
+	}
+
+	public static function is_under( string $path, string $prefix ): bool {
+		return $path === $prefix || str_starts_with( $path, $prefix . '.' );
+	}
+
+	public static function is_known_prefix( string $candidate ): bool {
+		foreach ( array_keys( self::definitions() ) as $path ) {
+			if ( self::is_under( $path, $candidate ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static function read( array $tree, string $path, bool &$found = false ): mixed {
 		$cursor = $tree;
 
@@ -167,6 +185,29 @@ final class Schema {
 
 		$found = true;
 		return $cursor;
+	}
+
+	private static function remove_segments( array &$node, array $segments ): void {
+		$head = (string) array_shift( $segments );
+
+		if ( ! array_key_exists( $head, $node ) ) {
+			return;
+		}
+
+		if ( array() === $segments ) {
+			unset( $node[ $head ] );
+			return;
+		}
+
+		if ( ! is_array( $node[ $head ] ) ) {
+			return;
+		}
+
+		self::remove_segments( $node[ $head ], $segments );
+
+		if ( array() === $node[ $head ] ) {
+			unset( $node[ $head ] );
+		}
 	}
 
 	private static function build(): array {
@@ -379,6 +420,8 @@ final class Schema {
 		$defs['performance.pageCss']       = self::def( 'string', 'enum', 'lazy', array( 'enum' => array( 'lazy', 'linked', 'inline' ) ) );
 		$defs['performance.deviceSkip']    = self::def( 'boolean', 'bool', true );
 		$defs['performance.optOut']        = self::def( 'array', 'enum_list', array(), array( 'enum' => self::OPT_OUTS ) );
+
+		$defs['maintenance.keepDataOnUninstall'] = self::def( 'boolean', 'bool', false );
 
 		return $defs;
 	}

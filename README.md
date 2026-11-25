@@ -122,6 +122,10 @@ Panel data is served as a versioned JSON file per locale from uploads, with a RE
 
 The launcher is server-rendered in a declarative shadow root and page CSS is applied as a stylesheet, so a strict policy needs `style-src 'unsafe-inline'`, as WordPress core already does. Scripts carry the request nonce when your CSP plugin provides one.
 
+### Sparse settings storage
+
+The site option stores only values that differ from the defaults below it (plugin defaults, then network defaults on multisite). A value you explicitly set equal to today's default is not stored, so it follows future default changes. Pin a value by choosing one that differs from the default.
+
 ### Upgrading and downgrading
 
 On upgrade from v0.1, an existing `advanced.loadStrategy` migrates to the Custom preset with the same behaviour, and an admin notice recommends the Recommended preset once, with a per-user dismissal. Purge page caches after upgrading.

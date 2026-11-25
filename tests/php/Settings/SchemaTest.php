@@ -136,7 +136,7 @@ final class SchemaTest extends TestCase {
 	}
 
 	public function test_version_is_two_and_load_strategy_is_gone(): void {
-		$this->assertSame( 4, Schema::VERSION );
+		$this->assertSame( 5, Schema::VERSION );
 		$this->assertNull( Schema::definition( 'advanced.loadStrategy' ) );
 		$this->assertArrayNotHasKey( 'loadStrategy', Schema::defaults()['advanced'] );
 	}

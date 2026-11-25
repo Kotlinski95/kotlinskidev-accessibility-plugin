@@ -32,7 +32,8 @@ describe('admin api', () => {
 
   it('exports, imports and resets', async () => {
     await api.exportSettings();
-    await api.importSettings({ b: 2 });
+    fetcher.mockResolvedValueOnce({ settings: { b: 2 }, dropped: [], locked: [] });
+    await expect(api.importSettings({ b: 2 })).resolves.toEqual({ b: 2 });
     await api.resetSettings();
     expect(fetcher).toHaveBeenNthCalledWith(1, expect.objectContaining({ url: `${ROOT}export`, method: 'GET' }));
     expect(fetcher).toHaveBeenNthCalledWith(2, expect.objectContaining({ url: `${ROOT}import`, method: 'POST', data: { b: 2 } }));

@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
@@ -13,6 +14,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  frontend-guard:
+    name: Front-end source is unchanged
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'frontend-change')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: git diff --exit-code "origin/${{ github.base_ref }}...HEAD" -- src/ts/frontend src/ts/shared src/ts/bootstrap src/ts/loader src/scss/widget src/scss/launcher src/scss/page
+
   php:
     name: PHP ${{ matrix.php }}
     runs-on: ubuntu-latest
