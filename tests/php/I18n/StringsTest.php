@@ -51,6 +51,7 @@ final class StringsTest extends TestCase {
 	public function test_does_not_restore_when_switch_did_nothing(): void {
 		Functions\when( 'get_option' )->justReturn( array() );
 		Functions\expect( 'switch_to_locale' )->once()->andReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
 		Functions\expect( 'restore_previous_locale' )->never();
 
 		( new Strings() )->for_locale( 'en_US' );
@@ -138,5 +139,69 @@ final class StringsTest extends TestCase {
 		foreach ( array( 'statementEmpty', 'statementCommitmentHeading', 'statementConformanceHeading', 'statementFeedbackHeading', 'statementDateHeading' ) as $key ) {
 			$this->assertContains( $key, $keys );
 		}
+	}
+
+	public function test_fallback_loads_shipped_file_and_restores(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
+		$mofile = KOTLINSKIDEV_A11Y_DIR . 'languages/kotlinskidev-accessibility-xx_XX.mo';
+		Functions\expect( 'unload_textdomain' )->twice()->with( 'kotlinskidev-accessibility', true );
+		Functions\expect( 'load_textdomain' )->once()->with( 'kotlinskidev-accessibility', $mofile, 'xx_XX' )->andReturn( true );
+		Functions\expect( 'load_plugin_textdomain' )->once()->with( 'kotlinskidev-accessibility', false, 'fixtures/languages' );
+		Functions\expect( 'restore_previous_locale' )->never();
+
+		( new Strings() )->for_locale( 'xx_XX' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_fallback_restores_when_collection_throws(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
+		Functions\when( 'load_textdomain' )->justReturn( true );
+		Functions\when( '__' )->alias(
+			static function (): string {
+				throw new \RuntimeException( 'boom' );
+			}
+		);
+		Functions\expect( 'unload_textdomain' )->twice();
+		Functions\expect( 'load_plugin_textdomain' )->once();
+
+		$this->expectException( \RuntimeException::class );
+		( new Strings() )->for_locale( 'xx_XX' );
+	}
+
+	public function test_fallback_skipped_when_file_missing(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
+		Functions\expect( 'load_textdomain' )->never();
+		Functions\expect( 'unload_textdomain' )->never();
+		Functions\expect( 'load_plugin_textdomain' )->never();
+
+		( new Strings() )->for_locale( 'zz_ZZ' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_fallback_skipped_for_invalid_locale(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'en_US' );
+		Functions\expect( 'load_textdomain' )->never();
+		Functions\expect( 'unload_textdomain' )->never();
+
+		( new Strings() )->for_locale( '../xx_XX' );
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_fallback_skipped_when_locale_is_current(): void {
+		Functions\when( 'get_option' )->justReturn( array() );
+		Functions\when( 'switch_to_locale' )->justReturn( false );
+		Functions\when( 'determine_locale' )->justReturn( 'xx_XX' );
+		Functions\expect( 'load_textdomain' )->never();
+
+		( new Strings() )->for_locale( 'xx_XX' );
+		$this->addToAssertionCount( 1 );
 	}
 }

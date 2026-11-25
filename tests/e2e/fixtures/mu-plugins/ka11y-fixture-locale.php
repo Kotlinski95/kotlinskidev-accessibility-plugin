@@ -28,13 +28,6 @@ add_filter(
 );
 
 add_filter(
-	'get_available_languages',
-	static function ( $languages ): array {
-		return array_values( array_unique( array_merge( is_array( $languages ) ? $languages : array(), array( 'pl_PL', 'he_IL' ) ) ) );
-	}
-);
-
-add_filter(
 	'kotlinskidev_a11y_locale_label',
 	static function ( string $label, string $locale ): string {
 		$labels = array(

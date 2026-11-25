@@ -38,7 +38,3 @@ Read this, then `CLAUDE.md` (project profile). Plans: `docs/ROADMAP.md` (phases 
 ## Known gap: inline HTML cost
 
 - With the widget on the gzip document grows by about 2.7 KB (inline config, bootstrap, launcher markup and CSS, 6.8 KB raw), which pushes it past the ~14.6 KB TCP initial window and shows up as +300 ms in Lighthouse simulated LCP. Observed (real Chrome) LCP differs by about 10 ms and TBT/CLS are 0. The nightly now compares observed LCP. Idea if it matters: shrink or defer the inline launcher block.
-
-## Known gap: locales without a core language pack
-
-- `Strings::for_locale()` uses `switch_to_locale()`, which only switches to locales in `get_available_languages()`. On a site where a locale (for example pl_PL) is not installed as a core language pack, the widget language switcher returns English for it even though the plugin ships the `.mo`. Fix idea: when `switch_to_locale()` returns false, `unload_textdomain` and `load_textdomain` the shipped `languages/kotlinskidev-accessibility-{locale}.mo`, then restore. The e2e locale fixture now adds pl_PL and he_IL to `get_available_languages`.

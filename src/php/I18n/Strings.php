@@ -7,6 +7,9 @@ use Kotlinskidev\A11y\Settings\Repository;
 
 final class Strings {
 
+	private const TEXT_DOMAIN    = 'kotlinskidev-accessibility';
+	private const LOCALE_PATTERN = '/^[a-z]{2,3}(_[A-Z]{2})?$/';
+
 	private Repository $repository;
 
 	public function __construct( ?Repository $repository = null ) {
@@ -14,19 +17,44 @@ final class Strings {
 	}
 
 	public function for_locale( string $locale ): array {
-		$switched = switch_to_locale( $locale );
-
-		try {
-			$strings = $this->defaults();
-		} finally {
-			if ( $switched ) {
-				restore_previous_locale();
-			}
-		}
+		$strings = $this->defaults_for( $locale );
 
 		$strings = array_merge( $strings, $this->overrides( $locale, $strings ) );
 
 		return apply_filters( 'kotlinskidev_a11y_strings', $strings, $locale );
+	}
+
+	private function defaults_for( string $locale ): array {
+		$switched = switch_to_locale( $locale );
+		$loaded   = ! $switched && $this->load_shipped_translations( $locale );
+
+		try {
+			return $this->defaults();
+		} finally {
+			if ( $switched ) {
+				restore_previous_locale();
+			}
+			if ( $loaded ) {
+				unload_textdomain( self::TEXT_DOMAIN, true );
+				load_plugin_textdomain( self::TEXT_DOMAIN, false, basename( KOTLINSKIDEV_A11Y_DIR ) . '/languages' );
+			}
+		}
+	}
+
+	private function load_shipped_translations( string $locale ): bool {
+		if ( 1 !== preg_match( self::LOCALE_PATTERN, $locale ) || determine_locale() === $locale ) {
+			return false;
+		}
+
+		$mofile = KOTLINSKIDEV_A11Y_DIR . 'languages/' . self::TEXT_DOMAIN . '-' . $locale . '.mo';
+
+		if ( ! is_readable( $mofile ) ) {
+			return false;
+		}
+
+		unload_textdomain( self::TEXT_DOMAIN, true );
+
+		return load_textdomain( self::TEXT_DOMAIN, $mofile, $locale );
 	}
 
 	public function keys(): array {

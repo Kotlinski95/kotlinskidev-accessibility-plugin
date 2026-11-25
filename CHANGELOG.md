@@ -5,6 +5,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Language switcher returns the shipped translation for locales without an installed core language pack: `Strings::for_locale()` loads `languages/kotlinskidev-accessibility-{locale}.mo` when `switch_to_locale()` does nothing, then restores the previous text domain.
+
 ## [0.4.0] - 2026-11-25
 
 ### Added
