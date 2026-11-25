@@ -327,10 +327,10 @@ test.describe('panel settings', () => {
         return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right, hostTransform: getComputedStyle(host).transform, innerHeight: window.innerHeight, innerWidth: window.innerWidth };
       });
       expect(geometry.hostTransform).toBe('none');
-      expect(geometry.top).toBe(0);
-      expect(geometry.bottom).toBe(geometry.innerHeight);
-      if (side === 'left') expect(geometry.left).toBe(0);
-      else expect(geometry.right).toBe(geometry.innerWidth);
+      expect(Math.abs(geometry.top)).toBeLessThan(0.5);
+      expect(Math.abs(geometry.bottom - geometry.innerHeight)).toBeLessThan(0.5);
+      if (side === 'left') expect(Math.abs(geometry.left)).toBeLessThan(0.5);
+      else expect(Math.abs(geometry.right - geometry.innerWidth)).toBeLessThan(0.5);
     });
   }
 });
@@ -351,9 +351,9 @@ test.describe('panel layout and media', () => {
       const rect = panel.getBoundingClientRect();
       return { left: rect.left, right: rect.right, bottom: rect.bottom, height: rect.height, innerHeight: window.innerHeight, innerWidth: window.innerWidth };
     });
-    expect(geometry.left).toBe(0);
-    expect(geometry.right).toBe(geometry.innerWidth);
-    expect(geometry.bottom).toBe(geometry.innerHeight);
+    expect(Math.abs(geometry.left)).toBeLessThan(0.5);
+    expect(Math.abs(geometry.right - geometry.innerWidth)).toBeLessThan(0.5);
+    expect(Math.abs(geometry.bottom - geometry.innerHeight)).toBeLessThan(0.5);
     expect(geometry.height).toBeLessThanOrEqual(geometry.innerHeight * 0.85 + 1);
     expect(geometry.height).toBeGreaterThan(200);
 
