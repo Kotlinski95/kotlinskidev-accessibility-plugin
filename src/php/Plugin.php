@@ -18,6 +18,8 @@ final class Plugin {
 	}
 
 	public static function init(): void {
+		load_plugin_textdomain( 'kotlinskidev-accessibility', false, dirname( plugin_basename( KOTLINSKIDEV_A11Y_FILE ) ) . '/languages' );
+
 		( new Cache\VersionWatcher() )->register();
 		( new Frontend\PanelDataStore() )->register();
 

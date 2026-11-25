@@ -12,7 +12,7 @@ export default defineConfig({
   workers: 1,
   forbidOnly: isCi,
   retries: isCi ? 1 : 0,
-  timeout: 45_000,
+  timeout: crossBrowser ? 120_000 : 45_000,
   expect: { timeout: 10_000 },
   reporter: isCi ? [['list'], ['html', { open: 'never' }]] : [['list']],
   use: {

@@ -1,6 +1,4 @@
 <?php
-declare(strict_types=1);
-
 use Kotlinskidev\A11y\Settings\Repository;
 
 $state = $args[0] ?? '';
