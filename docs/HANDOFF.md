@@ -29,3 +29,7 @@ Read this, then `CLAUDE.md` (project profile). Plans: `docs/ROADMAP.md` (phases 
 ## Known gap: layout shift for returning visitors
 
 - A saved `biggerText` state applies per-element font scaling after the kernel chunk loads, so returning visitors with it on see a layout shift (measured 0.046 CLS in e2e, 0.01 is the nightly gate). The nightly saved-state run therefore seeds a non-reflowing state (readingLine, highlightLinks). Fix idea: apply the scale through a CSS variable pre-paint from the bootstrap.
+
+## Known gap: inline HTML cost
+
+- With the widget on the gzip document grows by about 2.7 KB (inline config, bootstrap, launcher markup and CSS, 6.8 KB raw), which pushes it past the ~14.6 KB TCP initial window and shows up as +300 ms in Lighthouse simulated LCP. Observed (real Chrome) LCP differs by about 10 ms and TBT/CLS are 0. The nightly now compares observed LCP. Idea if it matters: shrink or defer the inline launcher block.

@@ -20,11 +20,16 @@ const median = (values) => {
 
 const numeric = (report, id) => report?.audits?.[id]?.numericValue;
 
+const observedLcp = (report) => {
+  const metrics = report?.audits?.metrics?.details?.items?.[0];
+  return Number.isFinite(metrics?.observedLargestContentfulPaint) ? metrics.observedLargestContentfulPaint : numeric(report, 'largest-contentful-paint');
+};
+
 const metricMedians = (reports) => {
   const pick = (id) => reports.map((report) => numeric(report, id)).filter(Number.isFinite);
   return {
     runs: reports.length,
-    lcp: median(pick('largest-contentful-paint')),
+    lcp: median(reports.map(observedLcp).filter(Number.isFinite)),
     cls: median(pick('cumulative-layout-shift')),
     tbt: median(pick('total-blocking-time')),
   };
