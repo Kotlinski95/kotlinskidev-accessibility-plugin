@@ -5,6 +5,10 @@ namespace Kotlinskidev\A11y\Tests;
 
 use Kotlinskidev\A11y\Tests\Triggers\TriggerEnvironment;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', __DIR__ . '/' );
+}
+
 require_once dirname( __DIR__, 2 ) . '/src/php/functions.php';
 
 final class FunctionsTest extends TestCase {
