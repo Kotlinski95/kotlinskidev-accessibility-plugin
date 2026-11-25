@@ -28,6 +28,6 @@ export const mount = ({ kernel, config, data, host, shadow }: PanelMountOptions)
   const profiles = kernel.profiles();
   if (profiles === null) throw new Error('kotlinskidev-a11y: profiles unavailable');
   const hideToolbar = createHideToolbar({ host, key: config.storage.key });
-  const { dialog } = createPanel({ config, store: kernel.store, profiles, hideToolbar, host, shadow });
+  const { dialog } = createPanel({ config, store: kernel.store, profiles, hideToolbar, host, shadow, sheetQuery: data.layout.sheetQuery });
   return { dialog };
 };

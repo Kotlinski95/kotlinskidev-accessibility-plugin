@@ -57,9 +57,10 @@ test.describe('panel open and close', () => {
     expect(focusedIsLauncher).toBe(true);
   });
 
-  test('traps focus inside the open panel', async ({ page }) => {
+  test('is non-modal: focus is not trapped and the page stays reachable', async ({ page }) => {
     const widget = await gotoHome(page);
     await openPanel(page, widget);
+    await expect(widget.panel).not.toHaveAttribute('aria-modal', /.*/);
     const countFocusable = await widget.panel.evaluate(
       (panel) =>
         [...panel.querySelectorAll<HTMLElement>('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])')].filter(
@@ -67,19 +68,14 @@ test.describe('panel open and close', () => {
         ).length
     );
     expect(countFocusable).toBeGreaterThan(2);
-    for (let step = 0; step < countFocusable * 2 + 3; step += 1) {
+    let leftPanel = false;
+    for (let step = 0; step < countFocusable * 2 + 6 && !leftPanel; step += 1) {
       await page.keyboard.press('Tab');
-      const insidePanel = await page.evaluate(() => {
-        const active = document.querySelector('#ka11y-root')?.shadowRoot?.activeElement;
-        return active?.closest('.ka11y-panel') !== null && active !== null && active !== undefined;
+      leftPanel = await page.evaluate(() => {
+        const shadow = document.querySelector('#ka11y-root')?.shadowRoot;
+        return !shadow?.activeElement || shadow.activeElement.closest('.ka11y-panel') === null;
       });
-      expect(insidePanel).toBe(true);
     }
-    await page.keyboard.press('Shift+Tab');
-    const stillInside = await page.evaluate(() => {
-      const active = document.querySelector('#ka11y-root')?.shadowRoot?.activeElement;
-      return active?.closest('.ka11y-panel') !== null && active !== null && active !== undefined;
-    });
-    expect(stillInside).toBe(true);
+    expect(leftPanel).toBe(true);
   });
 });

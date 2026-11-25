@@ -39,10 +39,16 @@ final class PanelData {
 			'panel'        => $this->panel( $settings ),
 			'layout'       => array( 'sheetQuery' => InlineConfig::device_queries( $settings )['mobile'] ),
 			'locales'      => $this->locales( $locale ),
-			'icons'        => new \stdClass(),
+			'icons'        => $this->icons(),
 		);
 
 		return array( 'hash' => $this->hash( $this->encode( $body ) ) ) + $body;
+	}
+
+	private function icons(): array|\stdClass {
+		$icons = Icons::map();
+
+		return array() === $icons ? new \stdClass() : $icons;
 	}
 
 	private function panel( array $settings ): array {

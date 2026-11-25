@@ -14,7 +14,8 @@ const setup = (): Setup => {
   const launcher = document.createElement('button');
   const panel = document.createElement('div');
   panel.id = 'ka11y-panel';
-  panel.innerHTML = '<button id="first">first</button>';
+  panel.setAttribute('aria-labelledby', 'title');
+  panel.innerHTML = '<h2 id="title">Title</h2><button id="first">first</button><button id="last">last</button>';
   shadow.append(launcher, panel);
   const dialog = createDialog({ panel, launcher, shadow });
   return { host, launcher, dialog, outside: document.getElementById('outside') as HTMLButtonElement };
@@ -120,5 +121,59 @@ describe('a11y-dialog focus return', () => {
     expect(launcher.getAttribute('aria-expanded')).toBe('true');
     dialog.close();
     expect(launcher.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('does not set aria-modal', () => {
+    const { dialog } = setup();
+    dialog.open();
+    expect(document.querySelector('[aria-modal]')).toBeNull();
+    expect((document.getElementById('ka11y-root')?.shadowRoot?.getElementById('ka11y-panel'))?.hasAttribute('aria-modal')).toBe(false);
+  });
+
+  it('moves initial focus to the title', () => {
+    const { dialog, host } = setup();
+    dialog.open();
+    expect(host.shadowRoot?.activeElement?.id).toBe('title');
+  });
+
+  it('does not trap Tab', () => {
+    const { dialog, host } = setup();
+    dialog.open();
+    (host.shadowRoot?.getElementById('last') as HTMLElement).focus();
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    document.dispatchEvent(event);
+    expect(event.defaultPrevented).toBe(false);
+    expect(host.shadowRoot?.activeElement?.id).toBe('last');
+  });
+
+  it('does not close on an outside click', () => {
+    const { dialog, outside } = setup();
+    dialog.open();
+    outside.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+    outside.click();
+    expect(dialog.isOpen()).toBe(true);
+  });
+
+  it('closes on Escape from inside the panel', () => {
+    const { dialog } = setup();
+    dialog.open();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(dialog.isOpen()).toBe(false);
+  });
+
+  it('closes on Escape when the launcher has focus', () => {
+    const { dialog, launcher } = setup();
+    dialog.open();
+    launcher.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(dialog.isOpen()).toBe(false);
+  });
+
+  it('ignores Escape when focus is on the page', () => {
+    const { dialog, outside } = setup();
+    dialog.open();
+    outside.focus();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(dialog.isOpen()).toBe(true);
   });
 });

@@ -73,7 +73,7 @@ describe('panel', () => {
     const { host, shadow, dialogEl, launcher } = setup();
     expect(host.querySelector('.ka11y-launcher')).toBeNull();
     expect(launcher.getAttribute('aria-haspopup')).toBe('dialog');
-    expect(dialogEl.getAttribute('aria-modal')).toBe('true');
+    expect(dialogEl.hasAttribute('aria-modal')).toBe(false);
     const titleId = dialogEl.getAttribute('aria-labelledby') ?? '';
     expect(shadow.getElementById(titleId)?.textContent).toBe('Accessibility settings');
   });
@@ -283,24 +283,6 @@ describe('panel', () => {
     expect(dialogEl.hasAttribute('inert')).toBe(false);
     store.set({ open: false });
     expect(dialogEl.hasAttribute('inert')).toBe(true);
-  });
-
-  it('traps Tab inside the panel', () => {
-    const { dialogEl, launcher, shadow } = setup();
-    launcher.click();
-    const focusable = [...dialogEl.querySelectorAll<HTMLElement>('button, a[href]')].filter(
-      (element) => element.closest('[hidden]') === null
-    );
-    const first = focusable[0] as HTMLElement;
-    const last = focusable[focusable.length - 1] as HTMLElement;
-    last.focus();
-    const forward = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
-    document.dispatchEvent(forward);
-    expect(forward.defaultPrevented).toBe(true);
-    expect(shadow.activeElement).toBe(first);
-    const backward = new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true, bubbles: true, cancelable: true });
-    document.dispatchEvent(backward);
-    expect(shadow.activeElement).toBe(last);
   });
 
   it('hide menu hides the toolbar for session and for days', () => {

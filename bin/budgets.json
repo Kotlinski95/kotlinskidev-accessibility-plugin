@@ -7,7 +7,8 @@
     "scripts.content": 4096,
     "scripts.color": 1536,
     "scripts.orientation": 3584,
-    "styles.page": 2048
+    "styles.page": 2048,
+    "data.icons": 2048
   },
   "raw": {
     "styles.launcher": 1400

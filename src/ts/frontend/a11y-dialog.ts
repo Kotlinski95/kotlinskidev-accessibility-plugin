@@ -30,29 +30,26 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
 
   const focusables = (): HTMLElement[] => [...panel.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(isFocusable);
 
-  const trapTab = (event: KeyboardEvent): void => {
-    const items = focusables();
-    const first = items[0];
-    const last = items[items.length - 1];
-    if (!first || !last) return;
-    event.preventDefault();
+  const focusInside = (): boolean => {
     const active = shadow.activeElement;
-    const index = active instanceof HTMLElement ? items.indexOf(active) : -1;
-    if (index === -1) {
-      (event.shiftKey ? last : first).focus();
-      return;
-    }
-    const step = event.shiftKey ? -1 : 1;
-    (items[(index + step + items.length) % items.length] ?? first).focus();
+    return active instanceof HTMLElement && (panel.contains(active) || active === launcher);
   };
 
   const onKeydown = (event: KeyboardEvent): void => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      close();
+    if (event.key !== 'Escape' || !focusInside()) return;
+    event.preventDefault();
+    close();
+  };
+
+  const focusTitle = (): void => {
+    const titleId = panel.getAttribute('aria-labelledby');
+    const title = titleId ? panel.querySelector<HTMLElement>(`[id="${titleId}"]`) : null;
+    if (!title) {
+      focusables()[0]?.focus();
       return;
     }
-    if (event.key === 'Tab') trapTab(event);
+    if (!title.hasAttribute('tabindex')) title.setAttribute('tabindex', '-1');
+    title.focus();
   };
 
   const launcherUsable = (): boolean => {
@@ -98,7 +95,7 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     render();
     doc.addEventListener('keydown', onKeydown);
     onChange?.(true);
-    focusables()[0]?.focus();
+    focusTitle();
   }
 
   function close(): void {

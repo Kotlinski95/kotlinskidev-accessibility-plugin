@@ -7,6 +7,7 @@ import { isLevelActive } from './feature-utils';
 import type { HideToolbar } from './hide-toolbar';
 import type { Profiles } from './profiles';
 import type { Store, StoreState } from './store';
+import { createPanelLayout } from './panel/layout';
 import { createTranslator, type Translator } from './translate';
 
 export interface PanelOptions {
@@ -17,6 +18,7 @@ export interface PanelOptions {
   host: HTMLElement;
   shadow: ShadowRoot;
   doc?: Document;
+  sheetQuery?: string;
 }
 
 export interface Panel {
@@ -68,7 +70,7 @@ const resolveLauncher = (host: HTMLElement, shadow: ShadowRoot, doc: Document, l
   return launcher;
 };
 
-export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow, doc = document }: PanelOptions): Panel => {
+export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow, doc = document, sheetQuery }: PanelOptions): Panel => {
   const t: Translator = createTranslator(config.strings);
   const featureControls: FeatureControl[] = [];
   const profileControls: ProfileControl[] = [];
@@ -248,7 +250,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
   const panel = createElement(
     doc,
     'div',
-    { id: PANEL_ID, class: 'ka11y-panel', role: 'dialog', 'aria-modal': 'true', 'aria-labelledby': TITLE_ID },
+    { id: PANEL_ID, class: 'ka11y-panel', role: 'dialog', 'aria-labelledby': TITLE_ID },
     [
       createElement(doc, 'header', { class: 'ka11y-header' }, [
         createElement(doc, 'h2', { class: 'ka11y-title', id: TITLE_ID }, [t('panelTitle')]),
@@ -266,12 +268,14 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
   const onChange = (open: boolean): void => {
     if (open) {
       placePanel(panel);
+      layout.place();
       skipRefresh();
     }
     if (store.getState().open !== open) store.set({ open });
     announce(open);
   };
 
+  const layout = createPanelLayout({ panel, host, sheetQuery: sheetQuery ?? '', win: doc.defaultView ?? window });
   const dialog = createDialog({ panel, launcher, shadow, doc, onChange });
 
   const onCloseClick = (): void => dialog.close();
@@ -305,6 +309,7 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     unsubscribe();
     listeners.forEach((remove) => remove());
     dialog.destroy();
+    layout.destroy();
   };
 
   return { dialog, destroy };

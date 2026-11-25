@@ -1,0 +1,5 @@
+Kotlinskidev Accessibility icon set
+
+The icons in src/icons are original work written for this plugin. They follow the visual conventions of Lucide (24 by 24 grid, 1.75 stroke, round caps and joins, no fill) but no Lucide path data was copied, so no third-party licence applies. The icons are distributed under the same licence as the plugin (GPL-2.0-or-later).
+
+If Lucide geometry is ever copied into this set, add the Lucide ISC licence notice here before release.

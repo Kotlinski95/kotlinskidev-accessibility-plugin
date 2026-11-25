@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 
@@ -93,5 +93,55 @@ describe('check-budget', () => {
 
   it('exits 2 when the manifest is missing', () => {
     expect(run(null).status).toBe(2);
+  });
+
+  it('reads data.icons from the manifest', () => {
+    const withIcons = { ...manifest(1500), data: { icons: entry(2048) } };
+    const iconBudgets = { ...budgets, gzip: { 'data.icons': 2048 } };
+    const ok = run(withIcons, iconBudgets);
+    expect(ok.status).toBe(0);
+    expect(ok.stdout).toMatch(/data\.icons\s+gzip\s+2048\s+2048\s+[\d.]+% ok/);
+    const over = run({ ...withIcons, data: { icons: entry(2049) } }, iconBudgets);
+    expect(over.status).toBe(1);
+    expect(over.stdout).toMatch(/data\.icons.*over/);
+    expect(run(manifest(1500), iconBudgets).stdout).toMatch(/data\.icons.*missing/);
+  });
+
+  it('ships a budget of 2048 bytes for data.icons', () => {
+    const shipped = JSON.parse(readFileSync(join(root, 'bin/budgets.json'), 'utf8'));
+    expect(shipped.gzip['data.icons']).toBe(2048);
+  });
+});
+
+describe('build icon validation', () => {
+  const buildWith = (svg: string): RunResult & { stderr: string } => {
+    const dir = mkdtempSync(join(tmpdir(), 'ka11y-icons-'));
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, 'fixture.svg'), svg);
+    const result = spawnSync('node', [join(root, 'bin/build.mjs')], {
+      encoding: 'utf8',
+      env: { ...process.env, KA11Y_ICONS_DIR: dir },
+    });
+    return { status: result.status, stdout: result.stdout, stderr: result.stderr };
+  };
+
+  const open = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">';
+
+  it('fails on a script element', () => {
+    const result = buildWith(`${open}<script>alert(1)</script><path d="M1 1h2"/></svg>`);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('fixture.svg');
+  });
+
+  it('fails on a fill attribute', () => {
+    const result = buildWith(`${open}<path d="M1 1h2" fill="red"/></svg>`);
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('attribute fill is not allowed');
+  });
+
+  it('fails on a non-path element, a wrong viewBox and invalid path data', () => {
+    expect(buildWith(`${open}<circle cx="1" cy="1" r="1"/></svg>`).status).toBe(1);
+    expect(buildWith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M1 1h2"/></svg>').status).toBe(1);
+    expect(buildWith(`${open}<path d="M1 1 <x>"/></svg>`).status).toBe(1);
   });
 });

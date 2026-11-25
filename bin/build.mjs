@@ -1,7 +1,7 @@
 import { build } from 'esbuild';
 import * as sass from 'sass';
 import { createHash } from 'node:crypto';
-import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
@@ -221,11 +221,68 @@ const assertScopedPageCss = (css) => {
   }
 };
 
+const ICON_PATH_DATA = /^[MmZzLlHhVvCcSsQqTtAa0-9eE.,+\s-]{1,1500}$/;
+const ICON_ROOT_ATTRIBUTES = {
+  xmlns: /^http:\/\/www\.w3\.org\/2000\/svg$/,
+  viewBox: /^0 0 24 24$/,
+  stroke: /^currentColor$/,
+  'stroke-width': /^[0-9.]+$/,
+  'stroke-linecap': /^round$/,
+  'stroke-linejoin': /^round$/,
+};
+
+const parseAttributes = (source, allowed, name) => {
+  const attributes = {};
+  const rest = source.replace(/([\w:-]+)="([^"]*)"/g, (_, key, value) => {
+    attributes[key] = value;
+    return '';
+  });
+  if (rest.trim() !== '') throw new Error(`Icon ${name}: malformed attributes`);
+  for (const [key, value] of Object.entries(attributes)) {
+    if (!allowed[key]?.test(value)) throw new Error(`Icon ${name}: attribute ${key} is not allowed`);
+  }
+  return attributes;
+};
+
+const iconPathData = (name, svg) => {
+  const tags = svg.match(/<[^>]*>/g) ?? [];
+  if (svg.replace(/<[^>]*>/g, '').trim() !== '') throw new Error(`Icon ${name}: text content is not allowed`);
+  const [open, ...rest] = tags;
+  const close = rest.pop();
+  const rootMatch = /^<svg\s+([^>]*)>$/.exec(open ?? '');
+  if (!rootMatch || close !== '</svg>') throw new Error(`Icon ${name}: expected a single svg root`);
+  const root = parseAttributes(rootMatch[1], ICON_ROOT_ATTRIBUTES, name);
+  if (root.viewBox !== '0 0 24 24') throw new Error(`Icon ${name}: viewBox must be 0 0 24 24`);
+  const paths = rest.map((tag) => {
+    const match = /^<path\s+([^>]*?)\s*\/>$/.exec(tag);
+    if (!match) throw new Error(`Icon ${name}: only path elements are allowed, found ${tag}`);
+    const { d } = parseAttributes(match[1], { d: ICON_PATH_DATA }, name);
+    if (d === undefined) throw new Error(`Icon ${name}: path without d`);
+    return d.trim();
+  });
+  if (paths.length === 0) throw new Error(`Icon ${name}: no path found`);
+  const joined = paths.join(' ');
+  if (!ICON_PATH_DATA.test(joined)) throw new Error(`Icon ${name}: path data too long or invalid`);
+  return joined;
+};
+
+const buildIconMap = async () => {
+  const dir = process.env.KA11Y_ICONS_DIR ? resolve(process.env.KA11Y_ICONS_DIR) : resolve(root, 'src/icons');
+  const files = (await readdir(dir)).filter((file) => file.endsWith('.svg')).sort();
+  const icons = {};
+  for (const file of files) {
+    icons[file.slice(0, -4)] = iconPathData(file, await readFile(resolve(dir, file), 'utf8'));
+  }
+  return JSON.stringify({ v: 1, icons });
+};
+
 const readBuilt = (file) => readFile(resolve(out, file));
 
 const run = async () => {
+  const iconsJson = await buildIconMap();
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
+  await writeFile(resolve(out, 'icons.json'), iconsJson);
   const compiled = Object.fromEntries(
     await Promise.all(styles.map(async (style) => [style.file, await buildStyle(style)]))
   );
@@ -256,6 +313,7 @@ const run = async () => {
     scripts,
     styles: { page: await entryOf('frontend.css'), launcher: await entryOf('launcher.css') },
     inline: { bootstrap: await entryOf('bootstrap.js') },
+    data: { icons: await entryOf('icons.json') },
   });
 };
 
