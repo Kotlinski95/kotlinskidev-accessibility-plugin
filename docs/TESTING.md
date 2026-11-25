@@ -78,3 +78,25 @@ Two more mu-plugins live in `tests/e2e/fixtures/mu-plugins/`. Both do nothing un
 `perf.spec.ts` compares the widget off (`visibility.mode=only_on` with an unmatched post ID) and on (Recommended) on `/` in fresh contexts with 4x CPU throttling, five interleaved runs per side. Median deltas, on minus off: CLS at most 0.005, LCP at most 50 ms, long-task total over 50 ms at most 30 ms. It also checks that no plugin stylesheet is in the head and that the launcher keeps its box with the loader held. `support/perf.ts` adds `installVitals`, `readVitals`, `throttleCpu`, `median` and `headHtml`. `@smoke` marks one run per side with CLS and request assertions only.
 
 Flake notes: the median test is the only timing-sensitive one. If it flakes on a slow runner, raise `RUNS` before loosening a budget.
+
+### Trigger specs
+
+`triggers.spec.ts` covers every trigger kind under each of the five load strategies with `widget.launcher = hidden`. A fourth mu-plugin, `tests/e2e/fixtures/mu-plugins/ka11y-fixture-triggers.php`, does nothing unless `WP_ENVIRONMENT_TYPE` is `local`, `KOTLINSKIDEV_A11Y_E2E` is true and the cookie `ka11y_fixture_triggers=1` is present. It prints one `#ka11y-fixture-triggers` block in `wp_footer` with: the open hash link, the `#ka11y/profile:adhdFriendly` link, a `.ka11y-open` button, a `data-ka11y="feature:darkContrast"` button, a `data-ka11y="toggle"` link with a real `href`, a `.fixture-a11y-menu > a` link (the spec saves that selector in `triggers.selectors`), the shortcode, the block with `feature:biggerText:2`, `kotlinskidev_a11y_button( array( 'action' => 'toggle' ) )`, a button that calls `kotlinskidevA11y.open( this )`, an unknown action, a button for the `highContrast` feature (disabled in the tests that need it), a reset button and a plain `Before` button for focus checks.
+
+| Test per strategy | Checks |
+| --- | --- |
+| `<case> takes effect by click and Enter` (10 cases) | Panel opens, Escape closes, focus returns to the trigger; feature and profile cases apply, set `aria-pressed`, survive a reload (with a `ka11y:change` of source `restore`), and re-apply after reset by Enter; no console error |
+| `<case> wires ARIA and activates by Space` (10 cases) | `role="button"` on links, `aria-expanded` false then true then false around open, `aria-pressed` false then true, Space activation |
+| unknown and disabled actions | Unknown `data-ka11y`, a disabled feature, `set`, and `toggle` with a disabled or invalid target change nothing |
+| URL query, landing hash, off and reset | `?ka11y=` applies, keeps other parameters and the hash, is never stored on its own and is stored with the next manual change; `#ka11y/feature:biggerText:2` clears the hash |
+| URL allowlist | `toggle`, `close`, `statement`, `hide`, unknown, a disabled feature and `feature:__proto__` are ignored |
+| JS API and events | `api`, `open`, `close`, `toggle`, `set` (true, level, clamp, false), `toggle(target)`, `reset`, `getState`, `on` with unsubscribe, late `ready`, `ka11y:ready` once, open, close and change events |
+| focus | Shortcut and API `open()` return focus to the previously focused element; with nothing focused and the launcher hidden focus lands on `body` and no `tabindex` is left behind |
+| axe | No serious or critical violations on the fixture block and the open panel |
+| before the loader | Profile link, data button and shortcode button clicked while `loader.js` is held apply exactly once after release |
+
+`@smoke` marks the `interaction` and `eager` strategies, and within each the hash open, data feature and PHP function cases plus every non-case test. Run it alone with `npx playwright test tests/e2e/triggers.spec.ts --grep @smoke`.
+
+Known product bug: `wireAria` in `src/ts/loader/triggers.ts` selects only `[data-ka11y]:not(html),a[href^="#ka11y/"]`, so `a[href="#kotlinskidev-a11y"]`, `.ka11y-open` and custom selector elements get no `role`, `aria-expanded` or `aria-controls`, and Space does nothing on the links among them. The three affected `wires ARIA and activates by Space` tests are wrapped in `test.fail` through `KNOWN_PRODUCT_BUGS`; remove those ids from the set when the loader is fixed.
+
+Flake note: the loader queue drops a `toggle` from the same source within 50 ms of the previous one (`isDoubleToggle` in `src/ts/loader/queue.ts`), so the dialog cases wait `TOGGLE_GUARD_MS` (80 ms) before each activation. The triggers `@smoke` subset takes about 21 s of the whole `@smoke` run.
