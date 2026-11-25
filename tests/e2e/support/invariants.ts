@@ -81,8 +81,14 @@ export const assertPageUsable = async (page: Page): Promise<void> => {
 
   await page.evaluate(() => window.scrollTo({ top: 400, behavior: 'instant' }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return window.scrollY;
+      })
+    )
+    .toBe(0);
 
   const hits = await page.evaluate(() => {
     const width = window.innerWidth;

@@ -19,6 +19,20 @@ test.describe('feature toggles', () => {
     await expect(reopened.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'true');
   });
 
+  test('readPage speaks the clicked block through speech synthesis without audio output', async ({ page }) => {
+    const widget = await gotoHome(page);
+    await openPanel(page, widget);
+    await widget.feature('readPage').click();
+    await expect(page.locator('html')).toHaveClass(/ka11y-read-page/);
+    await page.keyboard.press('Escape');
+    const heading = page.locator('h1, h2').first();
+    const expected = ((await heading.textContent()) ?? '').replace(/\s+/g, ' ').trim();
+    await heading.click();
+    const spoken = await page.evaluate(() => (window as unknown as { __ka11ySpoken: string[] }).__ka11ySpoken);
+    expect(spoken.length).toBeGreaterThan(0);
+    expect(spoken[spoken.length - 1]).toContain(expected.slice(0, 20));
+  });
+
   test('biggerText scales font size inline, cycles levels and persists', async ({ page }) => {
     const widget = await gotoHome(page);
     const heading = page.locator('h1, h2').first();

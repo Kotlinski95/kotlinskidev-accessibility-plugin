@@ -44,6 +44,16 @@ export const widgetFor = (page: Page): WidgetLocators => ({
 export const test = base.extend<Fixtures & Options>({
   fixture: ['stock', { option: true }],
   context: async ({ context, fixture, baseURL }, use) => {
+    await context.addInitScript(() => {
+      const spoken: string[] = [];
+      Object.defineProperty(window, '__ka11ySpoken', { value: spoken });
+      if (!('speechSynthesis' in window)) return;
+      const synthesis = window.speechSynthesis;
+      synthesis.speak = (utterance: SpeechSynthesisUtterance): void => {
+        spoken.push(utterance.text);
+      };
+      synthesis.cancel = (): void => undefined;
+    });
     if (fixture !== 'stock') {
       await context.addCookies([{ name: FIXTURE_COOKIE, value: fixture, url: baseURL ?? BASE_URL }]);
     }

@@ -43,8 +43,14 @@ const assertFixedElementStaysFixed = async (page: Page): Promise<void> => {
       headerPosition: header ? getComputedStyle(header).position : null,
     };
   });
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        return window.scrollY;
+      })
+    )
+    .toBe(0);
   expect(measured.badge).not.toBeNull();
   expect(Math.abs((measured.badge?.top ?? 0) - FIXED_EXPECTED.top)).toBeLessThanOrEqual(1);
   expect(Math.abs((measured.badge?.right ?? 0) - FIXED_EXPECTED.rightGap)).toBeLessThanOrEqual(1);
