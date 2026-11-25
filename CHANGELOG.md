@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-25
+
 ### Added
 
 - Appearance tab: style presets (`classic`, `brand`, `soft`, `contrast`), header, canvas and dark primary color tokens with a live contrast check, tile columns, section toggles and a language switcher toggle. Settings schema v4.
