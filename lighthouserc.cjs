@@ -7,7 +7,7 @@ module.exports = {
   ci: {
     collect: {
       url: urls,
-      numberOfRuns: 3,
+      numberOfRuns: 5,
       ...(puppeteerScript ? { puppeteerScript } : {}),
       settings: {
         chromeFlags: '--no-sandbox --headless=new',

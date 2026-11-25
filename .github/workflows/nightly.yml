@@ -128,10 +128,12 @@ jobs:
       - name: Widget off
         run: |
           npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" off
+          for i in 1 2 3 4 5; do curl -s -o /dev/null http://localhost:8889/; done
           LHCI_OUTPUT_DIR=lh-results/off npx lhci autorun --config=lighthouserc.cjs
       - name: Widget on
         run: |
           npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" on
+          for i in 1 2 3 4 5; do curl -s -o /dev/null http://localhost:8889/; done
           LHCI_OUTPUT_DIR=lh-results/on npx lhci autorun --config=lighthouserc.cjs
       - name: Widget on with saved state
         run: LHCI_OUTPUT_DIR=lh-results/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
