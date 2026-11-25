@@ -70,7 +70,7 @@ export const compare = (offReports, onReports, savedReports = [], thresholds = T
 
 export const loadReports = (dir) =>
   readdirSync(dir)
-    .filter((name) => /^lhr-.*\.json$/.test(name))
+    .filter((name) => /\.report\.json$/.test(name))
     .map((name) => JSON.parse(readFileSync(join(dir, name), 'utf8')));
 
 const main = () => {

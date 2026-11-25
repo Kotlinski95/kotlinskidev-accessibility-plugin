@@ -114,9 +114,25 @@ describe('lh-compare', () => {
     const onDir = join(root, 'on');
     mkdirSync(offDir);
     mkdirSync(onDir);
-    writeFileSync(join(offDir, 'lhr-1.json'), JSON.stringify(run(baseline)));
-    writeFileSync(join(onDir, 'lhr-1.json'), JSON.stringify(run({ ...baseline, lcp: 5000 })));
+    writeFileSync(join(offDir, 'localhost--2026_11_25_13_20_02.report.json'), JSON.stringify(run(baseline)));
+    writeFileSync(join(onDir, 'localhost--2026_11_25_13_20_02.report.json'), JSON.stringify(run({ ...baseline, lcp: 5000 })));
     expect(spawnSync(process.execPath, [script, offDir, onDir], { encoding: 'utf8' }).status).toBe(1);
+  });
+
+  it('reads lhci filesystem reports and ignores manifest.json', () => {
+    const root = mkdtempSync(join(tmpdir(), 'lh-'));
+    const offDir = join(root, 'off');
+    const onDir = join(root, 'on');
+    mkdirSync(offDir);
+    mkdirSync(onDir);
+    for (const dir of [offDir, onDir]) {
+      writeFileSync(join(dir, 'localhost--2026_11_25_13_20_02.report.json'), JSON.stringify(run(baseline)));
+      writeFileSync(join(dir, 'localhost--2026_11_25_13_20_02.report.html'), '<html></html>');
+      writeFileSync(join(dir, 'manifest.json'), '[]');
+    }
+    const result = spawnSync(process.execPath, [script, offDir, onDir], { encoding: 'utf8' });
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('Lighthouse comparison passed');
   });
 
   it('exits with usage error without two directories', () => {
