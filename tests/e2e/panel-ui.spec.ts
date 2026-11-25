@@ -197,7 +197,8 @@ test.describe('panel behaviour', () => {
     await expect.poll(() => page.evaluate(() => window.localStorage.getItem('ka11y'))).toBeNull();
   });
 
-  test(`language: switch to Polish, focus the select, survive reload ${SMOKE}`, async ({ page }) => {
+  test(`language: switch to Polish, focus the select, survive reload ${SMOKE}`, async ({ page, context }) => {
+    await setFixtureLocale(context, 'en_US');
     const widget = await gotoHome(page);
     await openPanel(page, widget);
     const select = widget.panel.locator('#ka11y-lang');
