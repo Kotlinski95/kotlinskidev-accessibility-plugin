@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-25
+
 ### Added
 
 - Performance tab with presets Recommended, Compatibility and Custom: load strategy, script position, fetch priority, panel prefetch, Page CSS mode (lazy, linked, inline), device skip and optimizer opt-out. The admin shows the estimated cost per page.
