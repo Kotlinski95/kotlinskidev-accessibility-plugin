@@ -47,6 +47,10 @@ final class Plugin {
 			( new Admin\PerformanceNotice() )->register();
 		}
 
+		if ( is_admin() || wp_doing_cron() ) {
+			( new Health\SiteHealth() )->register();
+		}
+
 		if ( self::should_check_updates() ) {
 			( new Update\Updater( KOTLINSKIDEV_A11Y_FILE ) )->register();
 		}
