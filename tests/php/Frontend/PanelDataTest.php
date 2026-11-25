@@ -83,7 +83,12 @@ final class PanelDataTest extends TestCase {
 
 	public function test_encode_omits_hash_and_escapes_markup(): void {
 		$panel = new PanelData();
-		$json  = $panel->encode( array( 'hash' => 'abc', 'text' => '<b>&"\'' ) );
+		$json  = $panel->encode(
+			array(
+				'hash' => 'abc',
+				'text' => '<b>&"\'',
+			)
+		);
 
 		$this->assertStringNotContainsString( 'hash', $json );
 		$this->assertStringNotContainsString( '<', $json );
@@ -99,7 +104,10 @@ final class PanelDataTest extends TestCase {
 	public function test_statement_url_prefers_page_permalink(): void {
 		$this->options['kotlinskidev_a11y_settings'] = array(
 			'schemaVersion' => 2,
-			'statement'     => array( 'pageId' => 9, 'url' => 'https://example.test/fallback' ),
+			'statement'     => array(
+				'pageId' => 9,
+				'url'    => 'https://example.test/fallback',
+			),
 		);
 		Functions\when( 'get_permalink' )->justReturn( 'https://example.test/statement/' );
 

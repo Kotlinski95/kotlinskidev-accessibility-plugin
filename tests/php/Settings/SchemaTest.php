@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Tests\Settings;
 
+use Kotlinskidev\A11y\Frontend\Actions;
 use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Tests\TestCase;
 
@@ -61,8 +62,21 @@ final class SchemaTest extends TestCase {
 	public function test_visibility_theme_storage_and_misc_defaults(): void {
 		$defaults = Schema::defaults();
 
-		$this->assertSame( array( 'desktop' => true, 'tablet' => true, 'mobile' => true ), $defaults['visibility']['devices'] );
-		$this->assertSame( array( 'tablet' => 1024, 'mobile' => 768 ), $defaults['visibility']['breakpoints'] );
+		$this->assertSame(
+			array(
+				'desktop' => true,
+				'tablet'  => true,
+				'mobile'  => true,
+			),
+			$defaults['visibility']['devices']
+		);
+		$this->assertSame(
+			array(
+				'tablet' => 1024,
+				'mobile' => 768,
+			),
+			$defaults['visibility']['breakpoints']
+		);
 		foreach ( array( 'excludePostIds', 'excludePostTypes', 'excludeRoles', 'excludeUrlPatterns' ) as $key ) {
 			$this->assertSame( array(), $defaults['visibility'][ $key ] );
 		}
@@ -72,10 +86,36 @@ final class SchemaTest extends TestCase {
 		$this->assertTrue( $defaults['theme']['followPrefersColorScheme'] );
 		$this->assertSame( 2147483000, $defaults['tokens']['zIndex'] );
 		$this->assertSame( '', $defaults['customCss'] );
-		$this->assertSame( array( 'mode' => 'local', 'ttlDays' => 365, 'key' => 'ka11y' ), $defaults['storage'] );
-		$this->assertSame( array( 'pageId' => 0, 'url' => '', 'content' => array() ), $defaults['statement'] );
-		$this->assertSame( array( 'enabled' => true, 'combo' => 'Alt+Shift+A' ), $defaults['shortcut'] );
-		$this->assertSame( array( 'allow' => true, 'days' => array( 1, 7, 30 ) ), $defaults['hideToolbar'] );
+		$this->assertSame(
+			array(
+				'mode'    => 'local',
+				'ttlDays' => 365,
+				'key'     => 'ka11y',
+			),
+			$defaults['storage']
+		);
+		$this->assertSame(
+			array(
+				'pageId'  => 0,
+				'url'     => '',
+				'content' => array(),
+			),
+			$defaults['statement']
+		);
+		$this->assertSame(
+			array(
+				'enabled' => true,
+				'combo'   => 'Alt+Shift+A',
+			),
+			$defaults['shortcut']
+		);
+		$this->assertSame(
+			array(
+				'allow' => true,
+				'days'  => array( 1, 7, 30 ),
+			),
+			$defaults['hideToolbar']
+		);
 		$this->assertSame( array(), $defaults['labels'] );
 		$this->assertSame( array( 'excludeSelectors' => '#wpadminbar' ), $defaults['advanced'] );
 		$this->assertSame( Schema::VERSION, $defaults['schemaVersion'] );
@@ -96,7 +136,7 @@ final class SchemaTest extends TestCase {
 	}
 
 	public function test_version_is_two_and_load_strategy_is_gone(): void {
-		$this->assertSame( 2, Schema::VERSION );
+		$this->assertSame( 3, Schema::VERSION );
 		$this->assertNull( Schema::definition( 'advanced.loadStrategy' ) );
 		$this->assertArrayNotHasKey( 'loadStrategy', Schema::defaults()['advanced'] );
 	}
@@ -191,5 +231,19 @@ final class SchemaTest extends TestCase {
 
 		$tree['performance']['preset'] = 'custom';
 		$this->assertSame( $tree, Schema::apply_performance_preset( $tree ) );
+	}
+
+	public function test_trigger_and_launcher_definitions(): void {
+		$defaults = Schema::defaults();
+
+		$this->assertSame( 'floating', $defaults['widget']['launcher'] );
+		$this->assertSame( '', $defaults['widget']['mount'] );
+		$this->assertSame( array(), $defaults['triggers']['selectors'] );
+		$this->assertSame( array( 'open', 'feature', 'profile' ), $defaults['triggers']['urlActions'] );
+		$this->assertSame( array( 'floating', 'inline', 'hidden' ), Schema::definition( 'widget.launcher' )['enum'] );
+		$this->assertSame( 'selector', Schema::definition( 'widget.mount' )['sanitize'] );
+		$this->assertSame( 10, Schema::definition( 'triggers.selectors' )['max'] );
+		$this->assertSame( 'selector_list', Schema::definition( 'triggers.selectors' )['sanitize'] );
+		$this->assertSame( Actions::URL, Schema::definition( 'triggers.urlActions' )['enum'] );
 	}
 }

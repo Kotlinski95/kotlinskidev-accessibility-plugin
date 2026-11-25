@@ -20,7 +20,7 @@ final class Assets {
 	);
 	private const DEVICES       = array( 'desktop', 'tablet', 'mobile' );
 	private const HIDDEN_RULE   = 'html[data-ka11y-hidden] #ka11y-root{display:none!important}';
-	private const NOSCRIPT      = '<noscript><style>#ka11y-root{display:none!important}</style></noscript>';
+	private const NOSCRIPT      = '<noscript><style>#ka11y-root,.ka11y-trigger{display:none!important}</style></noscript>';
 
 	private Visibility $visibility;
 	private Repository $repository;
@@ -127,14 +127,18 @@ final class Assets {
 	private function bootstrap_script( array $settings ): string {
 		$storage = (array) ( $settings['storage'] ?? array() );
 		$css     = 'lazy' === ( $settings['performance']['pageCss'] ?? 'lazy' ) ? $this->page_css_url() : null;
-		$prefix  = InlineConfig::GLOBAL_NAME . '=' . Json::encode(
-			array(
-				'storage' => $storage,
-				'css'     => $css,
-				'hk'      => (string) ( $storage['key'] ?? 'ka11y' ) . '-hidden',
-			),
-			self::JSON_FLAGS
-		) . ';';
+		$boot    = array(
+			'storage' => $storage,
+			'css'     => $css,
+			'hk'      => (string) ( $storage['key'] ?? 'ka11y' ) . '-hidden',
+		);
+		$custom  = InlineConfig::trigger_selectors( $settings );
+
+		if ( '' !== $custom ) {
+			$boot['t'] = $custom;
+		}
+
+		$prefix = InlineConfig::GLOBAL_NAME . '=' . Json::encode( $boot, self::JSON_FLAGS ) . ';';
 
 		return $prefix . str_ireplace( '</script', '<\/script', $this->read_build_file( 'bootstrap.js' ) );
 	}
@@ -181,11 +185,14 @@ final class Assets {
 				(int) ( $widget['offsetY'][ $device ] ?? 20 )
 			);
 
+			$triggers = '';
+
 			if ( false === ( $settings['visibility']['devices'][ $device ] ?? true ) ) {
 				$declarations .= 'display:none!important;';
+				$triggers      = '.ka11y-trigger{display:none!important}';
 			}
 
-			$css .= '@media ' . $queries[ $device ] . '{#ka11y-root{' . $declarations . '}}';
+			$css .= '@media ' . $queries[ $device ] . '{#ka11y-root{' . $declarations . '}' . $triggers . '}';
 		}
 
 		return $css;

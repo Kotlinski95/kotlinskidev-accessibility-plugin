@@ -13,10 +13,10 @@ require_once __DIR__ . '/WpFilesystemStub.php';
 
 final class PanelDataStoreTest extends TestCase {
 
-	private array $options  = array();
-	private string $base    = '';
-	private string $method  = 'direct';
-	private int $writes     = 0;
+	private array $options = array();
+	private string $base   = '';
+	private string $method = 'direct';
+	private int $writes    = 0;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -41,9 +41,11 @@ final class PanelDataStoreTest extends TestCase {
 			)
 		);
 		Functions\when( 'wp_mkdir_p' )->alias( static fn ( string $dir ): bool => is_dir( $dir ) || mkdir( $dir, 0777, true ) );
-		Functions\when( 'wp_delete_file' )->alias( static function ( string $file ): void {
-			unlink( $file );
-		} );
+		Functions\when( 'wp_delete_file' )->alias(
+			static function ( string $file ): void {
+				unlink( $file );
+			}
+		);
 		Functions\when( 'get_filesystem_method' )->alias( fn (): string => $this->method );
 		Functions\when( 'WP_Filesystem' )->justReturn( true );
 		Functions\when( 'set_url_scheme' )->returnArg( 1 );
@@ -183,7 +185,10 @@ final class PanelDataStoreTest extends TestCase {
 			'en_US' => array(
 				'hash'      => 'aaaaaaaaaaaa',
 				'file'      => '',
-				'inline'    => array( 'open' => '', 'loadError' => '' ),
+				'inline'    => array(
+					'open'      => '',
+					'loadError' => '',
+				),
 				'failed_at' => time() - 3601,
 			),
 		);
@@ -296,7 +301,10 @@ final class PanelDataStoreTest extends TestCase {
 			'en_US' => array(
 				'hash'      => 'aaaaaaaaaaaa',
 				'file'      => '../../evil.php',
-				'inline'    => array( 'open' => '', 'loadError' => '' ),
+				'inline'    => array(
+					'open'      => '',
+					'loadError' => '',
+				),
 				'failed_at' => 0,
 			),
 		);
@@ -307,7 +315,13 @@ final class PanelDataStoreTest extends TestCase {
 	}
 
 	public function test_upload_dir_error_falls_back_to_rest(): void {
-		Functions\when( 'wp_upload_dir' )->justReturn( array( 'error' => 'No write access', 'basedir' => '', 'baseurl' => '' ) );
+		Functions\when( 'wp_upload_dir' )->justReturn(
+			array(
+				'error'   => 'No write access',
+				'basedir' => '',
+				'baseurl' => '',
+			)
+		);
 
 		$urls = ( new PanelDataStore() )->urls( 'en_US' );
 

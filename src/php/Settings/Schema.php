@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Settings;
 
+use Kotlinskidev\A11y\Frontend\Actions;
+
 final class Schema {
 
-	public const VERSION = 2;
+	public const VERSION = 3;
 
 	private const FEATURE_KEYS = array(
 		'biggerText',
@@ -70,6 +72,8 @@ final class Schema {
 	);
 
 	private const DEVICES = array( 'desktop', 'tablet', 'mobile' );
+
+	private const LAUNCHERS = array( 'floating', 'inline', 'hidden' );
 
 	private const POSITIONS = array( 'bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left' );
 
@@ -215,6 +219,8 @@ final class Schema {
 		$defs['widget.size']       = self::def( 'string', 'enum', 'md', array( 'enum' => array( 'sm', 'md', 'lg' ) ) );
 		$defs['widget.icon']       = self::def( 'string', 'icon', 'universal' );
 		$defs['widget.iconBorder'] = self::def( 'boolean', 'bool', false );
+		$defs['widget.launcher']   = self::def( 'string', 'enum', 'floating', array( 'enum' => self::LAUNCHERS ) );
+		$defs['widget.mount']      = self::def( 'string', 'selector', '' );
 
 		foreach ( self::DEVICES as $device ) {
 			$defs[ "visibility.devices.$device" ] = self::def( 'boolean', 'bool', true );
@@ -328,6 +334,9 @@ final class Schema {
 				'max' => 3650,
 			)
 		);
+
+		$defs['triggers.selectors']  = self::def( 'array', 'selector_list', array(), array( 'max' => 10 ) );
+		$defs['triggers.urlActions'] = self::def( 'array', 'enum_list', Actions::URL, array( 'enum' => Actions::URL ) );
 
 		$defs['labels'] = self::def( 'object', 'label_map', array() );
 

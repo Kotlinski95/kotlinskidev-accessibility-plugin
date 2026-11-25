@@ -5,11 +5,15 @@ namespace Kotlinskidev\A11y\Settings;
 
 final class Sanitizer {
 
-	private const COLOR_PATTERN      = '/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i';
-	private const LENGTH_PATTERN     = '/^-?\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|vmin|vmax|ch)?$/';
-	private const COMBO_PATTERN      = '/^(?:(?:Alt|Ctrl|Shift|Meta)\+)*[A-Za-z0-9]$/';
-	public const LOCALE_PATTERN      = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
-	private const STRING_KEY_PATTERN = '/^[A-Za-z0-9_.-]{1,80}$/';
+	private const COLOR_PATTERN       = '/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i';
+	private const LENGTH_PATTERN      = '/^-?\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|vmin|vmax|ch)?$/';
+	private const COMBO_PATTERN       = '/^(?:(?:Alt|Ctrl|Shift|Meta)\+)*[A-Za-z0-9]$/';
+	public const LOCALE_PATTERN       = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
+	private const SELECTOR_PATTERN    = '/^[A-Za-z0-9 _#.:,>+~*=\[\]"\'()^$|-]+$/';
+	private const SELECTOR_MAX_LENGTH = 200;
+	private const SELECTOR_LIST_MAX   = 300;
+	private const BARE_SELECTORS      = array( 'html', 'body', '*' );
+	private const STRING_KEY_PATTERN  = '/^[A-Za-z0-9_.-]{1,80}$/';
 
 	public function sanitize( array $input ): array {
 		$output = array();
@@ -38,12 +42,14 @@ final class Sanitizer {
 			'color'     => $this->matching( $value, self::COLOR_PATTERN, $fallback ),
 			'length'    => $this->matching( $value, self::LENGTH_PATTERN, $fallback ),
 			'combo'     => $this->matching( $value, self::COMBO_PATTERN, $fallback ),
+			'selector'  => $this->selector( $value, $fallback ),
 			'icon'      => $this->icon( $value, $fallback ),
 			'url'       => is_string( $value ) ? esc_url_raw( trim( $value ) ) : $fallback,
 			'css'       => is_string( $value ) ? $this->css( $value ) : $fallback,
 			'int_list'  => $this->int_list( $value, $definition ),
 			'text_list' => $this->text_list( $value, $fallback ),
 			'enum_list' => $this->enum_list( $value, $definition ),
+			'selector_list' => $this->selector_list( $value, $definition ),
 			'label_map' => $this->label_map( $value, $fallback ),
 			'html_map'  => $this->html_map( $value, $fallback ),
 			default     => $fallback,
@@ -102,6 +108,50 @@ final class Sanitizer {
 		$trimmed = trim( $value );
 
 		return 1 === preg_match( $pattern, $trimmed ) ? $trimmed : $fallback;
+	}
+
+	private function selector( mixed $value, string $fallback ): string {
+		if ( ! is_string( $value ) ) {
+			return $fallback;
+		}
+
+		$trimmed = trim( $value );
+
+		if ( '' === $trimmed || strlen( $trimmed ) > self::SELECTOR_MAX_LENGTH || 1 !== preg_match( self::SELECTOR_PATTERN, $trimmed ) ) {
+			return $fallback;
+		}
+
+		foreach ( explode( ',', $trimmed ) as $item ) {
+			if ( in_array( strtolower( trim( $item ) ), self::BARE_SELECTORS, true ) ) {
+				return $fallback;
+			}
+		}
+
+		return $trimmed;
+	}
+
+	private function selector_list( mixed $value, array $definition ): array {
+		if ( ! is_array( $value ) ) {
+			return $definition['default'];
+		}
+
+		$items = array();
+
+		foreach ( $value as $item ) {
+			$clean = $this->selector( $item, '' );
+
+			if ( '' === $clean || in_array( $clean, $items, true ) ) {
+				continue;
+			}
+
+			if ( count( $items ) >= $definition['max'] || strlen( implode( ',', array_merge( $items, array( $clean ) ) ) ) > self::SELECTOR_LIST_MAX ) {
+				break;
+			}
+
+			$items[] = $clean;
+		}
+
+		return $items;
 	}
 
 	private function icon( mixed $value, string $fallback ): int|string {

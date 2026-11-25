@@ -5,6 +5,7 @@ namespace Kotlinskidev\A11y\Tests\Settings;
 
 use Brain\Monkey\Functions;
 use Kotlinskidev\A11y\Settings\Repository;
+use Kotlinskidev\A11y\Settings\Sanitizer;
 use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Tests\TestCase;
 
@@ -69,7 +70,12 @@ final class RepositoryTest extends TestCase {
 
 		$repository = new Repository();
 		$repository->get();
-		$saved = $repository->save( array( 'storage' => array( 'mode' => 'none' ), 'bogus' => 1 ) );
+		$saved = $repository->save(
+			array(
+				'storage' => array( 'mode' => 'none' ),
+				'bogus'   => 1,
+			)
+		);
 		$repository->get();
 
 		$this->assertSame( 'none', $saved['storage']['mode'] );
@@ -99,7 +105,7 @@ final class RepositoryTest extends TestCase {
 	public function test_migration_one_is_registered_and_schema_version_stamped(): void {
 		Functions\when( 'get_option' )->justReturn( array( 'schemaVersion' => 0 ) );
 
-		$this->assertSame( array( 1 ), array_keys( Repository::migrations() ) );
+		$this->assertSame( array( 1, 2 ), array_keys( Repository::migrations() ) );
 		$this->assertSame( Schema::VERSION, ( new Repository() )->get()['schemaVersion'] );
 	}
 
@@ -110,7 +116,14 @@ final class RepositoryTest extends TestCase {
 	}
 
 	public function test_v1_idle_becomes_custom_idle_linked(): void {
-		$result = $this->stored_v1( array( 'advanced' => array( 'excludeSelectors' => '#x', 'loadStrategy' => 'idle' ) ) );
+		$result = $this->stored_v1(
+			array(
+				'advanced' => array(
+					'excludeSelectors' => '#x',
+					'loadStrategy'     => 'idle',
+				),
+			)
+		);
 
 		$this->assertSame(
 			array(
@@ -126,7 +139,7 @@ final class RepositoryTest extends TestCase {
 			$result['performance']
 		);
 		$this->assertSame( array( 'excludeSelectors' => '#x' ), $result['advanced'] );
-		$this->assertSame( 2, $result['schemaVersion'] );
+		$this->assertSame( 3, $result['schemaVersion'] );
 	}
 
 	public function test_v1_defer_becomes_custom_defer(): void {
@@ -163,7 +176,11 @@ final class RepositoryTest extends TestCase {
 		Functions\when( 'get_option' )->justReturn(
 			array(
 				'schemaVersion' => 2,
-				'performance'   => array( 'preset' => 'compatibility', 'strategy' => 'idle', 'deviceSkip' => true ),
+				'performance'   => array(
+					'preset'     => 'compatibility',
+					'strategy'   => 'idle',
+					'deviceSkip' => true,
+				),
 			)
 		);
 
@@ -178,10 +195,99 @@ final class RepositoryTest extends TestCase {
 		Functions\when( 'get_option' )->justReturn(
 			array(
 				'schemaVersion' => 2,
-				'performance'   => array( 'preset' => 'custom', 'strategy' => 'async' ),
+				'performance'   => array(
+					'preset'   => 'custom',
+					'strategy' => 'async',
+				),
 			)
 		);
 
 		$this->assertSame( 'async', ( new Repository() )->get()['performance']['strategy'] );
+	}
+
+	public function test_migration_two_is_identity(): void {
+		$stored = array(
+			'schemaVersion' => 2,
+			'storage'       => array( 'mode' => 'cookie' ),
+		);
+
+		$this->assertSame( $stored, Repository::migrations()[2]( $stored ) );
+	}
+
+	public function test_v2_option_gets_v3_defaults_and_stamp(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'schemaVersion' => 2,
+				'storage'       => array( 'mode' => 'cookie' ),
+			)
+		);
+
+		$result = ( new Repository() )->get();
+
+		$this->assertSame( 3, $result['schemaVersion'] );
+		$this->assertSame( 'cookie', $result['storage']['mode'] );
+		$this->assertSame( 'floating', $result['widget']['launcher'] );
+		$this->assertSame( array( 'open', 'feature', 'profile' ), $result['triggers']['urlActions'] );
+	}
+
+	public function test_v1_chains_to_v3(): void {
+		$result = $this->stored_v1( array( 'advanced' => array( 'loadStrategy' => 'idle' ) ) );
+
+		$this->assertSame( 3, $result['schemaVersion'] );
+		$this->assertSame( 'idle', $result['performance']['strategy'] );
+		$this->assertSame( array(), $result['triggers']['selectors'] );
+	}
+
+	public function test_empty_url_actions_survive_the_merge(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'schemaVersion' => 3,
+				'triggers'      => array( 'urlActions' => array() ),
+			)
+		);
+
+		$this->assertSame( array(), ( new Repository() )->get()['triggers']['urlActions'] );
+	}
+
+	public function test_v3_option_is_read_by_the_v020_merge_rules_without_losing_v02_keys(): void {
+		$v3 = ( new Sanitizer() )->sanitize(
+			array(
+				'storage'  => array( 'mode' => 'cookie' ),
+				'widget'   => array(
+					'launcher' => 'inline',
+					'mount'    => '#slot',
+				),
+				'triggers' => array(
+					'selectors'  => array( '.x' ),
+					'urlActions' => array( 'open' ),
+				),
+			)
+		);
+
+		$v2_defaults = Schema::defaults();
+		unset( $v2_defaults['triggers'], $v2_defaults['widget']['launcher'], $v2_defaults['widget']['mount'] );
+
+		$merge = static function ( array $defaults, array $stored ) use ( &$merge ): array {
+			$merged = $defaults;
+
+			foreach ( $stored as $key => $value ) {
+				$default_value = $defaults[ $key ] ?? null;
+
+				if ( is_array( $value ) && is_array( $default_value ) && array() !== $default_value && ! array_is_list( $default_value ) ) {
+					$merged[ $key ] = $merge( $default_value, $value );
+				} else {
+					$merged[ $key ] = $value;
+				}
+			}
+
+			return $merged;
+		};
+
+		$read = $merge( $v2_defaults, $v3 );
+
+		$this->assertSame( 'cookie', $read['storage']['mode'] );
+		$this->assertSame( $v2_defaults['features'], $read['features'] );
+		$this->assertSame( $v2_defaults['performance'], $read['performance'] );
+		$this->assertGreaterThanOrEqual( 2, $read['schemaVersion'] );
 	}
 }

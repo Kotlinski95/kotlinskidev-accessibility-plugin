@@ -56,7 +56,15 @@ final class AltTextControllerTest extends TestCase {
 		Functions\when( 'get_post_type' )->justReturn( 'post' );
 		Functions\expect( 'update_post_meta' )->never();
 
-		$result = ( new AltTextController() )->update_alt_text( new \WP_REST_Request( null, array( 'id' => 5, 'alt' => 'x' ) ) );
+		$result = ( new AltTextController() )->update_alt_text(
+			new \WP_REST_Request(
+				null,
+				array(
+					'id'  => 5,
+					'alt' => 'x',
+				)
+			)
+		);
 
 		$this->assertInstanceOf( \WP_Error::class, $result );
 		$this->assertSame( 404, $result->data['status'] );
@@ -70,8 +78,23 @@ final class AltTextControllerTest extends TestCase {
 		Functions\when( 'get_transient' )->justReturn( false );
 		Functions\when( 'set_transient' )->justReturn( true );
 
-		$response = ( new AltTextController() )->update_alt_text( new \WP_REST_Request( null, array( 'id' => '9', 'alt' => '  <b>A cat</b> ' ) ) );
+		$response = ( new AltTextController() )->update_alt_text(
+			new \WP_REST_Request(
+				null,
+				array(
+					'id'  => '9',
+					'alt' => '  <b>A cat</b> ',
+				)
+			)
+		);
 
-		$this->assertSame( array( 'id' => 9, 'alt' => 'A cat', 'remaining' => 2 ), $response->get_data() );
+		$this->assertSame(
+			array(
+				'id'        => 9,
+				'alt'       => 'A cat',
+				'remaining' => 2,
+			),
+			$response->get_data()
+		);
 	}
 }

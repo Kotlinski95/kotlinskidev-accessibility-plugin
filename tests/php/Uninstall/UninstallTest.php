@@ -46,9 +46,11 @@ final class UninstallTest extends TestCase {
 		Functions\when( 'is_multisite' )->alias( fn (): bool => $this->multisite );
 		Functions\when( 'get_filesystem_method' )->alias( fn (): string => $this->method );
 		Functions\when( 'WP_Filesystem' )->justReturn( false );
-		Functions\when( 'wp_delete_file' )->alias( static function ( string $file ): void {
-			unlink( $file );
-		} );
+		Functions\when( 'wp_delete_file' )->alias(
+			static function ( string $file ): void {
+				unlink( $file );
+			}
+		);
 		Functions\when( 'wp_upload_dir' )->alias(
 			fn (): array => array(
 				'basedir' => $this->bases[ $this->current ] ?? '',
@@ -133,7 +135,12 @@ final class UninstallTest extends TestCase {
 	}
 
 	public function test_upload_error_skips_folder_removal(): void {
-		Functions\when( 'wp_upload_dir' )->justReturn( array( 'error' => 'denied', 'basedir' => '/nonexistent' ) );
+		Functions\when( 'wp_upload_dir' )->justReturn(
+			array(
+				'error'   => 'denied',
+				'basedir' => '/nonexistent',
+			)
+		);
 
 		$this->run_uninstall();
 

@@ -140,8 +140,8 @@ final class ScriptAttributesTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'id'           => 'kotlinskidev-a11y-bootstrap',
-				'data-cfasync' => 'false',
+				'id'              => 'kotlinskidev-a11y-bootstrap',
+				'data-cfasync'    => 'false',
 				'data-wpacu-skip' => true,
 			),
 			$this->attributes()->filter_inline( array( 'id' => 'kotlinskidev-a11y-bootstrap' ) )

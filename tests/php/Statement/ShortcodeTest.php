@@ -16,11 +16,11 @@ final class ShortcodeTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'__'                => static fn ( $text ) => $text,
-				'esc_html'          => static fn ( $text ) => htmlspecialchars( (string) $text ),
-				'esc_attr'          => static fn ( $text ) => htmlspecialchars( (string) $text ),
-				'shortcode_atts'    => static fn ( array $defaults, array $atts ) => array_merge( $defaults, array_intersect_key( $atts, $defaults ) ),
-				'switch_to_locale'  => false,
+				'__'               => static fn ( $text ) => $text,
+				'esc_html'         => static fn ( $text ) => htmlspecialchars( (string) $text ),
+				'esc_attr'         => static fn ( $text ) => htmlspecialchars( (string) $text ),
+				'shortcode_atts'   => static fn ( array $defaults, array $atts ) => array_merge( $defaults, array_intersect_key( $atts, $defaults ) ),
+				'switch_to_locale' => false,
 			)
 		);
 	}
@@ -49,7 +49,12 @@ final class ShortcodeTest extends TestCase {
 	}
 
 	public function test_renders_content_for_current_locale(): void {
-		$this->store( array( 'pl_PL' => '<p>Deklaracja</p>', 'en_US' => '<p>Statement</p>' ) );
+		$this->store(
+			array(
+				'pl_PL' => '<p>Deklaracja</p>',
+				'en_US' => '<p>Statement</p>',
+			)
+		);
 
 		$html = ( new Shortcode( null, $this->resolver( 'pl_PL' ) ) )->render();
 
@@ -67,7 +72,12 @@ final class ShortcodeTest extends TestCase {
 	}
 
 	public function test_locale_attribute_overrides_resolver(): void {
-		$this->store( array( 'pl_PL' => '<p>Deklaracja</p>', 'en_US' => '<p>Statement</p>' ) );
+		$this->store(
+			array(
+				'pl_PL' => '<p>Deklaracja</p>',
+				'en_US' => '<p>Statement</p>',
+			)
+		);
 
 		$html = ( new Shortcode( null, $this->resolver( 'en_US' ) ) )->render( array( 'locale' => 'pl_PL' ) );
 

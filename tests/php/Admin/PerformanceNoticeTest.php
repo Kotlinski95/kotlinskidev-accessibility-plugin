@@ -31,9 +31,9 @@ final class PerformanceNoticeTest extends TestCase {
 
 	private function legacy_performance(): array {
 		return array(
-			'preset'  => 'custom',
+			'preset'   => 'custom',
 			'strategy' => 'defer',
-			'pageCss' => 'linked',
+			'pageCss'  => 'linked',
 		);
 	}
 

@@ -20,19 +20,19 @@ final class SettingsPageTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'__'                    => static fn ( $text ) => $text,
-				'esc_html__'            => static fn ( $text ) => $text,
-				'esc_url'               => static fn ( $url ) => $url,
-				'esc_attr'              => static fn ( $text ) => $text,
-				'esc_html'              => static fn ( $text ) => $text,
-				'admin_url'             => static fn ( $path = '' ) => 'https://example.test/wp-admin/' . $path,
-				'plugin_basename'       => static fn ( $file ) => 'kotlinskidev-accessibility/kotlinskidev-accessibility.php',
-				'rest_url'              => static fn ( $path = '' ) => 'https://example.test/wp-json/' . $path,
-				'wp_create_nonce'       => 'nonce123',
-				'wp_json_encode'        => static fn ( $value, $flags = 0 ) => json_encode( $value, $flags ),
-				'get_locale'            => 'en_US',
-				'switch_to_locale'      => false,
-				'current_user_can'      => true,
+				'__'               => static fn ( $text ) => $text,
+				'esc_html__'       => static fn ( $text ) => $text,
+				'esc_url'          => static fn ( $url ) => $url,
+				'esc_attr'         => static fn ( $text ) => $text,
+				'esc_html'         => static fn ( $text ) => $text,
+				'admin_url'        => static fn ( $path = '' ) => 'https://example.test/wp-admin/' . $path,
+				'plugin_basename'  => static fn ( $file ) => 'kotlinskidev-accessibility/kotlinskidev-accessibility.php',
+				'rest_url'         => static fn ( $path = '' ) => 'https://example.test/wp-json/' . $path,
+				'wp_create_nonce'  => 'nonce123',
+				'wp_json_encode'   => static fn ( $value, $flags = 0 ) => json_encode( $value, $flags ),
+				'get_locale'       => 'en_US',
+				'switch_to_locale' => false,
+				'current_user_can' => true,
 			)
 		);
 		$this->frontend_environment();

@@ -29,9 +29,21 @@ final class SanitizerTest extends TestCase {
 	public function test_bad_types_fall_back_to_default(): void {
 		$result = $this->sanitizer->sanitize(
 			array(
-				'features'   => array( 'biggerText' => array( 'enabled' => 'yes', 'default' => 'x' ) ),
-				'storage'    => array( 'ttlDays' => array( 1 ), 'key' => 5 ),
-				'tokens'     => array( 'primary' => 'red', 'radius' => 'big', 'zIndex' => 1.5 ),
+				'features'   => array(
+					'biggerText' => array(
+						'enabled' => 'yes',
+						'default' => 'x',
+					),
+				),
+				'storage'    => array(
+					'ttlDays' => array( 1 ),
+					'key'     => 5,
+				),
+				'tokens'     => array(
+					'primary' => 'red',
+					'radius'  => 'big',
+					'zIndex'  => 1.5,
+				),
 				'shortcut'   => array( 'combo' => 'Alt+Shift+' ),
 				'visibility' => array( 'excludePostIds' => 'nope' ),
 				'labels'     => 'str',
@@ -53,7 +65,13 @@ final class SanitizerTest extends TestCase {
 	public function test_enums_rejected(): void {
 		$result = $this->sanitizer->sanitize(
 			array(
-				'widget'  => array( 'size' => 'xl', 'position' => array( 'desktop' => 'center', 'mobile' => 'top-left' ) ),
+				'widget'  => array(
+					'size'     => 'xl',
+					'position' => array(
+						'desktop' => 'center',
+						'mobile'  => 'top-left',
+					),
+				),
 				'storage' => array( 'mode' => 'session' ),
 				'theme'   => array( 'mode' => 'sepia' ),
 			)
@@ -70,7 +88,12 @@ final class SanitizerTest extends TestCase {
 		$result = $this->sanitizer->sanitize(
 			array(
 				'storage' => array( 'ttlDays' => 99999 ),
-				'widget'  => array( 'offsetX' => array( 'desktop' => '35', 'tablet' => -4 ) ),
+				'widget'  => array(
+					'offsetX' => array(
+						'desktop' => '35',
+						'tablet'  => -4,
+					),
+				),
 			)
 		);
 
@@ -81,7 +104,13 @@ final class SanitizerTest extends TestCase {
 
 	public function test_feature_level_accepts_bool_or_int(): void {
 		$result = $this->sanitizer->sanitize(
-			array( 'features' => array( 'biggerText' => array( 'default' => 2 ), 'textAlign' => array( 'default' => true ), 'saturation' => array( 'default' => 99 ) ) )
+			array(
+				'features' => array(
+					'biggerText' => array( 'default' => 2 ),
+					'textAlign'  => array( 'default' => true ),
+					'saturation' => array( 'default' => 99 ),
+				),
+			)
 		);
 
 		$this->assertSame( 2, $result['features']['biggerText']['default'] );
@@ -90,7 +119,7 @@ final class SanitizerTest extends TestCase {
 	}
 
 	public function test_custom_css_stripped(): void {
-		$result = $this->sanitizer->sanitize( array( 'customCss' => "a{color:red}</style><script>alert(1)</script></STYLE >b{top:0}" ) );
+		$result = $this->sanitizer->sanitize( array( 'customCss' => 'a{color:red}</style><script>alert(1)</script></STYLE >b{top:0}' ) );
 
 		$this->assertStringNotContainsString( '</style', strtolower( $result['customCss'] ) );
 		$this->assertStringNotContainsString( '<script', $result['customCss'] );
@@ -107,8 +136,17 @@ final class SanitizerTest extends TestCase {
 		$result = $this->sanitizer->sanitize(
 			array(
 				'bogus'    => 1,
-				'features' => array( 'biggerText' => array( 'enabled' => false, 'extra' => 1 ), 'nonFeature' => array( 'enabled' => true ) ),
-				'storage'  => array( 'mode' => 'none', 'evil' => 'x' ),
+				'features' => array(
+					'biggerText' => array(
+						'enabled' => false,
+						'extra'   => 1,
+					),
+					'nonFeature' => array( 'enabled' => true ),
+				),
+				'storage'  => array(
+					'mode' => 'none',
+					'evil' => 'x',
+				),
 			)
 		);
 
@@ -132,7 +170,10 @@ final class SanitizerTest extends TestCase {
 		$result = $this->sanitizer->sanitize(
 			array(
 				'labels'    => array(
-					'pl_PL'  => array( 'open' => '<b>Otwórz</b>', 'bad key!' => 'x' ),
+					'pl_PL'  => array(
+						'open'     => '<b>Otwórz</b>',
+						'bad key!' => 'x',
+					),
 					'not ok' => array( 'open' => 'x' ),
 					'en_US'  => 'oops',
 				),
@@ -159,7 +200,10 @@ final class SanitizerTest extends TestCase {
 	public function test_lists_deduped_and_sanitized(): void {
 		$result = $this->sanitizer->sanitize(
 			array(
-				'visibility'  => array( 'excludePostIds' => array( 5, '5', 'x', 9 ), 'excludeRoles' => array( 'editor', '<i>editor</i>', '', 3 ) ),
+				'visibility'  => array(
+					'excludePostIds' => array( 5, '5', 'x', 9 ),
+					'excludeRoles'   => array( 'editor', '<i>editor</i>', '', 3 ),
+				),
 				'hideToolbar' => array( 'days' => array( 2, 2, 'a', 9999 ) ),
 			)
 		);
@@ -178,8 +222,11 @@ final class SanitizerTest extends TestCase {
 	public function test_valid_values_preserved(): void {
 		$result = $this->sanitizer->sanitize(
 			array(
-				'tokens'   => array( 'primary' => '#ABC', 'radius' => '0.5rem' ),
-				'shortcut' => array( 'combo' => 'Ctrl+Alt+K' ),
+				'tokens'    => array(
+					'primary' => '#ABC',
+					'radius'  => '0.5rem',
+				),
+				'shortcut'  => array( 'combo' => 'Ctrl+Alt+K' ),
 				'statement' => array( 'url' => 'https://example.com/a11y' ),
 			)
 		);
@@ -218,23 +265,96 @@ final class SanitizerTest extends TestCase {
 
 	public function test_opt_out_drops_unknown_and_duplicate_values(): void {
 		$result = $this->sanitizer->sanitize(
-			array( 'performance' => array( 'preset' => 'custom', 'optOut' => array( 'litespeed', 'bogus', 'litespeed', 'cloudflare', 4 ) ) )
+			array(
+				'performance' => array(
+					'preset' => 'custom',
+					'optOut' => array( 'litespeed', 'bogus', 'litespeed', 'cloudflare', 4 ),
+				),
+			)
 		);
 
 		$this->assertSame( array( 'litespeed', 'cloudflare' ), $result['performance']['optOut'] );
 	}
 
 	public function test_preset_row_overrides_posted_fields(): void {
-		$result = $this->sanitizer->sanitize( array( 'performance' => array( 'preset' => 'recommended', 'strategy' => 'eager', 'deviceSkip' => false ) ) );
+		$result = $this->sanitizer->sanitize(
+			array(
+				'performance' => array(
+					'preset'     => 'recommended',
+					'strategy'   => 'eager',
+					'deviceSkip' => false,
+				),
+			)
+		);
 
 		$this->assertSame( 'interaction', $result['performance']['strategy'] );
 		$this->assertTrue( $result['performance']['deviceSkip'] );
 	}
 
 	public function test_custom_preset_keeps_posted_fields(): void {
-		$result = $this->sanitizer->sanitize( array( 'performance' => array( 'preset' => 'custom', 'strategy' => 'eager', 'pageCss' => 'inline' ) ) );
+		$result = $this->sanitizer->sanitize(
+			array(
+				'performance' => array(
+					'preset'   => 'custom',
+					'strategy' => 'eager',
+					'pageCss'  => 'inline',
+				),
+			)
+		);
 
 		$this->assertSame( 'eager', $result['performance']['strategy'] );
 		$this->assertSame( 'inline', $result['performance']['pageCss'] );
+	}
+
+	private function mount( mixed $value ): string {
+		return $this->sanitizer->sanitize( array( 'widget' => array( 'mount' => $value ) ) )['widget']['mount'];
+	}
+
+	private function selectors( mixed $value ): array {
+		return $this->sanitizer->sanitize( array( 'triggers' => array( 'selectors' => $value ) ) )['triggers']['selectors'];
+	}
+
+	public function test_selector_accepts_common_forms(): void {
+		foreach ( array( '.menu-item-a11y > a', '#a11y-link', 'a[href="#a11y"]', "a[data-x='y']", 'li.a + li:not(.b) ~ a', 'a[href^="#x"], button.open', '  .trim  ' ) as $selector ) {
+			$this->assertSame( trim( $selector ), $this->mount( $selector ), $selector );
+		}
+	}
+
+	public function test_selector_rejects_unsafe_values(): void {
+		foreach ( array( 'a<b', 'a{b}', 'a;b', '@media', 'a\\b', 'a/*b*/', 'html', 'BODY', '*', '.ok, body', 'a, *', str_repeat( 'a', 201 ), '', 5, null ) as $selector ) {
+			$this->assertSame( '', $this->mount( $selector ), var_export( $selector, true ) );
+		}
+		$this->assertSame( str_repeat( 'a', 200 ), $this->mount( str_repeat( 'a', 200 ) ) );
+	}
+
+	public function test_selector_list_dedupes_drops_invalid_and_caps_items(): void {
+		$this->assertSame( array( '.a', '#b' ), $this->selectors( array( '.a', '.a', '<x>', 'body', '#b', 7 ) ) );
+		$this->assertSame( array(), $this->selectors( 'nope' ) );
+
+		$items = array();
+		for ( $i = 0; $i < 15; $i++ ) {
+			$items[] = '.s' . $i;
+		}
+		$this->assertCount( 10, $this->selectors( $items ) );
+	}
+
+	public function test_selector_list_joined_length_is_capped(): void {
+		$kept = $this->selectors( array( str_repeat( 'a', 120 ), str_repeat( 'b', 120 ), str_repeat( 'c', 120 ), '.d' ) );
+
+		$this->assertSame( array( str_repeat( 'a', 120 ), str_repeat( 'b', 120 ) ), $kept );
+		$this->assertLessThanOrEqual( 300, strlen( implode( ',', $kept ) ) );
+	}
+
+	public function test_url_actions_enum(): void {
+		$result = $this->sanitizer->sanitize( array( 'triggers' => array( 'urlActions' => array( 'open', 'reset', 'hide', 'profile', 'open', 'feature:x' ) ) ) );
+
+		$this->assertSame( array( 'open', 'profile' ), $result['triggers']['urlActions'] );
+		$this->assertSame( array(), $this->sanitizer->sanitize( array( 'triggers' => array( 'urlActions' => array() ) ) )['triggers']['urlActions'] );
+		$this->assertSame( array( 'open', 'feature', 'profile' ), $this->sanitizer->sanitize( array( 'triggers' => array( 'urlActions' => 'open' ) ) )['triggers']['urlActions'] );
+	}
+
+	public function test_launcher_enum(): void {
+		$this->assertSame( 'hidden', $this->sanitizer->sanitize( array( 'widget' => array( 'launcher' => 'hidden' ) ) )['widget']['launcher'] );
+		$this->assertSame( 'floating', $this->sanitizer->sanitize( array( 'widget' => array( 'launcher' => 'tray' ) ) )['widget']['launcher'] );
 	}
 }

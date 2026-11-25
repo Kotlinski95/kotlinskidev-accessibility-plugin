@@ -290,7 +290,7 @@ final class AssetsTest extends TestCase {
 	public function test_head_prints_the_noscript_rule(): void {
 		$this->head();
 
-		$this->assertSame( '<noscript><style>#ka11y-root{display:none!important}</style></noscript>', $this->head_html );
+		$this->assertSame( '<noscript><style>#ka11y-root,.ka11y-trigger{display:none!important}</style></noscript>', $this->head_html );
 	}
 
 	public function test_tokens_css_has_variables_device_rules_hidden_rule_and_custom_css(): void {
@@ -353,5 +353,26 @@ final class AssetsTest extends TestCase {
 		$urls = implode( ' ', array_column( $this->registered_scripts, 'src' ) ) . ' ' . $this->printed_scripts[0][0] . ' ' . $this->enqueued_styles['kotlinskidev-a11y-frontend'][0];
 
 		$this->assertStringNotContainsString( 'frontend.js', $urls );
+	}
+
+	public function test_bootstrap_prefix_carries_t_only_with_custom_selectors(): void {
+		$this->head();
+		$this->assertStringNotContainsString( '"t":', $this->printed_scripts[0][0] );
+
+		$this->store_settings( array( 'triggers' => array( 'selectors' => array( '.menu-a11y > a', '#x' ) ) ) );
+		$this->printed_scripts = array();
+		$this->head();
+
+		$this->assertStringContainsString( '"t":".menu-a11y \\u003E a,#x"', $this->printed_scripts[0][0] );
+	}
+
+	public function test_device_rules_hide_triggers_on_hidden_devices_only(): void {
+		$settings                                    = Schema::defaults();
+		$settings['visibility']['devices']['tablet'] = false;
+
+		$css = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( 'display:none!important;}.ka11y-trigger{display:none!important}}', $css );
+		$this->assertSame( 1, substr_count( $css, '.ka11y-trigger{display:none!important}' ) );
 	}
 }

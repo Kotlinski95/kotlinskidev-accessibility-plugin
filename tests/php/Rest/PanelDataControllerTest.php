@@ -69,7 +69,15 @@ final class PanelDataControllerTest extends TestCase {
 		$probe      = $controller->get_panel_data( new WP_REST_Request( null, array( 'locale' => 'en_US' ) ) );
 		$hash       = $probe->get_data()['hash'];
 
-		$response = $controller->get_panel_data( new WP_REST_Request( null, array( 'locale' => 'en_US', 'v' => $hash ) ) );
+		$response = $controller->get_panel_data(
+			new WP_REST_Request(
+				null,
+				array(
+					'locale' => 'en_US',
+					'v'      => $hash,
+				)
+			)
+		);
 
 		$this->assertSame(
 			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings' ),
@@ -80,7 +88,15 @@ final class PanelDataControllerTest extends TestCase {
 	}
 
 	public function test_other_version_gets_short_cache(): void {
-		$response = ( new PanelDataController() )->get_panel_data( new WP_REST_Request( null, array( 'locale' => 'en_US', 'v' => 'ffffffffffff' ) ) );
+		$response = ( new PanelDataController() )->get_panel_data(
+			new WP_REST_Request(
+				null,
+				array(
+					'locale' => 'en_US',
+					'v'      => 'ffffffffffff',
+				)
+			)
+		);
 
 		$this->assertSame( 'public, max-age=600', $response->get_headers()['Cache-Control'] );
 	}

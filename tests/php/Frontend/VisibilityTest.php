@@ -16,16 +16,16 @@ final class VisibilityTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'is_admin'             => false,
-				'is_feed'              => false,
-				'is_customize_preview' => false,
-				'get_queried_object_id' => 0,
-				'is_singular'          => false,
+				'is_admin'               => false,
+				'is_feed'                => false,
+				'is_customize_preview'   => false,
+				'get_queried_object_id'  => 0,
+				'is_singular'            => false,
 				'get_page_template_slug' => false,
-				'get_post_type'        => false,
-				'home_url'             => 'https://example.test',
-				'wp_unslash'           => static fn ( $value ) => $value,
-				'wp_parse_url'         => static fn ( $url, $component = -1 ) => parse_url( (string) $url, $component ),
+				'get_post_type'          => false,
+				'home_url'               => 'https://example.test',
+				'wp_unslash'             => static fn ( $value ) => $value,
+				'wp_parse_url'           => static fn ( $url, $component = -1 ) => parse_url( (string) $url, $component ),
 			)
 		);
 		Functions\when( 'wp_get_current_user' )->justReturn( (object) array( 'roles' => array() ) );
@@ -38,17 +38,21 @@ final class VisibilityTest extends TestCase {
 	}
 
 	private function store( array $visibility ): void {
-		Functions\when( 'get_option' )->justReturn( array(
+		Functions\when( 'get_option' )->justReturn(
+			array(
 				'schemaVersion' => 2,
 				'visibility'    => array_merge( array( 'mode' => 'except_on' ), $visibility ),
-			) );
+			)
+		);
 	}
 
 	private function only_on( array $lists ): void {
-		Functions\when( 'get_option' )->justReturn( array(
+		Functions\when( 'get_option' )->justReturn(
+			array(
 				'schemaVersion' => 2,
 				'visibility'    => array_merge( array( 'mode' => 'only_on' ), $lists ),
-			) );
+			)
+		);
 	}
 
 	public function test_renders_by_default(): void {
@@ -300,9 +304,11 @@ final class VisibilityTest extends TestCase {
 
 	public function test_decision_is_memoized_across_head_and_footer(): void {
 		$state = array( 'singular' => true );
-		Functions\when( 'is_singular' )->alias( static function () use ( &$state ): bool {
-			return $state['singular'];
-		} );
+		Functions\when( 'is_singular' )->alias(
+			static function () use ( &$state ): bool {
+				return $state['singular'];
+			}
+		);
 		Functions\when( 'get_queried_object_id' )->justReturn( 42 );
 		$this->only_on( array( 'includePostIds' => array( 42 ) ) );
 

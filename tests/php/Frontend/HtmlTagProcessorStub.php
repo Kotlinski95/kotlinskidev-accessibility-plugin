@@ -48,9 +48,9 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 				$updated = substr( $tag, 0, -1 ) . ' ' . $rendered . '>';
 			}
 
-			$this->html      = substr( $this->html, 0, $this->tag_start ) . $updated . substr( $this->html, $this->tag_end );
-			$this->tag_end   = $this->tag_start + strlen( $updated );
-			$this->offset    = $this->tag_end;
+			$this->html    = substr( $this->html, 0, $this->tag_start ) . $updated . substr( $this->html, $this->tag_end );
+			$this->tag_end = $this->tag_start + strlen( $updated );
+			$this->offset  = $this->tag_end;
 
 			return true;
 		}

@@ -19,12 +19,12 @@ final class DashboardWidgetTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'__'                => static fn ( $text ) => $text,
-				'esc_html__'        => static fn ( $text ) => $text,
-				'esc_html'          => static fn ( $text ) => $text,
-				'esc_url'           => static fn ( $url ) => $url,
+				'__'                 => static fn ( $text ) => $text,
+				'esc_html__'         => static fn ( $text ) => $text,
+				'esc_html'           => static fn ( $text ) => $text,
+				'esc_url'            => static fn ( $url ) => $url,
 				'number_format_i18n' => static fn ( $number ) => (string) $number,
-				'admin_url'         => static fn ( $path = '' ) => 'https://example.test/wp-admin/' . $path,
+				'admin_url'          => static fn ( $path = '' ) => 'https://example.test/wp-admin/' . $path,
 			)
 		);
 	}

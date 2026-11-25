@@ -120,7 +120,7 @@ final class InlineConfigTest extends TestCase {
 
 	public static function combos(): array {
 		return array(
-			'alt shift a'  => array(
+			'alt shift a'   => array(
 				'Alt+Shift+A',
 				array(
 					'alt'   => true,
@@ -131,7 +131,7 @@ final class InlineConfigTest extends TestCase {
 					'code'  => 'KeyA',
 				),
 			),
-			'ctrl digit'   => array(
+			'ctrl digit'    => array(
 				'Ctrl+1',
 				array(
 					'alt'   => false,
@@ -142,7 +142,7 @@ final class InlineConfigTest extends TestCase {
 					'code'  => 'Digit1',
 				),
 			),
-			'aliases'      => array(
+			'aliases'       => array(
 				'Cmd+Option+Escape',
 				array(
 					'alt'   => true,
@@ -165,7 +165,14 @@ final class InlineConfigTest extends TestCase {
 		$this->assertNull( $this->config()['shortcut']['parsed'] );
 		$this->assertFalse( $this->config()['shortcut']['enabled'] );
 
-		$this->store_settings( array( 'shortcut' => array( 'enabled' => true, 'combo' => 'Alt+' ) ) );
+		$this->store_settings(
+			array(
+				'shortcut' => array(
+					'enabled' => true,
+					'combo'   => 'Alt+',
+				),
+			)
+		);
 		$this->assertNull( $this->config()['shortcut']['parsed'] );
 	}
 
@@ -191,17 +198,47 @@ final class InlineConfigTest extends TestCase {
 		$mobile  = '(max-width:768px)';
 
 		return array(
-			'all visible'    => array( array( 'desktop' => true, 'tablet' => true, 'mobile' => true ), '' ),
+			'all visible'    => array(
+				array(
+					'desktop' => true,
+					'tablet'  => true,
+					'mobile'  => true,
+				),
+				'',
+			),
 			'mobile hidden'  => array( array( 'mobile' => false ), $mobile ),
 			'tablet hidden'  => array( array( 'tablet' => false ), $tablet ),
 			'desktop hidden' => array( array( 'desktop' => false ), $desktop ),
-			'mobile tablet'  => array( array( 'tablet' => false, 'mobile' => false ), $tablet . ',' . $mobile ),
-			'all hidden'     => array( array( 'desktop' => false, 'tablet' => false, 'mobile' => false ), $desktop . ',' . $tablet . ',' . $mobile ),
+			'mobile tablet'  => array(
+				array(
+					'tablet' => false,
+					'mobile' => false,
+				),
+				$tablet . ',' . $mobile,
+			),
+			'all hidden'     => array(
+				array(
+					'desktop' => false,
+					'tablet'  => false,
+					'mobile'  => false,
+				),
+				$desktop . ',' . $tablet . ',' . $mobile,
+			),
 		);
 	}
 
 	public function test_hidden_media_follows_custom_breakpoints(): void {
-		$this->store_settings( array( 'visibility' => array( 'breakpoints' => array( 'tablet' => 900, 'mobile' => 600 ), 'devices' => array( 'mobile' => false ) ) ) );
+		$this->store_settings(
+			array(
+				'visibility' => array(
+					'breakpoints' => array(
+						'tablet' => 900,
+						'mobile' => 600,
+					),
+					'devices'     => array( 'mobile' => false ),
+				),
+			)
+		);
 
 		$this->assertSame( '(max-width:600px)', $this->config()['hiddenMedia'] );
 	}
@@ -265,5 +302,83 @@ final class InlineConfigTest extends TestCase {
 
 	public function test_schema_defaults_produce_the_recommended_load_section(): void {
 		$this->assertSame( Schema::defaults()['performance']['strategy'], $this->config()['load']['strategy'] );
+	}
+
+	public function test_trigger_and_launcher_fields_are_omitted_at_defaults(): void {
+		$config = $this->config();
+
+		$this->assertArrayNotHasKey( 'triggers', $config );
+		$this->assertArrayNotHasKey( 'launcher', $config );
+	}
+
+	public function test_trigger_fields_carry_selectors_and_url_actions(): void {
+		$settings                           = ( new Repository() )->get();
+		$settings['triggers']['selectors']  = array( '.a', '#b' );
+		$settings['triggers']['urlActions'] = array( 'open' );
+
+		$this->assertSame(
+			array(
+				's' => '.a,#b',
+				'u' => array( 'open' ),
+			),
+			$this->config( $settings )['triggers']
+		);
+
+		$settings['triggers']['selectors'] = array();
+		$this->assertSame( '', $this->config( $settings )['triggers']['s'] );
+	}
+
+	public function test_launcher_field_carries_mode_and_mount_only_for_inline(): void {
+		$settings                       = ( new Repository() )->get();
+		$settings['widget']['launcher'] = 'inline';
+		$settings['widget']['mount']    = '#slot';
+
+		$this->assertSame(
+			array(
+				'mode'  => 'inline',
+				'mount' => '#slot',
+			),
+			$this->config( $settings )['launcher']
+		);
+
+		$settings['widget']['launcher'] = 'hidden';
+		$this->assertSame(
+			array(
+				'mode'  => 'hidden',
+				'mount' => '',
+			),
+			$this->config( $settings )['launcher']
+		);
+	}
+
+	public function test_filters_extend_selectors_and_narrow_url_actions(): void {
+		Filters\expectApplied( 'kotlinskidev_a11y_trigger_selectors' )->once()->andReturn( array( '.a', '<bad>', 'body', '.c' ) );
+		Filters\expectApplied( 'kotlinskidev_a11y_url_actions' )->once()->andReturn( array( 'open', 'reset' ) );
+
+		$triggers = $this->config()['triggers'];
+
+		$this->assertSame( '.a,.c', $triggers['s'] );
+		$this->assertSame( array( 'open' ), $triggers['u'] );
+	}
+
+	public function test_url_actions_filter_cannot_widen_the_setting(): void {
+		$settings                           = ( new Repository() )->get();
+		$settings['triggers']['urlActions'] = array( 'open' );
+
+		Filters\expectApplied( 'kotlinskidev_a11y_url_actions' )->once()->andReturn( array( 'open', 'feature', 'profile' ) );
+
+		$this->assertSame( array( 'open' ), InlineConfig::url_actions( $settings ) );
+	}
+
+	public function test_budget_holds_with_maximum_selectors_and_non_default_url_actions(): void {
+		$selectors = array();
+		for ( $i = 0; $i < 10; $i++ ) {
+			$selectors[] = str_pad( '.menu-item-a11y-' . $i . ' > a', 40, 'x' );
+		}
+		$settings                           = ( new Repository() )->get();
+		$settings['triggers']['selectors']  = $selectors;
+		$settings['triggers']['urlActions'] = array( 'open' );
+
+		$this->assertLessThanOrEqual( 1536, strlen( ( new InlineConfig() )->script( $settings ) ) );
 	}
 }

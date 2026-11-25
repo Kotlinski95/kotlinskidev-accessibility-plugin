@@ -5,6 +5,8 @@ namespace Kotlinskidev\A11y\Frontend;
 
 use Kotlinskidev\A11y\I18n\LanguageResolver;
 use Kotlinskidev\A11y\Settings\Repository;
+use Kotlinskidev\A11y\Settings\Sanitizer;
+use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Support\Json;
 
 final class InlineConfig {
@@ -65,6 +67,21 @@ final class InlineConfig {
 		}
 
 		return implode( ',', $hidden );
+	}
+
+	public static function trigger_selectors( array $settings ): string {
+		$stored    = (array) ( $settings['triggers']['selectors'] ?? array() );
+		$filtered  = apply_filters( 'kotlinskidev_a11y_trigger_selectors', $stored );
+		$sanitized = ( new Sanitizer() )->sanitize_value( is_array( $filtered ) ? $filtered : $stored, (array) Schema::definition( 'triggers.selectors' ) );
+
+		return implode( ',', (array) $sanitized );
+	}
+
+	public static function url_actions( array $settings ): array {
+		$stored   = (array) ( $settings['triggers']['urlActions'] ?? Actions::URL );
+		$filtered = apply_filters( 'kotlinskidev_a11y_url_actions', $stored );
+
+		return array_values( array_intersect( is_array( $filtered ) ? $filtered : $stored, $stored, Actions::URL ) );
 	}
 
 	public static function parse_combo( string $combo ): ?array {
@@ -139,6 +156,8 @@ final class InlineConfig {
 			),
 		);
 
+		$config = array_merge( $config, $this->trigger_fields( $settings ) );
+
 		if ( true === apply_filters( 'kotlinskidev_a11y_legacy_config', false ) ) {
 			return $this->with_legacy_fields( $config, $locale );
 		}
@@ -148,6 +167,29 @@ final class InlineConfig {
 
 	public function script( array $settings ): string {
 		return self::GLOBAL_NAME . '=Object.assign(' . self::GLOBAL_NAME . '||{},' . Json::encode( $this->config( $settings ), self::JSON_FLAGS ) . ');';
+	}
+
+	private function trigger_fields( array $settings ): array {
+		$fields    = array();
+		$selectors = self::trigger_selectors( $settings );
+		$actions   = self::url_actions( $settings );
+		$mode      = (string) ( $settings['widget']['launcher'] ?? 'floating' );
+
+		if ( '' !== $selectors || Actions::URL !== $actions ) {
+			$fields['triggers'] = array(
+				's' => $selectors,
+				'u' => $actions,
+			);
+		}
+
+		if ( 'floating' !== $mode ) {
+			$fields['launcher'] = array(
+				'mode'  => $mode,
+				'mount' => 'inline' === $mode ? (string) ( $settings['widget']['mount'] ?? '' ) : '',
+			);
+		}
+
+		return $fields;
 	}
 
 	private function with_legacy_fields( array $config, string $locale ): array {

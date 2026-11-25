@@ -17,18 +17,18 @@ final class MarkupTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'is_feed'              => false,
-				'is_customize_preview' => false,
+				'is_feed'               => false,
+				'is_customize_preview'  => false,
 				'get_queried_object_id' => 0,
-				'get_post_type'        => false,
-				'home_url'             => 'https://example.test',
-				'wp_unslash'           => static fn ( $value ) => $value,
-				'wp_parse_url'         => static fn ( $url, $component = -1 ) => parse_url( (string) $url, $component ),
-				'wp_get_current_user'  => (object) array( 'roles' => array() ),
-				'__'         => static fn ( $text ) => $text,
-				'esc_attr'   => static fn ( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES ),
-				'esc_url'    => static fn ( $text ) => (string) $text,
-				'wp_kses'    => static fn ( $html ) => $html,
+				'get_post_type'         => false,
+				'home_url'              => 'https://example.test',
+				'wp_unslash'            => static fn ( $value ) => $value,
+				'wp_parse_url'          => static fn ( $url, $component = -1 ) => parse_url( (string) $url, $component ),
+				'wp_get_current_user'   => (object) array( 'roles' => array() ),
+				'__'                    => static fn ( $text ) => $text,
+				'esc_attr'              => static fn ( $text ) => htmlspecialchars( (string) $text, ENT_QUOTES ),
+				'esc_url'               => static fn ( $text ) => (string) $text,
+				'wp_kses'               => static fn ( $html ) => $html,
 			)
 		);
 		Functions\when( 'get_option' )->justReturn( array() );

@@ -1,8 +1,7 @@
-<?php
-?><!doctype html>
+<!doctype html>
 <html <?php language_attributes(); ?>>
 <head>
-<meta charset="<?php bloginfo('charset'); ?>">
+<meta charset="<?php bloginfo( 'charset' ); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <?php wp_head(); ?>
 </head>
@@ -25,9 +24,9 @@
 			<div>Slide 1</div><div>Slide 2</div><div>Slide 3</div><div>Slide 4</div>
 		</div>
 		<iframe id="hostile-iframe" title="Embedded fixture" width="300" height="100" srcdoc="<p>Framed content</p>"></iframe>
-		<video id="hostile-video" width="64" height="48" muted autoplay loop playsinline src="<?php echo esc_url(get_theme_file_uri('clip.mp4')); ?>"></video>
+		<video id="hostile-video" width="64" height="48" muted autoplay loop playsinline src="<?php echo esc_url( get_theme_file_uri( 'clip.mp4' ) ); ?>"></video>
 		<img id="hostile-bg-image" alt="" width="160" height="90" src="data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' width='160' height='90'&gt;&lt;rect width='160' height='90' fill='%23396'/&gt;&lt;/svg&gt;">
-		<?php for ($index = 0; $index < 700; $index++) : ?>
+		<?php for ( $index = 0; $index < 700; $index++ ) : ?>
 		<article class="hostile-article">
 			<h3>Article <?php echo (int) $index; ?></h3>
 			<p>Body <span>text</span> with <a href="#hostile-footer">a link</a> number <?php echo (int) $index; ?>.</p>
