@@ -118,6 +118,10 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['hideToolbar.days'] = definition('array', 'int_list', [1, 7, 30]);
   defs.labels = definition('object', 'label_map', {});
   defs['advanced.excludeSelectors'] = definition('string', 'text', '#wpadminbar');
+  defs['widget.launcher'] = definition('string', 'enum', 'floating', { enum: ['floating', 'inline', 'hidden'] });
+  defs['widget.mount'] = definition('string', 'selector', '');
+  defs['triggers.selectors'] = definition('array', 'selector_list', [], { max: 10 });
+  defs['triggers.urlActions'] = definition('array', 'enum_list', ['open', 'feature', 'profile'], { enum: ['open', 'feature', 'profile'] });
   defs['performance.preset'] = definition('string', 'enum', 'recommended', { enum: ['recommended', 'compatibility', 'custom'] });
   defs['performance.strategy'] = definition('string', 'enum', 'interaction', {
     enum: ['interaction', 'idle', 'defer', 'async', 'eager'],
@@ -185,6 +189,7 @@ export const sampleConfig = (): AdminConfig => ({
   profiles: PROFILES,
   features: FEATURES,
   version: '0.1.0',
+  homeUrl: 'https://example.test/',
   cost: sampleCost(),
 });
 

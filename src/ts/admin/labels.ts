@@ -139,3 +139,50 @@ export const optOutLabel = (optimizer: string): string =>
     },
     optimizer
   );
+
+export const launcherLabel = (mode: string): string =>
+  lookup(
+    {
+      floating: __('Floating button', 'kotlinskidev-accessibility'),
+      inline: __('Inside a page element', 'kotlinskidev-accessibility'),
+      hidden: __('No launcher button (use your own triggers)', 'kotlinskidev-accessibility'),
+    },
+    mode
+  );
+
+export const urlActionLabel = (action: string): string =>
+  lookup(
+    {
+      open: __('Open the panel', 'kotlinskidev-accessibility'),
+      feature: __('Turn on a feature', 'kotlinskidev-accessibility'),
+      profile: __('Apply a profile', 'kotlinskidev-accessibility'),
+    },
+    action
+  );
+
+export const snippetKindLabel = (kind: string): string =>
+  lookup(
+    {
+      html: __('HTML', 'kotlinskidev-accessibility'),
+      link: __('Link', 'kotlinskidev-accessibility'),
+      shortcode: __('Shortcode', 'kotlinskidev-accessibility'),
+      php: __('PHP', 'kotlinskidev-accessibility'),
+      javascript: __('JavaScript', 'kotlinskidev-accessibility'),
+      url: __('URL', 'kotlinskidev-accessibility'),
+    },
+    kind
+  );
+
+export const dialogActionLabel = (action: string): string =>
+  lookup(
+    {
+      open: __('Open the panel', 'kotlinskidev-accessibility'),
+      close: __('Close the panel', 'kotlinskidev-accessibility'),
+      toggle: __('Open or close the panel', 'kotlinskidev-accessibility'),
+      reset: __('Reset all adjustments', 'kotlinskidev-accessibility'),
+      statement: __('Go to the accessibility statement', 'kotlinskidev-accessibility'),
+      hide: __('Hide the toolbar', 'kotlinskidev-accessibility'),
+      show: __('Show the toolbar', 'kotlinskidev-accessibility'),
+    },
+    action
+  );

@@ -8,6 +8,7 @@ import { createNotices } from './notices';
 import { createPreview } from './preview';
 import { createSaveBar } from './save-bar';
 import { createFormState } from './state';
+import { createTriggerNotice } from './panels/triggers';
 import type { FormState } from './state';
 import type { AdminConfig, SchemaPayload, SettingsTree } from './types';
 
@@ -33,6 +34,8 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
 
   const context: FormContext = { state, schema, config, api, notices, reload: () => mountForm() };
 
+  const triggerNotice = createTriggerNotice(context);
+
   const saveBar = createSaveBar(state, () => {
     void save();
   });
@@ -44,6 +47,7 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
       const saved = await api.saveSettings(state.snapshot());
       state.load(saved);
       mountForm();
+      void triggerNotice.refresh();
       notices.success(__('Settings saved.', 'kotlinskidev-accessibility'));
     } catch (error) {
       notices.error(errorMessage(error, __('Settings could not be saved.', 'kotlinskidev-accessibility')));
@@ -53,8 +57,10 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   };
 
   mountForm();
+  void triggerNotice.refresh();
   root.replaceChildren(
     notices.element,
+    triggerNotice.element,
     h('div', { class: 'ka11y-layout' }, h('div', { class: 'ka11y-layout__main' }, formHost, saveBar.element), h('aside', { class: 'ka11y-layout__aside' }, preview.element))
   );
   const removeGuard = installUnsavedGuard(state);

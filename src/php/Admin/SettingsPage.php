@@ -104,6 +104,7 @@ final class SettingsPage {
 			'profiles' => Schema::profile_keys(),
 			'features' => Schema::feature_keys(),
 			'version'  => KOTLINSKIDEV_A11Y_VERSION,
+			'homeUrl'  => esc_url_raw( home_url( '/' ) ),
 			'cost'     => $this->cost(),
 		);
 	}

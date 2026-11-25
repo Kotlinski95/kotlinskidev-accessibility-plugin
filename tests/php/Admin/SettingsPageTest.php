@@ -116,6 +116,7 @@ final class SettingsPageTest extends TestCase {
 		$this->assertSame( 'https://example.test/wp-json/kotlinskidev-a11y/v1/', $config['restRoot'] );
 		$this->assertSame( 'nonce123', $config['nonce'] );
 		$this->assertSame( '0.0.0-test', $config['version'] );
+		$this->assertSame( 'https://example.test', $config['homeUrl'] );
 		$this->assertArrayHasKey( 'panelTitle', $config['strings'] );
 		$this->assertContains( 'biggerText', $config['features'] );
 		$this->assertContains( 'visionImpaired', $config['profiles'] );

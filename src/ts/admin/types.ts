@@ -53,6 +53,7 @@ export interface AdminConfig {
   profiles: string[];
   features: string[];
   version: string;
+  homeUrl: string;
   cost: CostData;
 }
 
