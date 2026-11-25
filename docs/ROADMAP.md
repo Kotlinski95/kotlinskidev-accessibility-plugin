@@ -75,6 +75,8 @@ Done when: reverting the Phase 0 fix makes the suite fail.
 
 ## Phase 3: loading and performance, v0.2.0
 
+Status: done, release v0.2.0 pending. Spec: [PHASE3-SPEC.md](PHASE3-SPEC.md).
+
 Architecture:
 
 - `bootstrap` (inline, under 1 KB): restores state, handles recovery URLs.

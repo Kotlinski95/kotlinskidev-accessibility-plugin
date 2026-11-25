@@ -7,46 +7,46 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Admin notice for sites migrated from v0.1 (custom preset, defer or idle, linked page CSS) recommending the Recommended performance preset, with a nonce-checked per-user dismissal.
-- E2E: hostile fixture theme and cookie-driven theme switch (mu-plugin), every page invariant runs on `stock` and `hostile`, pairwise feature-level combinations, hostile-only checks, and a Pixel 5 `@smoke` project. See `docs/TESTING.md`.
-- CI: PHPStan level 8 (`composer run analyse`), WordPress Plugin Check on the packaged plugin, smoke E2E on pull requests, nightly WordPress and PHP matrix with Firefox and WebKit smoke, CodeQL and Dependabot.
-- Settings schema v2: `performance.*` (preset, strategy, position, fetch priority, prefetch, page CSS, device skip, optimizer opt-out) with Recommended and Compatibility presets, `visibility.mode` with include lists, a v1 migration that maps `advanced.loadStrategy`, and `presets` in `GET /schema`.
-- Visibility modes on the front end: `everywhere`, `only_on` and `except_on`, with a template matcher (block template slug or page template file) and the `__guest` pseudo-role for logged-out visitors.
-- Panel data: per-locale `panel-{locale}-{hash}.json` in `uploads/kotlinskidev-a11y/` plus a public `GET /kotlinskidev-a11y/v1/panel-data` fallback, a new `loadError` string, and a `translations` reason for `kotlinskidev_a11y_cache_invalidated` after translation updates. Uninstall removes the files.
-- Front end switch-over: one `loader.js` script on every page (strategy, position, fetch priority and optimizer opt-out attributes follow the Performance settings), the launcher server-rendered in a declarative shadow root, page CSS loaded lazily, and `build/manifest.php` for versions. The panel and feature chunks load on first use or from saved state. See `docs/PHASE3-SPEC.md`.
-- `kotlinskidev_a11y_legacy_config` filter: return `true` to keep the moved config fields inline until v0.3.0.
-- E2E `loading.spec.ts` (strategies, saved state, hostile fixture, early triggers, chunk failure, data fallback, device skip, no JavaScript, page CSS modes) and `tests/e2e/support/perf.ts`.
-- E2E `compat.spec.ts` (Asset CleanUp style moved loader, strict CSP with nonce) and `perf.spec.ts` (CLS, LCP and request gates), with `ka11y-fixture-moved` and `ka11y-fixture-csp` mu-plugins.
-- Nightly Lighthouse job running `lhci` three times (widget off via `visibility.mode=only_on`, Recommended, saved state) and comparing LCP, CLS and TBT medians (`lighthouserc.cjs`, `bin/lh-widget.php`, `bin/lh-seed-state.cjs`, `bin/lh-compare.mjs`), with `@lhci/cli` pinned to 0.15.1.
+- Performance tab with presets Recommended, Compatibility and Custom: load strategy, script position, fetch priority, panel prefetch, Page CSS mode (lazy, linked, inline), device skip and optimizer opt-out. The admin shows the estimated cost per page.
+- Where to load: everywhere, only on, or except on, by post, post type, template, role (including `__guest`) and URL pattern.
+- Panel data as a versioned JSON file per locale from uploads, with a REST fallback at `kotlinskidev-a11y/v1/panel-data` and a new `loadError` string.
+- `kotlinskidev_a11y_cache_invalidated` fires with `translations` after language packs update.
+- `kotlinskidev_a11y_legacy_config` filter keeps the moved config fields inline until v0.3.0.
+- Admin notice for sites migrated from v0.1 recommending the Recommended preset, dismissible per user.
+- Settings schema v2 with a v1 migration and `presets` in `GET /schema`.
+- Tests and CI: hostile fixture theme, loading, compat and perf E2E specs, PHPStan level 8, Plugin Check, nightly matrix and Lighthouse comparison. See `docs/TESTING.md`.
 
 ### Changed
 
-- Document-level custom CSS is printed in the page head. Custom CSS that targets the launcher inside the shadow root applies after the first open.
-- `window.kotlinskidevA11y` is merged into the bootstrap prefix and holds only the loader fields. The other fields arrive with the panel data.
+- Only a loader of at most 2 KB gzip runs on every page. The panel, the features and the page CSS load on first use. Visitors with saved settings still get them before first paint.
+- The launcher is server-rendered in a declarative shadow root and shows a loading and an error state.
+- `window.kotlinskidevA11y` holds only what the loader needs. The rest arrives with the panel data.
+- Document-level custom CSS is printed in the page head. CSS that targets the launcher inside the shadow root applies after the first open.
 - The panel dialog returns focus to the opener passed with the open command, and the launcher by default.
 - Page footprint budget: bootstrap plus loader at most 3840 B gzip.
 
+### Deprecated
+
+- Reading `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` or the full `strings` from `window.kotlinskidevA11y` at page load. Use `kotlinskidev_a11y_legacy_config` until v0.3.0.
+
 ### Removed
 
+- `advanced.loadStrategy`. Existing values migrate to the Custom preset.
 - `build/frontend.js` and `frontend.asset.php`.
 
 ### Fixed
 
-- Visibility: post ID and post type rules match singular views only (archives and the blog index no longer collide with term IDs), the decision is made once per request so head and footer agree, and non-ASCII URL patterns such as `/café/*` match percent-encoded requests.
-- Panel data: invalid locales stay REST-only without rebuilding on every page view, the file is written atomically, malformed cached entries are rebuilt, and upload directory errors fall back to the REST URL.
-- Uninstall also cleans every site of a multisite network and falls back to deleting files when the filesystem is not direct. The plugin now reports a missing `build/bootstrap.js` or `build/launcher.css`.
+- Visibility: post ID and post type rules match singular views only, the decision is made once per request, and non-ASCII URL patterns match percent-encoded requests.
+- Panel data: invalid locales stay REST-only, the file is written atomically, malformed cache entries are rebuilt, and upload errors fall back to REST.
+- Uninstall cleans every site of a multisite network. A missing `build/bootstrap.js` or `build/launcher.css` is reported.
 - Bootstrap keeps the early click handler when stored state is corrupt, and the loader shows a built-in message when the load error string is empty.
 
 ### Security
 
-- Visibility URL patterns use a linear wildcard matcher with a length cap instead of a regular expression (no ReDoS).
+- Visibility URL patterns use a linear wildcard matcher with a length cap (no ReDoS).
 - `GET /panel-data` returns 404 for locales the site does not use.
-- Bootstrap rejects stored CSS variable values containing `url(`, `image-set(`, `expression`, `;`, `{`, `}` or more than 200 characters, builds the page CSS link with DOM APIs and escapes the URL on the `document.write` path, and clears the hidden toolbar key on `?ka11y=reset`.
-- Loader command and group lookups ignore inherited keys such as `constructor` and `__proto__`; a failed JSON encoding no longer prints a broken inline script.
-
-### Changed
-
-- The logged-out pseudo-role is now `__guest` so it cannot collide with a real role slug. It was introduced in this unreleased work, so no migration is needed.
+- Bootstrap rejects unsafe stored CSS variable values, builds the page CSS link with DOM APIs, and clears the hidden toolbar key on `?ka11y=reset`.
+- Loader lookups ignore inherited keys such as `constructor` and `__proto__`. A failed JSON encoding no longer prints a broken inline script.
 
 ## [0.1.3] - 2026-11-24
 

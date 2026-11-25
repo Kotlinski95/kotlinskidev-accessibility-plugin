@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Kotlinskidev Accessibility 0.1.0\n"
+"Project-Id-Version: Kotlinskidev Accessibility 0.1.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kotlinskidev-accessibility\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-24T12:31:59+00:00\n"
+"POT-Creation-Date: 2026-11-25T06:34:20+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: kotlinskidev-accessibility\n"
@@ -29,1085 +29,1576 @@ msgstr ""
 msgid "Adrian Kotlinski"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:35
-#: src/php/Admin/AltTextPage.php:36
-#: src/php/Admin/AltTextPage.php:100
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:35
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:36
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:100
+#: src/php/Admin/AltTextPage.php:30
+#: src/php/Admin/AltTextPage.php:31
+#: src/php/Admin/AltTextPage.php:95
 msgid "Missing alt text"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:106
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:106
+#: src/php/Admin/AltTextPage.php:101
 msgid "Every image has alt text."
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:119
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:119
+#: src/php/Admin/AltTextPage.php:114
 msgid "images without alt text"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:127
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:127
+#: src/php/Admin/AltTextPage.php:122
 msgid "Search by title"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:129
-#: src/php/I18n/Strings.php:136
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:129
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:136
+#: src/php/Admin/AltTextPage.php:124
+#: src/php/I18n/Strings.php:137
 msgid "Search"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:154
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:154
+#: src/php/Admin/AltTextPage.php:149
 msgid "Alt text"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:155
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:155
+#: src/php/Admin/AltTextPage.php:150
 msgid "Save"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:171
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:171
+#: src/php/Admin/AltTextPage.php:166
 msgid "Previous"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:172
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:172
+#: src/php/Admin/AltTextPage.php:167
 msgid "Next"
 msgstr ""
 
-#: src/php/Admin/AltTextPage.php:177
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:177
+#: src/php/Admin/AltTextPage.php:172
 msgid "Pagination"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:34
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:38
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:39
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:63
 #: src/php/Admin/DashboardWidget.php:34
-#: src/php/Admin/SettingsPage.php:38
-#: src/php/Admin/SettingsPage.php:39
-#: src/php/Admin/SettingsPage.php:63
+#: src/php/Admin/SettingsPage.php:43
+#: src/php/Admin/SettingsPage.php:44
+#: src/php/Admin/SettingsPage.php:68
 msgid "Accessibility"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:58
 #: src/php/Admin/DashboardWidget.php:58
 msgid "Images without alt text"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:61
 #: src/php/Admin/DashboardWidget.php:61
 msgid "Fix missing alt text"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:62
 #: src/php/Admin/DashboardWidget.php:62
 msgid "Enabled features"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:65
 #: src/php/Admin/DashboardWidget.php:65
 msgid "Open settings"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:66
 #: src/php/Admin/DashboardWidget.php:66
 msgid "Plugin version"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:50
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:50
+#: src/php/Admin/SettingsPage.php:55
 msgid "Settings"
 msgstr ""
 
-#: src/php/Admin/SettingsPage.php:65
+#: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:65
+#: src/php/Admin/SettingsPage.php:70
 msgid "This settings page needs JavaScript."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:57
 #: src/php/I18n/Strings.php:57
 msgid "Bigger text"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:58
 #: src/php/I18n/Strings.php:58
 msgid "Increase the text size across the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:59
 #: src/php/I18n/Strings.php:59
 msgid "Line height"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:60
 #: src/php/I18n/Strings.php:60
 msgid "Increase the space between lines of text."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:61
 #: src/php/I18n/Strings.php:61
 msgid "Letter spacing"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:62
 #: src/php/I18n/Strings.php:62
 msgid "Increase the space between letters."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:63
 #: src/php/I18n/Strings.php:63
 msgid "Font weight"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:64
 #: src/php/I18n/Strings.php:64
 msgid "Make text bolder."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:65
 #: src/php/I18n/Strings.php:65
 msgid "Readable font"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:66
 #: src/php/I18n/Strings.php:66
 msgid "Switch to a plain, easy-to-read font."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:67
 #: src/php/I18n/Strings.php:67
 msgid "Dyslexia-friendly font"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:68
 #: src/php/I18n/Strings.php:68
 msgid "Use a font designed to ease reading with dyslexia."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:69
 #: src/php/I18n/Strings.php:69
 msgid "Text alignment"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:70
 #: src/php/I18n/Strings.php:70
 msgid "Cycle text alignment between left, center and right."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:71
 #: src/php/I18n/Strings.php:71
 msgid "Highlight links"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:72
 #: src/php/I18n/Strings.php:72
 msgid "Underline and emphasize every link."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:73
 #: src/php/I18n/Strings.php:73
 msgid "Big cursor"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:74
 #: src/php/I18n/Strings.php:74
 msgid "Enlarge the mouse pointer."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:75
 #: src/php/I18n/Strings.php:75
 msgid "Text magnifier"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:76
 #: src/php/I18n/Strings.php:76
 msgid "Show a magnified view of the text under the pointer."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:77
 #: src/php/I18n/Strings.php:77
 msgid "Cognitive reading"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:78
 #: src/php/I18n/Strings.php:78
 msgid "Bold the first half of each word to guide reading."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:79
 #: src/php/I18n/Strings.php:79
 msgid "Dark contrast"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:80
 #: src/php/I18n/Strings.php:80
 msgid "Use a dark, high-legibility color scheme."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:81
 #: src/php/I18n/Strings.php:81
 msgid "Light contrast"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:82
 #: src/php/I18n/Strings.php:82
 msgid "Use a light, high-legibility color scheme."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:83
 #: src/php/I18n/Strings.php:83
 msgid "High contrast"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:84
 #: src/php/I18n/Strings.php:84
 msgid "Increase the contrast of all colors."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:85
 #: src/php/I18n/Strings.php:85
 msgid "Monochrome"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:86
 #: src/php/I18n/Strings.php:86
 msgid "Remove all color from the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:87
 #: src/php/I18n/Strings.php:87
 msgid "Saturation"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:88
 #: src/php/I18n/Strings.php:88
 msgid "Lower or raise the color saturation."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:89
 #: src/php/I18n/Strings.php:89
 msgid "Reading line"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:90
 #: src/php/I18n/Strings.php:90
 msgid "Show a horizontal guide line that follows the pointer."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:91
 #: src/php/I18n/Strings.php:91
 msgid "Reading mask"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:92
 #: src/php/I18n/Strings.php:92
 msgid "Dim everything except the line being read."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:93
 #: src/php/I18n/Strings.php:93
 msgid "Read page"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:94
 #: src/php/I18n/Strings.php:94
 msgid "Read the page content aloud."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:95
 #: src/php/I18n/Strings.php:95
 msgid "Keyboard navigation"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:96
 #: src/php/I18n/Strings.php:96
 msgid "Strengthen focus outlines and enable navigation hotkeys."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:97
 #: src/php/I18n/Strings.php:97
 msgid "Hide images"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:98
 #: src/php/I18n/Strings.php:98
 msgid "Hide all images on the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:99
 #: src/php/I18n/Strings.php:99
 msgid "Mute sounds"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:100
 #: src/php/I18n/Strings.php:100
 msgid "Mute all audio and video on the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:101
 #: src/php/I18n/Strings.php:101
 msgid "Highlight titles"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:102
 #: src/php/I18n/Strings.php:102
 msgid "Outline every heading on the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:103
 #: src/php/I18n/Strings.php:103
 msgid "Highlight all"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:104
 #: src/php/I18n/Strings.php:104
 msgid "Outline all interactive elements and headings."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:105
 #: src/php/I18n/Strings.php:105
 msgid "Stop animations"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:106
 #: src/php/I18n/Strings.php:106
 msgid "Stop animations, moving images and autoplay video."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:107
 #: src/php/I18n/Strings.php:107
 msgid "Skip to content"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:108
 #: src/php/I18n/Strings.php:108
 msgid "Jump straight to a main part of the page."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:109
 #: src/php/I18n/Strings.php:109
 msgid "Vision impaired"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:110
 #: src/php/I18n/Strings.php:110
 msgid "Seizure safe"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:111
 #: src/php/I18n/Strings.php:111
 msgid "ADHD friendly"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:112
 #: src/php/I18n/Strings.php:112
 msgid "Blindness"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:113
 #: src/php/I18n/Strings.php:113
 msgid "Epilepsy safe"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:114
 #: src/php/I18n/Strings.php:114
 msgid "Accessibility settings"
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:115
 #: src/php/I18n/Strings.php:115
 msgid "Open accessibility settings"
 msgstr ""
 
-#: src/php/I18n/Strings.php:116
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:116
+#: src/php/I18n/Strings.php:117
 msgid "Close"
 msgstr ""
 
-#: src/php/I18n/Strings.php:117
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:117
+#: src/php/I18n/Strings.php:118
 msgid "Reset all settings"
 msgstr ""
 
-#: src/php/I18n/Strings.php:118
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:118
+#: src/php/I18n/Strings.php:119
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Hide toolbar"
 msgstr ""
 
-#: src/php/I18n/Strings.php:119
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:119
+#: src/php/I18n/Strings.php:120
 msgid "Hide for this session"
 msgstr ""
 
-#: src/php/I18n/Strings.php:120
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:120
+#: src/php/I18n/Strings.php:121
 msgid "Hide for"
 msgstr ""
 
-#: src/php/I18n/Strings.php:121
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:121
+#: src/php/I18n/Strings.php:122
 msgid "days"
 msgstr ""
 
-#: src/php/I18n/Strings.php:122
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:122
+#: src/php/I18n/Strings.php:123
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Accessibility statement"
 msgstr ""
 
-#: src/php/I18n/Strings.php:123
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:123
+#: src/php/I18n/Strings.php:124
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Keyboard shortcut"
 msgstr ""
 
-#: src/php/I18n/Strings.php:124
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:124
+#: src/php/I18n/Strings.php:125
 msgid "Accessibility profiles"
 msgstr ""
 
-#: src/php/I18n/Strings.php:125
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:125
+#: src/php/I18n/Strings.php:126
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Content"
 msgstr ""
 
-#: src/php/I18n/Strings.php:126
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:126
+#: src/php/I18n/Strings.php:127
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Color"
 msgstr ""
 
-#: src/php/I18n/Strings.php:127
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:127
+#: src/php/I18n/Strings.php:128
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Orientation"
 msgstr ""
 
-#: src/php/I18n/Strings.php:128
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:128
+#: src/php/I18n/Strings.php:129
 msgid "Adjustments"
 msgstr ""
 
-#: src/php/I18n/Strings.php:129
-#: src/php/I18n/Strings.php:132
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:129
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:132
+#: src/php/I18n/Strings.php:130
+#: src/php/I18n/Strings.php:133
 msgid "Main content"
 msgstr ""
 
-#: src/php/I18n/Strings.php:130
-#: src/php/I18n/Strings.php:133
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:130
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:133
+#: src/php/I18n/Strings.php:131
+#: src/php/I18n/Strings.php:134
 msgid "Navigation"
 msgstr ""
 
-#: src/php/I18n/Strings.php:131
-#: src/php/I18n/Strings.php:135
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:131
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:135
+#: src/php/I18n/Strings.php:132
+#: src/php/I18n/Strings.php:136
 msgid "Footer"
 msgstr ""
 
-#: src/php/I18n/Strings.php:134
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:134
+#: src/php/I18n/Strings.php:135
 msgid "Header"
 msgstr ""
 
-#: src/php/I18n/Strings.php:137
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:137
+#: src/php/I18n/Strings.php:138
 msgid "Sidebar"
 msgstr ""
 
-#: src/php/I18n/Strings.php:138
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:138
+#: src/php/I18n/Strings.php:139
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Off"
 msgstr ""
 
-#: src/php/I18n/Strings.php:139
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:139
+#: src/php/I18n/Strings.php:140
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "On"
 msgstr ""
 
-#: src/php/I18n/Strings.php:140
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:140
+#: src/php/I18n/Strings.php:141
+#: build/admin.js:1
 msgid "Low"
 msgstr ""
 
-#: src/php/I18n/Strings.php:141
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:141
+#: src/php/I18n/Strings.php:142
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Medium"
 msgstr ""
 
-#: src/php/I18n/Strings.php:142
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:142
+#: src/php/I18n/Strings.php:143
+#: build/admin.js:1
 msgid "High"
 msgstr ""
 
-#: src/php/I18n/Strings.php:143
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:143
+#: src/php/I18n/Strings.php:144
 msgid "Left"
 msgstr ""
 
-#: src/php/I18n/Strings.php:144
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:144
+#: src/php/I18n/Strings.php:145
 msgid "Center"
 msgstr ""
 
-#: src/php/I18n/Strings.php:145
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:145
+#: src/php/I18n/Strings.php:146
 msgid "Right"
 msgstr ""
 
-#: src/php/I18n/Strings.php:146
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:146
+#: src/php/I18n/Strings.php:147
 msgid "The accessibility statement has not been published yet."
 msgstr ""
 
-#: src/php/I18n/Strings.php:147
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:147
+#: src/php/I18n/Strings.php:148
 msgid "Our commitment to accessibility"
 msgstr ""
 
-#: src/php/I18n/Strings.php:148
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:148
+#: src/php/I18n/Strings.php:149
 msgid "We want this website to be usable by everyone, including people with disabilities."
 msgstr ""
 
-#: src/php/I18n/Strings.php:149
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:149
+#: src/php/I18n/Strings.php:150
 msgid "Conformance status"
 msgstr ""
 
-#: src/php/I18n/Strings.php:150
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:150
+#: src/php/I18n/Strings.php:151
 msgid "We are working towards conformance with WCAG 2.2 level AA."
 msgstr ""
 
-#: src/php/I18n/Strings.php:151
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:151
+#: src/php/I18n/Strings.php:152
 msgid "Feedback and contact"
 msgstr ""
 
-#: src/php/I18n/Strings.php:152
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:152
+#: src/php/I18n/Strings.php:153
 msgid "If you run into an accessibility barrier on this website, please contact the site owner and describe the problem."
 msgstr ""
 
-#: src/php/I18n/Strings.php:153
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:153
+#: src/php/I18n/Strings.php:154
 msgid "Date of this statement"
 msgstr ""
 
-#: src/php/I18n/Strings.php:154
+#: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:154
+#: src/php/I18n/Strings.php:155
 msgid "This statement is reviewed regularly; the date of the last review is added by the site owner."
 msgstr ""
 
+#: dist/stage/kotlinskidev-accessibility/src/php/Rest/AltTextController.php:52
 #: src/php/Rest/AltTextController.php:52
 msgid "The requested item is not a media attachment."
 msgstr ""
 
-#: src/php/Rest/SettingsController.php:129
+#: dist/stage/kotlinskidev-accessibility/src/php/Rest/SettingsController.php:129
+#: src/php/Rest/SettingsController.php:130
 msgid "The request body must be a JSON object."
 msgstr ""
 
+#: src/php/Admin/PerformanceNotice.php:61
+msgid "Accessibility: switch to the Recommended performance preset to load less JavaScript on every page."
+msgstr ""
+
+#: src/php/Admin/PerformanceNotice.php:63
+msgid "Open performance settings"
+msgstr ""
+
+#: src/php/Admin/PerformanceNotice.php:65
+msgid "Dismiss"
+msgstr ""
+
+#: src/php/Admin/PerformanceNotice.php:73
+msgid "You do not have permission to do this."
+msgstr ""
+
+#: src/php/I18n/Strings.php:116
+msgid "Accessibility tools could not load. Select the button to try again."
+msgstr ""
+
+#: src/php/requirements.php:28
+msgid "Kotlinskidev Accessibility is inactive because some plugin files are missing. Delete it, then install kotlinskidev-accessibility.zip from the latest GitHub release, not \"Source code (zip)\"."
+msgstr ""
+
+#: src/php/Rest/PanelDataController.php:63
+msgid "Unknown locale."
+msgstr ""
+
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Desktop"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Tablet"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Mobile"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Bottom right"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Bottom left"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Top right"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Top left"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Middle right"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Middle left"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Small"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Large"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Automatic"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Light"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Dark"
 msgstr ""
 
 #: build/admin.js:1
+msgid "Everywhere"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Only on the pages listed below"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Everywhere except the pages listed below"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Local storage"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Cookie"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Do not remember choices"
 msgstr ""
 
 #: build/admin.js:1
-msgid "Deferred script"
+msgid "Recommended"
 msgstr ""
 
 #: build/admin.js:1
+msgid "Compatibility"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Custom"
+msgstr ""
+
+#: build/admin.js:1
+msgid "On first interaction"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "When the browser is idle"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Deferred script"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Asynchronous script"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Immediately"
+msgstr ""
+
+#: build/admin.js:1
+msgid "In the head"
+msgstr ""
+
+#: build/admin.js:1
+msgid "In the footer"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Never"
+msgstr ""
+
+#: build/admin.js:1
+msgid "When the pointer nears the button"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Load when the panel opens"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Linked stylesheet"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Inline in the page"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Cloudflare Rocket Loader"
+msgstr ""
+
+#: build/admin.js:1
+msgid "WP Rocket"
+msgstr ""
+
+#: build/admin.js:1
+msgid "LiteSpeed Cache"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Jetpack Boost"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Asset CleanUp"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Theme"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Widget theme"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Dark mode selector"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "CSS selector that matches your site when it is in dark mode."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Light mode selector"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "CSS selector that matches your site when it is in light mode."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Follow the visitor color scheme preference"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Colors"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Primary color"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Text on primary color"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Light surface"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Dark surface"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Text on light surface"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Text on dark surface"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Shape and type"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Corner radius"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Any CSS length, for example 12px or 0.75rem."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Stacking order (z-index)"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Font family"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use inherit to follow the site font."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Custom CSS"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Applied to the widget and the page. Tags are removed on save."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Record shortcut"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Press the new combination, or Escape to cancel"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Remove"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Remove %s"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Add"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Remembering choices"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Saving a visitor choice in the browser is strictly necessary to provide the accessibility features they asked for. Choose Do not remember choices to store nothing."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Storage mode"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Remember for (days)"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Storage key"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Enable the keyboard shortcut"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Shortcut combination"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Opens the accessibility panel from anywhere on the page."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Let visitors hide the toolbar"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Hide durations (days)"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Advanced"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Exclude selectors"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Elements matching these selectors are left untouched by the adjustments."
 msgstr ""
 
 #: build/admin.js:1
-msgid "Script loading"
-msgstr ""
-
-#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Level %1$d: %2$s"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Enable %s"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Default state of %s"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Choose which adjustments visitors can use and which ones start active."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Feature"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Enabled"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Default"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Attachment #%d"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Default icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Choose launcher icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use this icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Choose icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use default icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Widget position per device"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Device"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Position"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Horizontal offset (px)"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Vertical offset (px)"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Launcher size"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Launcher icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Pick an image from the media library, or keep the default universal access icon."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Show a border around the icon"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Cancel"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The file could not be read."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The file is not valid JSON."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The file must contain a settings object."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings exported."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Export failed."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Choose a JSON file to import first."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings imported and saved."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import failed."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset all settings?"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "This restores every setting to its default value and cannot be undone."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset settings"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings reset to defaults."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset failed."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Export"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Download the saved settings as a JSON file."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Download settings"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Upload a settings file. It replaces the saved settings immediately."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings file"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import settings"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Restore every setting to its default value."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset to defaults"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Filter labels"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Override any widget text per language. Empty fields use the default text shown as a placeholder."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Widget labels"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement page ID"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use 0 to link to the address below instead."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement address"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement content"
 msgstr ""
 
 #: build/admin.js:1
+msgid "Cost per page"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Downloaded on every page: "
+msgstr ""
+
+#: build/admin.js:1
+msgid "Downloaded when a visitor opens the widget: "
+msgstr ""
+
+#: build/admin.js:1
+msgid "Compressed sizes, estimated from the current settings."
+msgstr ""
+
+#: build/admin.js:1
+msgid "Preset"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Performance preset"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Recommended loads the least JavaScript. Compatibility loads everything at once for sites whose optimizers break on-demand loading. Custom lets you set each option."
+msgstr ""
+
+#: build/admin.js:1
+msgid "Loading"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Script loading"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Script position"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Fetch priority"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Prefetch the panel"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Styles"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Page adjustment styles"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Devices"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Skip downloads on devices where the widget is hidden"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Optimizers"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Exclude the widget scripts from"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Profiles switch on a ready-made set of adjustments with one click."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Offer the %s profile"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 #, js-format
 msgid "Adjustments in the %s profile"
 msgstr ""
 
 #: build/admin.js:1
-msgid "Show the widget on"
+msgid "Use __guest for logged-out visitors. Role rules are skipped on cached pages, so a page cache can show the widget to the wrong audience."
 msgstr ""
 
 #: build/admin.js:1
-msgid "Visible"
+msgid "Template slugs such as single, page or front-page, or a page template file such as templates/full-width.php."
 msgstr ""
 
 #: build/admin.js:1
-msgid "Breakpoints"
-msgstr ""
-
-#: build/admin.js:1
-msgid "Largest tablet width (px)"
-msgstr ""
-
-#: build/admin.js:1
-msgid "Screens up to this width count as tablet."
-msgstr ""
-
-#: build/admin.js:1
-msgid "Largest mobile width (px)"
-msgstr ""
-
-#: build/admin.js:1
-msgid "Screens up to this width count as mobile."
-msgstr ""
-
-#: build/admin.js:1
-msgid "Exclusions"
-msgstr ""
-
-#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Post and page IDs"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Post types"
 msgstr ""
 
 #: build/admin.js:1
+msgid "Templates"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "User roles"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "URL patterns"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use * as a wildcard, for example /checkout/*."
 msgstr ""
 
 #: build/admin.js:1
+msgid "Show the widget"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Only on"
+msgstr ""
+
+#: build/admin.js:1
+msgid "Except on"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Show the widget on"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Visible"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Breakpoints"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Largest tablet width (px)"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Screens up to this width count as tablet."
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Largest mobile width (px)"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Screens up to this width count as mobile."
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "General"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Features"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Profiles"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Visibility"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Appearance"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Languages"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Behavior"
 msgstr ""
 
 #: build/admin.js:1
+msgid "Performance"
+msgstr ""
+
+#: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import / Export"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Accessibility settings sections"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The widget is hidden on this device."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Live preview"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Preview device"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Save changes"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "You have unsaved changes."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings saved."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings could not be saved."
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Loading settings"
 msgstr ""
 
 #: build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings could not be loaded."
 msgstr ""
 
 #: build/alt-text.js:1
+#: dist/stage/kotlinskidev-accessibility/build/alt-text.js:1
 #, js-format
 msgid "Enter alt text for %s before saving."
 msgstr ""
 
 #: build/alt-text.js:1
+#: dist/stage/kotlinskidev-accessibility/build/alt-text.js:1
 #, js-format
 msgid "Alt text saved for %s."
 msgstr ""
 
 #: build/alt-text.js:1
+#: dist/stage/kotlinskidev-accessibility/build/alt-text.js:1
 msgid "Alt text could not be saved."
+msgstr ""
+
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Exclusions"
 msgstr ""

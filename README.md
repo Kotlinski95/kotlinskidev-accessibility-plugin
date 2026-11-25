@@ -21,7 +21,7 @@ The plugin does not know any cache plugin. It fires one generic action instead:
 do_action( 'kotlinskidev_a11y_cache_invalidated', string $reason );
 ```
 
-`$reason` is `settings` after settings are saved, imported or reset (at most once per request), or `update` once after the plugin version changes (checked in the admin and cron only, never on first install).
+`$reason` is `settings` after settings are saved, imported or reset (at most once per request), `update` once after the plugin version changes (checked in the admin and cron only, never on first install), or `translations` after language packs update.
 
 Role-based visibility rules (including `__guest`) only work when the page cache varies by login state. A cache that serves one stored page to everyone shows or hides the widget for the wrong audience.
 
@@ -45,6 +45,48 @@ add_action( 'kotlinskidev_a11y_cache_invalidated', static fn () => do_action( 'l
 ```
 
 These are WP Rocket, W3 Total Cache and LiteSpeed Cache. For Super Page Cache, call its purge function from the same callback in place of `my_cache_purge()`; its exact hook name is not verified here, so check its documentation. Cloudflare edge caching is left to the cache plugin.
+
+## Performance
+
+Only a loader of at most 2 KB gzip runs on every page. The panel, the features and the page CSS load on first use. Visitors with saved settings still get them before first paint, whatever the strategy. Settings live in the Performance tab, which also shows the estimated cost per page.
+
+Presets:
+
+- `Recommended`: load on interaction, footer, low fetch priority, prefetch on hover, lazy Page CSS, skip downloads on hidden devices.
+- `Compatibility`: load everything at once (`eager`), linked Page CSS, no prefetch, no device skip, and every optimizer opt-out. Use it when an optimizer breaks on-demand loading.
+- `Custom`: set each option below yourself.
+
+| Option | Values |
+| --- | --- |
+| Strategy | `interaction`, `idle`, `defer`, `async`, `eager` |
+| Position | `head`, `footer` |
+| Fetch priority | `low`, `auto`, `high` |
+| Prefetch | `none`, `hover`, `idle` |
+| Page CSS | `lazy` (loaded on first use), `linked` (render-blocking `<link>`), `inline` (printed in the page head) |
+| Device skip | Skip downloads on devices where the widget is hidden. |
+| Optimizer opt-out | Exclude the widget scripts from Cloudflare, WP Rocket, LiteSpeed, Jetpack Boost or Asset CleanUp. |
+
+Visibility mode (Visibility tab): `everywhere`, `only_on` or `except_on`, by post, post type, template, role (`__guest` for logged-out visitors) and URL pattern.
+
+Panel data is served as a versioned JSON file per locale from uploads, with a REST fallback at `kotlinskidev-a11y/v1/panel-data`. Commands such as `open`, `close` and `toggle` sent to `window.kotlinskidevA11yQueue` before any script has loaded are replayed in order.
+
+### Content Security Policy
+
+The launcher is server-rendered in a declarative shadow root and page CSS is applied as a stylesheet, so a strict policy needs `style-src 'unsafe-inline'`, as WordPress core already does. Scripts carry the request nonce when your CSP plugin provides one.
+
+### Legacy config
+
+`window.kotlinskidevA11y` holds only what the loader needs. Reading `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` or the full `strings` at page load is deprecated. Keep them inline until v0.3.0:
+
+```php
+add_filter( 'kotlinskidev_a11y_legacy_config', '__return_true' );
+```
+
+### Upgrading and downgrading
+
+On upgrade from v0.1, an existing `advanced.loadStrategy` migrates to the Custom preset with the same behaviour, and an admin notice recommends the Recommended preset once, with a per-user dismissal. Purge page caches after upgrading.
+
+Downgrade to v0.1.x is safe. v0.1 ignores the new keys, falls back to the `defer` strategy and still honours the `exclude*` lists. It does not understand `only_on`, so the widget renders everywhere.
 
 ## Build
 
@@ -99,6 +141,7 @@ Source keys: `repository`, `slug`, `asset_pattern`, `branch`. The token is read 
 | `kotlinskidev_a11y_strings` | Adjust the strings sent to the front end. |
 | `kotlinskidev_a11y_update_source` | Swap repository, slug, asset pattern or branch for updates. |
 | `kotlinskidev_a11y_update_token` | Supply an authentication token for private update sources. |
+| `kotlinskidev_a11y_legacy_config` | Return `true` to keep the moved config fields inline until v0.3.0. |
 
 ## Privacy and storage (GDPR)
 
