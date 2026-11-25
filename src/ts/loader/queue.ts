@@ -1,10 +1,7 @@
+import { ACTION_PATTERN } from '../shared/actions';
 import type { KA11yCommand, KA11yQueue } from '../shared/types';
 
 export type CommandHandler = (command: KA11yCommand) => void;
-
-const ACTION_PATTERN = /^[a-z][a-zA-Z0-9]*(?::[a-zA-Z0-9_-]+){0,2}$/;
-
-const TOGGLE_GUARD_MS = 50;
 
 export const actionName = (command: KA11yCommand): string => command.action.split(':')[0] as string;
 
@@ -14,7 +11,7 @@ export const installQueue = (handlers: Record<string, CommandHandler>): KA11yQue
 
   const isDoubleToggle = (command: KA11yCommand): boolean => {
     const at = Date.now();
-    const repeated = command.source === lastSource && at - lastAt < TOGGLE_GUARD_MS;
+    const repeated = command.source === lastSource && at - lastAt < 50;
     lastSource = command.source;
     lastAt = at;
     return repeated;

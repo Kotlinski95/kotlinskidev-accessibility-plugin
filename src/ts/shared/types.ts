@@ -190,7 +190,7 @@ export interface RuntimeHandoff {
   e?: (event: MouseEvent) => void;
 }
 
-export type CommandSource = 'early' | 'launcher' | 'hash' | 'shortcut' | 'api';
+export type CommandSource = 'early' | 'launcher' | 'hash' | 'shortcut' | 'api' | 'trigger' | 'url';
 
 export interface KA11yCommand {
   action: string;
@@ -200,6 +200,28 @@ export interface KA11yCommand {
 
 export interface KA11yQueue {
   push(...commands: KA11yCommand[]): number;
+}
+
+export type PublicFeatureLevel = number;
+
+export interface PublicState {
+  api: 1;
+  open: boolean;
+  profile: string | null;
+  features: Record<string, PublicFeatureLevel>;
+}
+
+export type ApiEventName = 'ready' | 'open' | 'close' | 'change';
+
+export interface KotlinskidevA11yApi {
+  api: 1;
+  open(opener?: HTMLElement | null): void;
+  close(): void;
+  toggle(target?: string, opener?: HTMLElement | null): void;
+  set(feature: string, level: number | boolean): void;
+  reset(): void;
+  getState(): Promise<PublicState>;
+  on(event: ApiEventName, listener: (detail: unknown) => void): () => void;
 }
 
 declare global {
