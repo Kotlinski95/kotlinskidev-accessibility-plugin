@@ -40,7 +40,29 @@ export const installLongContent = async (page: Page): Promise<void> => {
   );
 };
 
+const LAYOUT_SETTLE_FRAMES = 20;
+
+const waitForLayoutSettled = async (page: Page): Promise<void> => {
+  await page.evaluate(
+    (frames) =>
+      new Promise<void>((resolve) => {
+        let stable = 0;
+        let last = -1;
+        const tick = (): void => {
+          const height = document.documentElement.scrollHeight;
+          stable = height === last ? stable + 1 : 0;
+          last = height;
+          if (stable >= frames) resolve();
+          else requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }),
+    LAYOUT_SETTLE_FRAMES
+  );
+};
+
 export const assertPageUsable = async (page: Page): Promise<void> => {
+  await waitForLayoutSettled(page);
   await page.mouse.move(320, 240);
   await page.mouse.move(340, 260);
 

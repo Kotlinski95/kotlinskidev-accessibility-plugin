@@ -60,7 +60,7 @@ const assertCookieWallClickable = async (page: Page): Promise<void> => {
     if (!button) return false;
     const box = button.getBoundingClientRect();
     const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-    return hit === button || hit?.id === hostId;
+    return (hit !== null && button.contains(hit)) || hit?.id === hostId;
   }, WIDGET_HOST);
   await expect.poll(isReachable, { timeout: 5_000 }).toBe(true);
 };
