@@ -244,6 +244,7 @@ describe('panel', () => {
     dialog.open(opener);
     dialog.close();
     expect(document.activeElement).toBe(opener);
+    opener.blur();
     dialog.open();
     dialog.close();
     expect(launcher.getRootNode()).toBeInstanceOf(ShadowRoot);
@@ -347,6 +348,52 @@ describe('panel', () => {
       expect(wrapper(shadow).hidden).toBe(false);
       store.setLevel('skipToContent', false);
       expect(wrapper(shadow).hidden).toBe(true);
+    });
+  });
+
+  describe('open and close announcements', () => {
+    it('dispatches ka11y:open and ka11y:close on document', () => {
+      const { panel } = setup();
+      const seen: string[] = [];
+      const record = (event: Event): void => {
+        seen.push(`${event.type}:${(event as CustomEvent).detail.source}`);
+      };
+      document.addEventListener('ka11y:open', record);
+      document.addEventListener('ka11y:close', record);
+      panel.dialog.open();
+      panel.dialog.open();
+      panel.dialog.close();
+      document.removeEventListener('ka11y:open', record);
+      document.removeEventListener('ka11y:close', record);
+      expect(seen).toEqual(['ka11y:open:panel', 'ka11y:close:panel']);
+    });
+
+    it('does not bubble or cancel', () => {
+      const { panel } = setup();
+      let received: Event | null = null;
+      const record = (event: Event): void => {
+        received = event;
+      };
+      document.addEventListener('ka11y:open', record);
+      panel.dialog.open();
+      document.removeEventListener('ka11y:open', record);
+      expect((received as unknown as Event).bubbles).toBe(false);
+      expect((received as unknown as Event).cancelable).toBe(false);
+    });
+
+    it('syncs aria-expanded on open and toggle triggers, including late ones', () => {
+      const { panel } = setup();
+      document.body.insertAdjacentHTML(
+        'beforeend',
+        '<a data-ka11y="toggle" aria-controls="ka11y-root" aria-expanded="false"></a><button data-ka11y="close" aria-controls="ka11y-root"></button>'
+      );
+      const trigger = document.querySelector('[data-ka11y="toggle"]') as HTMLElement;
+      const closer = document.querySelector('[data-ka11y="close"]') as HTMLElement;
+      panel.dialog.open();
+      expect(trigger.getAttribute('aria-expanded')).toBe('true');
+      expect(closer.hasAttribute('aria-expanded')).toBe(false);
+      panel.dialog.close();
+      expect(trigger.getAttribute('aria-expanded')).toBe('false');
     });
   });
 });

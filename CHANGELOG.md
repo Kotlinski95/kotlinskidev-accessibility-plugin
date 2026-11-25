@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` dynamic block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`, and the `kotlinskidev_a11y_button_html` filter. Default trigger labels are new strings.
+- Launcher modes `floating`, `inline` and `hidden` in the server markup, `ka11y:open` and `ka11y:close` events, `aria-expanded` sync on open and toggle triggers, and focus return to the opener, the previously focused element, the launcher or the page when the launcher is hidden.
 
 ## [0.2.0] - 2026-11-25
 

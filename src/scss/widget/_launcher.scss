@@ -3,18 +3,14 @@
 :host {
   position: fixed;
   z-index: tokens.$z-index;
-  --ka11y-w-focus: #{tokens.$focus-light};
+  --ka11y-w-focus:#{tokens.$focus-light};
 }
 
-:host([hidden]) {
-  display: none;
-}
-
-.ka11y-launcher {
-  position: relative;
+.ka11y-launcher:not([hidden]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   width: max(#{tokens.$size}, #{tokens.$target});
   aspect-ratio: 1;
   padding: 0;

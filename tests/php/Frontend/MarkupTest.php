@@ -160,4 +160,54 @@ final class MarkupTest extends TestCase {
 
 		$this->assertStringContainsString( '<div id="ka11y-root" lang="en-US" dir="ltr"', $html );
 	}
+
+	public function test_floating_mode_adds_no_launcher_attribute_and_keeps_button_visible(): void {
+		$html = $this->markup()->html( Schema::defaults() );
+
+		$this->assertStringNotContainsString( 'data-ka11y-launcher', $html );
+		$this->assertStringNotContainsString( ' hidden', $html );
+	}
+
+	public function test_inline_mode_marks_the_host(): void {
+		$settings                       = Schema::defaults();
+		$settings['widget']['launcher'] = 'inline';
+		$html                           = $this->markup()->html( $settings );
+
+		$this->assertStringContainsString( 'data-ka11y-launcher="inline"', $html );
+		$this->assertStringNotContainsString( 'class="ka11y-launcher" hidden', $html );
+	}
+
+	public function test_hidden_mode_marks_the_host_and_hides_the_button(): void {
+		$settings                       = Schema::defaults();
+		$settings['widget']['launcher'] = 'hidden';
+		$html                           = $this->markup()->html( $settings );
+
+		$this->assertStringContainsString( 'data-ka11y-launcher="hidden"', $html );
+		$this->assertStringContainsString( 'class="ka11y-launcher" hidden aria-label=', $html );
+	}
+
+	public function test_unknown_mode_falls_back_to_floating(): void {
+		$settings                       = Schema::defaults();
+		$settings['widget']['launcher'] = 'bogus';
+
+		$this->assertStringNotContainsString( 'data-ka11y-launcher', $this->markup()->html( $settings ) );
+	}
+
+	public function test_kses_allow_list_keeps_launcher_attribute_and_hidden_button(): void {
+		$allowed = array();
+		Functions\when( 'wp_kses' )->alias(
+			static function ( string $html, array $allow ) use ( &$allowed ): string {
+				$allowed = $allow;
+
+				return $html;
+			}
+		);
+
+		ob_start();
+		$this->markup()->render();
+		ob_end_clean();
+
+		$this->assertTrue( $allowed['div']['data-ka11y-launcher'] );
+		$this->assertTrue( $allowed['button']['hidden'] );
+	}
 }

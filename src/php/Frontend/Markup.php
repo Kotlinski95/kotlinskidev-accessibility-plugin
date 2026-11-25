@@ -53,7 +53,7 @@ final class Markup {
 
 		return '<div id="ka11y-root"' . $this->language_attributes( $locale ) . $this->root_attributes( $widget ) . '><template shadowrootmode="open">'
 			. $this->launcher_style()
-			. '<button type="button" class="ka11y-launcher" aria-label="' . esc_attr( $label ) . '" aria-haspopup="dialog" aria-expanded="false">'
+			. '<button type="button" class="ka11y-launcher"' . ( 'hidden' === $this->launcher_mode( $widget ) ? ' hidden' : '' ) . ' aria-label="' . esc_attr( $label ) . '" aria-haspopup="dialog" aria-expanded="false">'
 			. $this->icon( $widget['icon'] ?? 'universal' )
 			. '</button></template></div>';
 	}
@@ -83,7 +83,19 @@ final class Markup {
 		$attributes .= ' data-ka11y-size="' . esc_attr( (string) ( $widget['size'] ?? 'md' ) ) . '"';
 		$attributes .= ' data-ka11y-icon-border="' . ( true === ( $widget['iconBorder'] ?? false ) ? 'true' : 'false' ) . '"';
 
+		$mode = $this->launcher_mode( $widget );
+
+		if ( 'floating' !== $mode ) {
+			$attributes .= ' data-ka11y-launcher="' . $mode . '"';
+		}
+
 		return $attributes;
+	}
+
+	private function launcher_mode( array $widget ): string {
+		$mode = $widget['launcher'] ?? 'floating';
+
+		return in_array( $mode, array( 'inline', 'hidden' ), true ) ? $mode : 'floating';
 	}
 
 	private function icon( mixed $icon ): string {
@@ -133,12 +145,14 @@ final class Markup {
 				'data-ka11y-position-mobile'  => true,
 				'data-ka11y-size'             => true,
 				'data-ka11y-icon-border'      => true,
+				'data-ka11y-launcher'         => true,
 			),
 			'template' => array( 'shadowrootmode' => true ),
 			'style'    => array(),
 			'button'   => array(
 				'type'          => true,
 				'class'         => true,
+				'hidden'        => true,
 				'aria-label'    => true,
 				'aria-haspopup' => true,
 				'aria-expanded' => true,

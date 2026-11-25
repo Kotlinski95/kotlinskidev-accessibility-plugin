@@ -37,6 +37,7 @@ interface ProfileControl {
 
 const PANEL_ID = 'ka11y-panel';
 const TITLE_ID = 'ka11y-panel-title';
+const EXPANDED_TRIGGERS = '[aria-controls="ka11y-root"][aria-expanded]';
 const LAUNCHER_SELECTOR = '.ka11y-launcher';
 const SKIP_FEATURE_KEY = 'skipToContent';
 const SKIP_SELECT_ID = 'ka11y-skip-select';
@@ -257,12 +258,18 @@ export const createPanel = ({ config, store, profiles, hideToolbar, host, shadow
     ]
   );
 
+  const announce = (open: boolean): void => {
+    doc.querySelectorAll(EXPANDED_TRIGGERS).forEach((trigger) => trigger.setAttribute('aria-expanded', String(open)));
+    doc.dispatchEvent(new CustomEvent(open ? 'ka11y:open' : 'ka11y:close', { detail: { source: 'panel' } }));
+  };
+
   const onChange = (open: boolean): void => {
     if (open) {
       placePanel(panel);
       skipRefresh();
     }
     if (store.getState().open !== open) store.set({ open });
+    announce(open);
   };
 
   const dialog = createDialog({ panel, launcher, shadow, doc, onChange });

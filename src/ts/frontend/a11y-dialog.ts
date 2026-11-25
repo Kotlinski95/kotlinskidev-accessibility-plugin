@@ -19,6 +19,9 @@ const FOCUSABLE = 'button, a[href], input, select, textarea, [tabindex]:not([tab
 const isFocusable = (element: HTMLElement): boolean =>
   !element.hasAttribute('disabled') && element.closest('[hidden]') === null;
 
+const usable = (element: HTMLElement): boolean =>
+  element.isConnected && element.closest('[hidden]') === null && (element.checkVisibility?.() ?? true);
+
 export const createDialog = ({ panel, launcher, shadow, doc = document, onChange }: DialogOptions): Dialog => {
   let opened = false;
   let returnTarget: HTMLElement = launcher;
@@ -50,6 +53,28 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     if (event.key === 'Tab') trapTab(event);
   };
 
+  const launcherUsable = (): boolean => {
+    const host = shadow.host;
+    return usable(launcher) && !launcher.hidden && host.getAttribute('data-ka11y-launcher') !== 'hidden' && host.closest('[hidden]') === null;
+  };
+
+  const lightActive = (): HTMLElement | null => {
+    const active = doc.activeElement;
+    return active instanceof HTMLElement && active !== doc.body && active !== shadow.host ? active : null;
+  };
+
+  const focusBody = (): void => {
+    doc.body.setAttribute('tabindex', '-1');
+    doc.body.focus();
+    doc.body.removeAttribute('tabindex');
+  };
+
+  const restoreFocus = (): void => {
+    if (returnTarget === launcher ? launcherUsable() : usable(returnTarget)) returnTarget.focus();
+    else if (launcherUsable()) launcher.focus();
+    else focusBody();
+  };
+
   const onLauncherClick = (): void => toggle();
 
   const render = (): void => {
@@ -60,7 +85,7 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
   function open(opener?: HTMLElement | null): void {
     if (opened) return;
     opened = true;
-    returnTarget = opener ?? launcher;
+    returnTarget = opener ?? lightActive() ?? launcher;
     render();
     doc.addEventListener('keydown', onKeydown);
     onChange?.(true);
@@ -73,7 +98,7 @@ export const createDialog = ({ panel, launcher, shadow, doc = document, onChange
     render();
     doc.removeEventListener('keydown', onKeydown);
     onChange?.(false);
-    (returnTarget.isConnected ? returnTarget : launcher).focus();
+    restoreFocus();
   }
 
   function toggle(opener?: HTMLElement | null): void {
