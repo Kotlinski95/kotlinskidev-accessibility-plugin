@@ -1,9 +1,11 @@
 import { panelSpecs, renderForm } from '../../../src/ts/admin/form-renderer';
 import { buildApp, mountAdmin } from '../../../src/ts/admin/app';
-import { change, fakeApi, sampleConfig, sampleContext, sampleDefaults, sampleSchema } from './helpers';
+import { change, fakeApi, previewOf, sampleConfig, sampleContext, sampleDefaults, sampleSchema } from './helpers';
 
 jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
 jest.mock('@wordpress/api-fetch', () => jest.requireActual('./wp-mocks').apiFetchMock, { virtual: true });
+
+const CHANGE = { path: 'storage.key', from: 'changed', to: 'ka11y', source: 'default' };
 
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -13,9 +15,9 @@ describe('form renderer', () => {
     const form = renderForm(ctx);
     document.body.replaceChildren(form.element);
     const ids = panelSpecs().map((spec) => spec.id);
-    expect(ids).toEqual(['general', 'features', 'profiles', 'visibility', 'appearance', 'languages', 'behavior', 'triggers', 'performance', 'import-export']);
-    expect(form.buttons).toHaveLength(10);
-    expect(form.element.querySelectorAll(':scope > [role="tabpanel"]')).toHaveLength(10);
+    expect(ids).toEqual(['general', 'features', 'profiles', 'visibility', 'appearance', 'languages', 'behavior', 'triggers', 'performance', 'maintenance', 'import-export']);
+    expect(form.buttons).toHaveLength(11);
+    expect(form.element.querySelectorAll(':scope > [role="tabpanel"]')).toHaveLength(11);
     for (const spec of panelSpecs()) {
       const panel = spec.build(ctx);
       expect(panel.children.length).toBeGreaterThan(0);
@@ -64,7 +66,7 @@ describe('form renderer', () => {
   });
 
   it('import-export tab resets through an in-DOM confirm dialog', async () => {
-    const api = fakeApi();
+    const api = fakeApi({ previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])) });
     const ctx = sampleContext(sampleDefaults(), api);
     ctx.state.set('storage.key', 'changed');
     const form = renderForm(ctx);
@@ -72,9 +74,13 @@ describe('form renderer', () => {
     const reset = [...form.element.querySelectorAll('button')].find((item) => item.textContent === 'Reset to defaults') as HTMLButtonElement;
     const confirmSpy = jest.spyOn(window, 'confirm');
     reset.click();
+    await flush();
     const dialog = document.querySelector('[role="alertdialog"]') as HTMLElement;
     expect(dialog).not.toBeNull();
-    (dialog.querySelectorAll('button')[1] as HTMLButtonElement).click();
+    expect(dialog.textContent).toContain('Your 1 unsaved change will be lost.');
+    expect(dialog.querySelectorAll('tbody tr')).toHaveLength(1);
+    const buttons = dialog.querySelectorAll('button');
+    (buttons[buttons.length - 1] as HTMLButtonElement).click();
     await flush();
     expect(api.resetSettings).toHaveBeenCalled();
     expect(ctx.reload).toHaveBeenCalled();
@@ -84,12 +90,13 @@ describe('form renderer', () => {
   });
 
   it('cancelling the dialog keeps settings', async () => {
-    const api = fakeApi();
+    const api = fakeApi({ previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])) });
     const ctx = sampleContext(sampleDefaults(), api);
     const form = renderForm(ctx);
     document.body.replaceChildren(form.element);
     const reset = [...form.element.querySelectorAll('button')].find((item) => item.textContent === 'Reset to defaults') as HTMLButtonElement;
     reset.click();
+    await flush();
     (document.querySelector('[role="alertdialog"] button') as HTMLButtonElement).click();
     await flush();
     expect(api.resetSettings).not.toHaveBeenCalled();
@@ -109,7 +116,7 @@ describe('admin app', () => {
     change(key);
     expect(app.state.isDirty()).toBe(true);
     expect(save.disabled).toBe(false);
-    expect(root.querySelector('.ka11y-savebar__status')?.textContent).toBe('You have unsaved changes.');
+    expect(root.querySelector('.ka11y-savebar__status')?.textContent).toBe('You have 1 unsaved change.');
     const beforeUnload = new Event('beforeunload', { cancelable: true });
     window.dispatchEvent(beforeUnload);
     expect(beforeUnload.defaultPrevented).toBe(true);

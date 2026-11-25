@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import type { FieldContext } from '../context';
-import { h, isRecord, uid } from '../dom';
+import { h, isRecord, uid, markPath } from '../dom';
 import { createTabs } from '../tabs';
 
 export interface LocaleMapOptions {
@@ -67,7 +67,7 @@ const buildDocumentPanel = (ctx: FieldContext, options: LocaleMapOptions, locale
   return h('div', { class: 'ka11y-locale__panel' }, h('label', { class: 'ka11y-field__label', for: id }, options.label), textarea);
 };
 
-export const createLocaleMapField = (ctx: FieldContext, options: LocaleMapOptions): HTMLElement => {
+const buildLocaleMapField = (ctx: FieldContext, options: LocaleMapOptions): HTMLElement => {
   const locales = ctx.config.locales;
   const specs = locales.map((locale) => ({
     id: locale.code,
@@ -82,3 +82,5 @@ export const createLocaleMapField = (ctx: FieldContext, options: LocaleMapOption
     createTabs(specs, { label: options.label }).element
   );
 };
+
+export const createLocaleMapField = (ctx: FieldContext, options: LocaleMapOptions): HTMLElement => markPath(buildLocaleMapField(ctx, options), options.path);

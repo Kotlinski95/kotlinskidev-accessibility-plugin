@@ -1,0 +1,26 @@
+.ka11y-dialog--wide {
+  inline-size: min(48rem, 100%);
+  max-block-size: 90vh;
+  overflow: auto;
+}
+
+.ka11y-changes {
+  max-block-size: 50vh;
+  margin-block-end: var(--ka11y-a-gap);
+  overflow: auto;
+
+  th,
+  td {
+    overflow-wrap: anywhere;
+  }
+}
+
+.ka11y-changes__more,
+.ka11y-changes__notes {
+  margin-block: var(--ka11y-a-gap-small) 0;
+}
+
+.ka11y-changes__notes {
+  padding-inline-start: 1.25rem;
+  list-style: disc;
+}

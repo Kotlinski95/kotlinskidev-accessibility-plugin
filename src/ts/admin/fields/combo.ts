@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import type { FieldContext } from '../context';
-import { button, h, uid } from '../dom';
+import { button, h, uid, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
 const MODIFIER_KEYS = new Set(['Control', 'Alt', 'Shift', 'Meta']);
@@ -17,7 +17,7 @@ export const comboFromEvent = (event: KeyboardEvent): string | null => {
   return parts.join('+');
 };
 
-export const createComboField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
+const buildComboField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
   const id = uid('ka11y-combo');
   const current = ctx.state.get(options.path);
   const display = h('input', { type: 'text', class: 'regular-text ka11y-combo__value', id, readonly: true });
@@ -80,3 +80,5 @@ export const createComboField = (ctx: FieldContext, options: FieldOptions): HTML
     help
   );
 };
+
+export const createComboField = (ctx: FieldContext, options: FieldOptions): HTMLElement => markPath(buildComboField(ctx, options), options.path);

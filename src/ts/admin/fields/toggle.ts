@@ -1,8 +1,8 @@
 import type { FieldContext } from '../context';
-import { h, uid } from '../dom';
+import { h, uid, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
-export const createToggleField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
+const buildToggleField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
   const input = h('input', { type: 'checkbox', class: 'ka11y-toggle__input' });
   input.checked = ctx.state.get(options.path) === true;
 
@@ -26,3 +26,5 @@ export const createToggleField = (ctx: FieldContext, options: FieldOptions): HTM
     help
   );
 };
+
+export const createToggleField = (ctx: FieldContext, options: FieldOptions): HTMLElement => markPath(buildToggleField(ctx, options), options.path);

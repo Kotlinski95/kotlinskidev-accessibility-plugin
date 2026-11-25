@@ -1,5 +1,6 @@
 declare module '@wordpress/i18n' {
   export const __: (text: string, domain?: string) => string;
+  export const _n: (single: string, plural: string, number: number, domain?: string) => string;
   export const sprintf: (format: string, ...args: ReadonlyArray<string | number>) => string;
 }
 

@@ -1,12 +1,12 @@
 import {
   downloadSettings,
-  importSettingsFile,
+  importIntro,
   parseSettingsFile,
   parseSettingsText,
   serializeSettings,
   EXPORT_FILENAME,
 } from '../../../src/ts/admin/import-export';
-import { fakeApi, sampleDefaults } from './helpers';
+import { fakeApi, importOf, sampleDefaults } from './helpers';
 
 jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
 
@@ -16,9 +16,9 @@ describe('import and export', () => {
     const file = new File([serializeSettings(settings)], EXPORT_FILENAME, { type: 'application/json' });
     expect(await parseSettingsFile(file)).toEqual(settings);
     const api = fakeApi();
-    const saved = await importSettingsFile(api, file);
-    expect(api.importSettings).toHaveBeenCalledWith(settings);
-    expect(saved).toEqual(settings);
+    const dry = await api.importSettings(await parseSettingsFile(file), true);
+    expect(api.importSettings).toHaveBeenCalledWith(settings, true);
+    expect(dry.settings).toEqual(settings);
   });
 
   it('rejects invalid files', () => {
@@ -27,10 +27,13 @@ describe('import and export', () => {
     expect(() => parseSettingsText('"x"')).toThrow('The file must contain a settings object.');
   });
 
-  it('does not call the api for invalid files', async () => {
-    const api = fakeApi();
-    await expect(importSettingsFile(api, new File(['{bad'], 'x.json'))).rejects.toThrow();
-    expect(api.importSettings).not.toHaveBeenCalled();
+  it('rejects an unreadable file before any api call', async () => {
+    await expect(parseSettingsFile(new File(['{bad'], 'x.json'))).rejects.toThrow('The file is not valid JSON.');
+  });
+
+  it('describes the origin of an imported file', () => {
+    expect(importIntro(importOf({}))).toContain('version 0.4.0 (settings format 4)');
+    expect(importIntro({ ...importOf({}), from: { plugin: null, schemaVersion: 1 } })).toBe('Importing this file changes these settings.');
   });
 
   it('downloads the exported settings as a JSON file', async () => {

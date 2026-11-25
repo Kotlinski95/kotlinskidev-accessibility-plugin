@@ -5,9 +5,10 @@ export interface ConfirmOptions {
   title: string;
   message: string;
   confirmLabel: string;
+  content?: HTMLElement;
 }
 
-const FOCUSABLE = 'button:not([disabled])';
+const FOCUSABLE = 'button:not([disabled]), [tabindex="0"]';
 
 export const confirmDialog = (host: HTMLElement, options: ConfirmOptions): Promise<boolean> =>
   new Promise((resolve) => {
@@ -17,9 +18,10 @@ export const confirmDialog = (host: HTMLElement, options: ConfirmOptions): Promi
     const confirm = h('button', { type: 'button', class: 'button button-primary' }, options.confirmLabel);
     const dialog = h(
       'div',
-      { class: 'ka11y-dialog', role: 'alertdialog', 'aria-modal': 'true', 'aria-labelledby': `${id}-title`, 'aria-describedby': `${id}-message` },
+      { class: options.content === undefined ? 'ka11y-dialog' : 'ka11y-dialog ka11y-dialog--wide', role: 'alertdialog', 'aria-modal': 'true', 'aria-labelledby': `${id}-title`, 'aria-describedby': `${id}-message` },
       h('h2', { class: 'ka11y-dialog__title', id: `${id}-title` }, options.title),
       h('p', { class: 'ka11y-dialog__message', id: `${id}-message` }, options.message),
+      options.content,
       h('div', { class: 'ka11y-dialog__actions' }, cancel, confirm)
     );
     const backdrop = h('div', { class: 'ka11y-dialog__backdrop' }, dialog);

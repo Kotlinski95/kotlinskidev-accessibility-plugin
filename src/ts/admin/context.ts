@@ -12,5 +12,6 @@ export interface FieldContext {
 export interface FormContext extends FieldContext {
   api: Api;
   notices: Notices;
+  locked: ReadonlySet<string>;
   reload: () => void;
 }

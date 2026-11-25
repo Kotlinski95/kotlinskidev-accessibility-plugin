@@ -1,5 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import type { FormContext } from './context';
+import { applyLockedState } from './locks';
+import { buildTabReset } from './tab-reset';
 import { createTabs } from './tabs';
 import type { TabsApi } from './tabs';
 import { buildAppearancePanel } from './panels/appearance';
@@ -7,6 +9,7 @@ import { buildBehaviorPanel } from './panels/behavior';
 import { buildFeaturesPanel } from './panels/features';
 import { buildGeneralPanel } from './panels/general';
 import { buildImportExportPanel } from './panels/import-export';
+import { buildMaintenancePanel } from './panels/maintenance';
 import { buildLanguagesPanel } from './panels/languages';
 import { buildPerformancePanel } from './panels/performance';
 import { buildProfilesPanel } from './panels/profiles';
@@ -17,18 +20,20 @@ export interface PanelSpec {
   id: string;
   label: string;
   build: (ctx: FormContext) => HTMLElement;
+  resetPaths?: string[];
 }
 
 export const panelSpecs = (): PanelSpec[] => [
-  { id: 'general', label: __('General', 'kotlinskidev-accessibility'), build: buildGeneralPanel },
-  { id: 'features', label: __('Features', 'kotlinskidev-accessibility'), build: buildFeaturesPanel },
-  { id: 'profiles', label: __('Profiles', 'kotlinskidev-accessibility'), build: buildProfilesPanel },
-  { id: 'visibility', label: __('Visibility', 'kotlinskidev-accessibility'), build: buildVisibilityPanel },
-  { id: 'appearance', label: __('Appearance', 'kotlinskidev-accessibility'), build: buildAppearancePanel },
-  { id: 'languages', label: __('Languages', 'kotlinskidev-accessibility'), build: buildLanguagesPanel },
-  { id: 'behavior', label: __('Behavior', 'kotlinskidev-accessibility'), build: buildBehaviorPanel },
-  { id: 'triggers', label: __('Triggers', 'kotlinskidev-accessibility'), build: buildTriggersPanel },
-  { id: 'performance', label: __('Performance', 'kotlinskidev-accessibility'), build: buildPerformancePanel },
+  { id: 'general', label: __('General', 'kotlinskidev-accessibility'), build: buildGeneralPanel, resetPaths: ['widget.position', 'widget.offsetX', 'widget.offsetY', 'widget.size', 'widget.icon', 'widget.iconBorder'] },
+  { id: 'features', label: __('Features', 'kotlinskidev-accessibility'), build: buildFeaturesPanel, resetPaths: ['features'] },
+  { id: 'profiles', label: __('Profiles', 'kotlinskidev-accessibility'), build: buildProfilesPanel, resetPaths: ['profiles'] },
+  { id: 'visibility', label: __('Visibility', 'kotlinskidev-accessibility'), build: buildVisibilityPanel, resetPaths: ['visibility'] },
+  { id: 'appearance', label: __('Appearance', 'kotlinskidev-accessibility'), build: buildAppearancePanel, resetPaths: ['theme', 'tokens', 'panel', 'customCss'] },
+  { id: 'languages', label: __('Languages', 'kotlinskidev-accessibility'), build: buildLanguagesPanel, resetPaths: ['labels', 'statement'] },
+  { id: 'behavior', label: __('Behavior', 'kotlinskidev-accessibility'), build: buildBehaviorPanel, resetPaths: ['storage', 'shortcut', 'hideToolbar', 'advanced'] },
+  { id: 'triggers', label: __('Triggers', 'kotlinskidev-accessibility'), build: buildTriggersPanel, resetPaths: ['triggers', 'widget.launcher', 'widget.mount'] },
+  { id: 'performance', label: __('Performance', 'kotlinskidev-accessibility'), build: buildPerformancePanel, resetPaths: ['performance'] },
+  { id: 'maintenance', label: __('Maintenance', 'kotlinskidev-accessibility'), build: buildMaintenancePanel, resetPaths: ['maintenance'] },
   { id: 'import-export', label: __('Import / Export', 'kotlinskidev-accessibility'), build: buildImportExportPanel },
 ];
 
@@ -37,8 +42,18 @@ export interface RenderOptions {
   onSelect?: (id: string) => void;
 }
 
-export const renderForm = (ctx: FormContext, options: RenderOptions = {}): TabsApi =>
-  createTabs(
-    panelSpecs().map((spec) => ({ id: spec.id, label: spec.label, panel: spec.build(ctx) })),
+const buildPanel = (ctx: FormContext, spec: PanelSpec): HTMLElement => {
+  const panel = spec.build(ctx);
+  panel.dataset.ka11yTab = spec.id;
+  if (spec.resetPaths !== undefined) panel.append(buildTabReset(ctx, spec.label, spec.resetPaths));
+  return panel;
+};
+
+export const renderForm = (ctx: FormContext, options: RenderOptions = {}): TabsApi => {
+  const tabs = createTabs(
+    panelSpecs().map((spec) => ({ id: spec.id, label: spec.label, panel: buildPanel(ctx, spec) })),
     { label: __('Accessibility settings sections', 'kotlinskidev-accessibility'), initial: options.initial, onSelect: options.onSelect }
   );
+  applyLockedState(tabs.element, ctx.locked);
+  return tabs;
+};

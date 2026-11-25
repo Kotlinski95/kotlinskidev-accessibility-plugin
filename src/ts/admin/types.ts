@@ -19,6 +19,27 @@ export interface SchemaPayload {
   features: string[];
   profiles: string[];
   presets: Record<string, Record<string, unknown>>;
+  locked?: string[];
+  sources?: Record<string, string>;
+}
+
+export interface SettingChange {
+  path: string;
+  from: unknown;
+  to: unknown;
+  source: string;
+}
+
+export interface PreviewResult {
+  settings: SettingsTree;
+  changes: SettingChange[];
+  adjusted?: string[];
+  locked?: string[];
+}
+
+export interface ImportResult extends PreviewResult {
+  dropped: string[];
+  from: { plugin: string | null; schemaVersion: number };
 }
 
 export interface LocaleOption {

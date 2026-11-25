@@ -2,7 +2,7 @@ import type { Api } from '../../../src/ts/admin/api';
 import type { FormContext } from '../../../src/ts/admin/context';
 import { createNotices } from '../../../src/ts/admin/notices';
 import { createFormState } from '../../../src/ts/admin/state';
-import type { AdminConfig, DefinitionMap, FieldDefinition, SchemaPayload, SettingsTree } from '../../../src/ts/admin/types';
+import type { AdminConfig, DefinitionMap, FieldDefinition, ImportResult, PreviewResult, SchemaPayload, SettingsTree } from '../../../src/ts/admin/types';
 
 export const FEATURES = [
   'biggerText',
@@ -147,6 +147,7 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['performance.prefetch'] = definition('string', 'enum', 'hover', { enum: ['none', 'hover', 'idle'] });
   defs['performance.pageCss'] = definition('string', 'enum', 'lazy', { enum: ['lazy', 'linked', 'inline'] });
   defs['performance.deviceSkip'] = definition('boolean', 'bool', true);
+  defs['maintenance.keepDataOnUninstall'] = definition('boolean', 'bool', false);
   defs['performance.optOut'] = definition('array', 'enum_list', [], { enum: OPTIMIZERS });
   return defs;
 };
@@ -209,13 +210,24 @@ export const sampleConfig = (): AdminConfig => ({
   cost: sampleCost(),
 });
 
+export const previewOf = (settings: SettingsTree, changes: PreviewResult['changes'] = []): PreviewResult => ({ settings, changes });
+
+export const importOf = (settings: SettingsTree, changes: PreviewResult['changes'] = []): ImportResult => ({
+  settings,
+  changes,
+  dropped: [],
+  from: { plugin: '0.4.0', schemaVersion: 4 },
+});
+
 export const fakeApi = (overrides: Partial<Api> = {}): Api => ({
   getSettings: jest.fn().mockResolvedValue(sampleDefaults()),
   saveSettings: jest.fn().mockImplementation((settings: SettingsTree) => Promise.resolve(settings)),
   getSchema: jest.fn().mockResolvedValue(sampleSchema()),
   exportSettings: jest.fn().mockResolvedValue(sampleDefaults()),
-  importSettings: jest.fn().mockImplementation((settings: SettingsTree) => Promise.resolve(settings)),
+  previewSave: jest.fn().mockImplementation((settings: SettingsTree) => Promise.resolve(previewOf(settings))),
+  importSettings: jest.fn().mockImplementation((settings: SettingsTree) => Promise.resolve(importOf(settings))),
   resetSettings: jest.fn().mockResolvedValue(sampleDefaults()),
+  previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults())),
   ...overrides,
 });
 
@@ -225,6 +237,7 @@ export const sampleContext = (settings: SettingsTree = sampleDefaults(), api: Ap
   config: sampleConfig(),
   api,
   notices: createNotices(),
+  locked: new Set<string>(),
   reload: jest.fn(),
 });
 

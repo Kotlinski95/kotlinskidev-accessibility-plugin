@@ -1,12 +1,16 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { Api } from './api';
+import { previewChanges } from './change-preview';
 import { failingPairs } from './contrast';
 import type { FormContext } from './context';
-import { errorMessage, h, isRecord } from './dom';
+import { h, isRecord } from './dom';
 import { renderForm } from './form-renderer';
 import { installUnsavedGuard } from './guard';
+import { failureMessage } from './locks';
 import { createNotices } from './notices';
 import { createPreview } from './preview';
+import { createSearch } from './search';
+import type { TabsApi } from './tabs';
 import { createSaveBar } from './save-bar';
 import { createFormState } from './state';
 import { tokenLabel } from './labels';
@@ -24,23 +28,33 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   const state = createFormState(settings);
   const notices = createNotices();
   const formHost = h('div', { class: 'ka11y-form' });
+  const locked: ReadonlySet<string> = new Set(schema.locked ?? []);
+  const paths = Object.keys(schema.definitions);
   let activeTab: string | undefined;
+  let tabs: TabsApi | undefined;
 
   const onSelect = (id: string): void => {
     activeTab = id;
   };
 
-  const mountForm = (): void => {
-    formHost.replaceChildren(renderForm(context, { initial: activeTab, onSelect }).element);
+  const mountForm = (focusTab = false): void => {
+    tabs = renderForm(context, { initial: activeTab, onSelect });
+    formHost.replaceChildren(tabs.element);
+    if (focusTab) tabs.buttons.find((tabButton) => tabButton.getAttribute('aria-selected') === 'true')?.focus();
   };
 
-  const context: FormContext = { state, schema, config, api, notices, reload: () => mountForm() };
+  const context: FormContext = { state, schema, config, api, notices, locked, reload: () => mountForm(true) };
+  const search = createSearch(() => tabs);
 
   const triggerNotice = createTriggerNotice(context);
 
-  const saveBar = createSaveBar(state, () => {
-    void save();
-  });
+  const saveBar = createSaveBar(
+    state,
+    () => {
+      void requestSave();
+    },
+    paths
+  );
   const preview = createPreview(state);
 
   const reportSaved = (saved: SettingsTree): void => {
@@ -65,7 +79,27 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
       void triggerNotice.refresh();
       reportSaved(saved);
     } catch (error) {
-      notices.error(errorMessage(error, __('Settings could not be saved.', 'kotlinskidev-accessibility')));
+      notices.error(failureMessage(error, __('Settings could not be saved.', 'kotlinskidev-accessibility')));
+    } finally {
+      saveBar.setBusy(false);
+    }
+  };
+
+  const requestSave = async (): Promise<void> => {
+    saveBar.setBusy(true);
+    try {
+      const pending = await api.previewSave(state.snapshot());
+      saveBar.setBusy(false);
+      const confirmed = await previewChanges(saveBar.element, {
+        title: __('Save these changes?', 'kotlinskidev-accessibility'),
+        message: __('These settings will change on your site.', 'kotlinskidev-accessibility'),
+        confirmLabel: __('Save changes', 'kotlinskidev-accessibility'),
+        changes: pending.changes,
+        notes: { adjusted: pending.adjusted, locked: pending.locked },
+      });
+      if (confirmed) await save();
+    } catch (error) {
+      notices.error(failureMessage(error, __('Settings could not be saved.', 'kotlinskidev-accessibility')));
     } finally {
       saveBar.setBusy(false);
     }
@@ -76,7 +110,7 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   root.replaceChildren(
     notices.element,
     triggerNotice.element,
-    h('div', { class: 'ka11y-layout' }, h('div', { class: 'ka11y-layout__main' }, formHost, saveBar.element), h('aside', { class: 'ka11y-layout__aside' }, preview.element))
+    h('div', { class: 'ka11y-layout' }, h('div', { class: 'ka11y-layout__main' }, search.element, formHost, saveBar.element), h('aside', { class: 'ka11y-layout__aside' }, preview.element))
   );
   const removeGuard = installUnsavedGuard(state);
 
@@ -91,7 +125,7 @@ export const mountAdmin = async (root: HTMLElement, config: AdminConfig, api: Ap
   } catch (error) {
     const notices = createNotices();
     root.replaceChildren(notices.element);
-    notices.error(errorMessage(error, __('Settings could not be loaded.', 'kotlinskidev-accessibility')));
+    notices.error(failureMessage(error, __('Settings could not be loaded.', 'kotlinskidev-accessibility')));
     return null;
   }
 };

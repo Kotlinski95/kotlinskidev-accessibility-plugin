@@ -2,7 +2,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { FieldContext } from '../context';
 import { pairsFor, formatRatio } from '../contrast';
 import type { ContrastReading } from '../contrast';
-import { h, isRecord, uid } from '../dom';
+import { h, isRecord, uid, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 import { tokenLabel } from '../labels';
 
@@ -50,7 +50,7 @@ const createContrastBadge = (ctx: FieldContext, token: string): HTMLElement => {
   return badge;
 };
 
-export const createColorField = (ctx: FieldContext, options: ColorFieldOptions): HTMLElement => {
+const buildColorField = (ctx: FieldContext, options: ColorFieldOptions): HTMLElement => {
   const current = ctx.state.get(options.path);
   const initial = typeof current === 'string' ? current : '';
   const picker = h('input', { type: 'color', class: 'ka11y-color__picker', tabindex: -1, 'aria-hidden': 'true' });
@@ -97,3 +97,5 @@ export const createColorField = (ctx: FieldContext, options: ColorFieldOptions):
     help
   );
 };
+
+export const createColorField = (ctx: FieldContext, options: ColorFieldOptions): HTMLElement => markPath(buildColorField(ctx, options), options.path);

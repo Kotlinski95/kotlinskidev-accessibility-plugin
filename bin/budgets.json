@@ -7,6 +7,7 @@
     "scripts.content": 4096,
     "scripts.color": 1536,
     "scripts.orientation": 3584,
+    "scripts.admin": 28541,
     "styles.page": 2048,
     "data.icons": 2048
   },

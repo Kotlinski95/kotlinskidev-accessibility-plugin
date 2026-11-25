@@ -1,8 +1,8 @@
 import type { FieldContext } from '../context';
-import { h, wrapField } from '../dom';
+import { h, wrapField, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
-export const createNumberField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
+const buildNumberField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
   const definition = ctx.schema.definitions[options.path];
   const current = ctx.state.get(options.path);
   const input = h('input', {
@@ -24,3 +24,5 @@ export const createNumberField = (ctx: FieldContext, options: FieldOptions): HTM
 
   return wrapField(input, options);
 };
+
+export const createNumberField = (ctx: FieldContext, options: FieldOptions): HTMLElement => markPath(buildNumberField(ctx, options), options.path);

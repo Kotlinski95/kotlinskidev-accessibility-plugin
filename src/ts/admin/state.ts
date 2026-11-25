@@ -9,6 +9,7 @@ export interface FormState {
   snapshot: () => SettingsTree;
   load: (tree: SettingsTree) => void;
   isDirty: () => boolean;
+  changedPaths: (paths: readonly string[]) => string[];
   subscribe: (listener: Listener) => () => void;
 }
 
@@ -43,6 +44,7 @@ export const writePath = (tree: SettingsTree, path: string, value: unknown): voi
 
 export const createFormState = (initial: SettingsTree): FormState => {
   let current = clone(initial);
+  let savedTree = clone(initial);
   let saved = JSON.stringify(current);
   const listeners = new Set<Listener>();
 
@@ -59,10 +61,12 @@ export const createFormState = (initial: SettingsTree): FormState => {
     snapshot: () => clone(current),
     load: (tree) => {
       current = clone(tree);
+      savedTree = clone(tree);
       saved = JSON.stringify(current);
       notify();
     },
     isDirty: () => JSON.stringify(current) !== saved,
+    changedPaths: (paths) => paths.filter((path) => JSON.stringify(readPath(current, path)) !== JSON.stringify(readPath(savedTree, path))),
     subscribe: (listener) => {
       listeners.add(listener);
       return () => {

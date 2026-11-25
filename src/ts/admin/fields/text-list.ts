@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { FieldContext } from '../context';
-import { button, h, uid } from '../dom';
+import { button, h, uid, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
 export interface TextListOptions extends FieldOptions {
@@ -22,7 +22,7 @@ const parseItem = (raw: string, numeric: boolean): string | number | null => {
   return Number.isInteger(value) && value > 0 ? value : null;
 };
 
-export const createTextListField = (ctx: FieldContext, options: TextListOptions): HTMLElement => {
+const buildTextListField = (ctx: FieldContext, options: TextListOptions): HTMLElement => {
   const numeric = options.numeric === true;
   const id = uid('ka11y-list');
   const list = h('ul', { class: 'ka11y-list__items' });
@@ -87,3 +87,5 @@ export const createTextListField = (ctx: FieldContext, options: TextListOptions)
     help
   );
 };
+
+export const createTextListField = (ctx: FieldContext, options: TextListOptions): HTMLElement => markPath(buildTextListField(ctx, options), options.path);

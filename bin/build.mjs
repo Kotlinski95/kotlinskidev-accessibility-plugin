@@ -308,6 +308,7 @@ const run = async () => {
     await Promise.all(scriptNames.map(async (name) => [name, fileEntry(`${name}.js`, await readBuilt(`${name}.js`))]))
   );
   const entryOf = async (file) => fileEntry(file, await readBuilt(file));
+  scripts.admin = await entryOf('admin.js');
   await writeManifest(out, {
     abi,
     scripts,

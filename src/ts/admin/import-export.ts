@@ -1,7 +1,7 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { Api } from './api';
 import { isRecord } from './dom';
-import type { SettingsTree } from './types';
+import type { ImportResult, SettingsTree } from './types';
 
 export const EXPORT_FILENAME = 'kotlinskidev-accessibility-settings.json';
 
@@ -43,5 +43,11 @@ export const downloadSettings = async (api: Api, doc: Document = document): Prom
   URL.revokeObjectURL(url);
 };
 
-export const importSettingsFile = async (api: Api, file: Blob): Promise<SettingsTree> =>
-  api.importSettings(await parseSettingsFile(file));
+export const importIntro = (result: ImportResult): string =>
+  result.from.plugin === null
+    ? __('Importing this file changes these settings.', 'kotlinskidev-accessibility')
+    : sprintf(
+        __('This file was exported from version %1$s (settings format %2$d). Importing it changes these settings.', 'kotlinskidev-accessibility'),
+        result.from.plugin,
+        result.from.schemaVersion
+      );

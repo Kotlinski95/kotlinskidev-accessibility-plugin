@@ -1,5 +1,5 @@
 import type { FieldContext } from '../context';
-import { h, wrapField } from '../dom';
+import { h, wrapField, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
 export type ChoiceValue = string | number | boolean;
@@ -19,7 +19,7 @@ export const enumChoices = (
   labelOf: (value: string) => string
 ): Choice[] => (ctx.schema.definitions[path]?.enum ?? []).map((value) => ({ value, label: labelOf(value) }));
 
-export const createSelectField = (ctx: FieldContext, options: SelectOptions): HTMLElement => {
+const buildSelectField = (ctx: FieldContext, options: SelectOptions): HTMLElement => {
   const select = h('select', { class: 'ka11y-select' });
   const current = ctx.state.get(options.path);
   const selectedIndex = Math.max(
@@ -41,3 +41,5 @@ export const createSelectField = (ctx: FieldContext, options: SelectOptions): HT
 
   return wrapField(select, options);
 };
+
+export const createSelectField = (ctx: FieldContext, options: SelectOptions): HTMLElement => markPath(buildSelectField(ctx, options), options.path);

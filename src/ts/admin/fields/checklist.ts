@@ -1,5 +1,5 @@
 import type { FieldContext } from '../context';
-import { fieldset, h } from '../dom';
+import { fieldset, h, markPath } from '../dom';
 
 export interface ChecklistOptions {
   path: string;
@@ -7,7 +7,7 @@ export interface ChecklistOptions {
   choices: ReadonlyArray<{ value: string; label: string }>;
 }
 
-export const createChecklistField = (ctx: FieldContext, options: ChecklistOptions): HTMLElement => {
+const buildChecklistField = (ctx: FieldContext, options: ChecklistOptions): HTMLElement => {
   const selected = (): string[] => {
     const value = ctx.state.get(options.path);
     return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
@@ -31,3 +31,5 @@ export const createChecklistField = (ctx: FieldContext, options: ChecklistOption
 
   return fieldset(options.label, 'ka11y-checklist', h('div', { class: 'ka11y-checklist__grid' }, ...rows));
 };
+
+export const createChecklistField = (ctx: FieldContext, options: ChecklistOptions): HTMLElement => markPath(buildChecklistField(ctx, options), options.path);

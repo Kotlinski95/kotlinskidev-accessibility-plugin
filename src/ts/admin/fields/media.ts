@@ -1,6 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { FieldContext } from '../context';
-import { button, h, uid } from '../dom';
+import { button, h, uid, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
 export const UNIVERSAL_ICON = 'universal';
@@ -10,7 +10,7 @@ const describe = (value: unknown): string => {
   return __('Default icon', 'kotlinskidev-accessibility');
 };
 
-export const createMediaField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
+const buildMediaField = (ctx: FieldContext, options: FieldOptions): HTMLElement => {
   const id = uid('ka11y-media');
   const status = h('span', { class: 'ka11y-media__status', id: `${id}-status` });
   const preview = h('img', { class: 'ka11y-media__preview', alt: '', hidden: true });
@@ -69,3 +69,5 @@ export const createMediaField = (ctx: FieldContext, options: FieldOptions): HTML
     options.help ? h('p', { class: 'description ka11y-field__help' }, options.help) : null
   );
 };
+
+export const createMediaField = (ctx: FieldContext, options: FieldOptions): HTMLElement => markPath(buildMediaField(ctx, options), options.path);

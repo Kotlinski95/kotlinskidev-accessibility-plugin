@@ -1,5 +1,5 @@
 import type { FieldContext } from '../context';
-import { h, wrapField } from '../dom';
+import { h, wrapField, markPath } from '../dom';
 import type { FieldOptions } from '../dom';
 
 export interface TextareaOptions extends FieldOptions {
@@ -7,7 +7,7 @@ export interface TextareaOptions extends FieldOptions {
   code?: boolean;
 }
 
-export const createTextareaField = (ctx: FieldContext, options: TextareaOptions): HTMLElement => {
+const buildTextareaField = (ctx: FieldContext, options: TextareaOptions): HTMLElement => {
   const current = ctx.state.get(options.path);
   const textarea = h('textarea', {
     class: options.code === true ? 'large-text code ka11y-textarea' : 'large-text ka11y-textarea',
@@ -21,3 +21,5 @@ export const createTextareaField = (ctx: FieldContext, options: TextareaOptions)
 
   return wrapField(textarea, options);
 };
+
+export const createTextareaField = (ctx: FieldContext, options: TextareaOptions): HTMLElement => markPath(buildTextareaField(ctx, options), options.path);

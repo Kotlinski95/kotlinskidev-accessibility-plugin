@@ -36,6 +36,13 @@ export const h = <K extends keyof HTMLElementTagNameMap>(
   return element;
 };
 
+export const PATH_ATTRIBUTE = 'data-ka11y-path';
+
+export const markPath = <T extends HTMLElement>(element: T, path: string): T => {
+  element.setAttribute(PATH_ATTRIBUTE, path);
+  return element;
+};
+
 export const wrapField = (control: HTMLElement, options: FieldOptions): HTMLElement => {
   if (options.bare === true) {
     control.setAttribute('aria-label', options.label);
