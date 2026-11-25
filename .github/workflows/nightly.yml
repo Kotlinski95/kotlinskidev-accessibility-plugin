@@ -103,3 +103,42 @@ jobs:
           retention-days: 7
       - if: always()
         run: npm run wp-env:stop
+
+  lighthouse:
+    name: Lighthouse widget on vs off
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-dev -o
+      - run: npm ci
+      - run: npm run build
+      - run: npm run wp-env:start
+      - name: Widget off
+        run: |
+          npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" off
+          LHCI_OUTPUT_DIR=.lighthouseci/off npx lhci autorun --config=lighthouserc.cjs
+      - name: Widget on
+        run: |
+          npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" on
+          LHCI_OUTPUT_DIR=.lighthouseci/on npx lhci autorun --config=lighthouserc.cjs
+      - name: Widget on with saved state
+        run: LHCI_OUTPUT_DIR=.lighthouseci/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
+      - run: node bin/lh-compare.mjs .lighthouseci/off .lighthouseci/on .lighthouseci/saved
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+          retention-days: 7
+      - if: always()
+        run: npm run wp-env:stop

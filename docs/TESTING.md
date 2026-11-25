@@ -7,7 +7,7 @@
 | `ci.yml` `js` | push to main, pull request | ESLint, typecheck, Jest, build, version check |
 | `ci.yml` `e2e` | push to main, pull request | wp-env in Docker, Chromium. Pull requests run `--grep @smoke` when tagged tests exist, otherwise the full suite. Main runs the full suite. |
 | `ci.yml` `plugin-check` | push to main, pull request | Builds the package like the release (build, `composer --no-dev`, rsync with `.distignore`) and runs WordPress Plugin Check on `dist/kotlinskidev-accessibility` |
-| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke` |
+| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke`, and a Lighthouse job that runs `lhci` three times against wp-env (widget off through `visibility.mode=only_on` with `includePostIds=[999999]`, widget on with Recommended, widget on with saved state seeded by `bin/lh-seed-state.cjs`), settings switched by `bin/lh-widget.php`, then `bin/lh-compare.mjs` compares the medians: LCP and TBT may rise by 5 percent of the off value but never less than 100 ms (LCP) and 50 ms (TBT) as noise floors, CLS by 0.01, and no render-blocking plugin URL is allowed (`lighthouserc.cjs`) |
 | `codeql.yml` | push to main, pull request, weekly | CodeQL for JavaScript and TypeScript |
 | `release.yml` | tag `v*` | Builds and attaches `kotlinskidev-accessibility.zip` |
 
@@ -62,4 +62,19 @@ npx playwright test --grep-invert "combination"  # without pairwise rows
 
 ### Loading specs
 
-`loading.spec.ts` covers the five load strategies with and without saved state on both fixtures, open triggers held behind a delayed `loader.js`, a 404 on `panel.js` (error state, then recovery), the uploads JSON fallback to REST, device skip, no JavaScript and the three Page CSS modes. `support/perf.ts` has `pluginRequests`, `seedSavedState` and `firstPaintSnapshot`. `@smoke` marks interaction without state on `stock`, eager without state on `stock`, interaction with state on `hostile`, the early-trigger test, the chunk failure test and the no-JS test. The Asset CleanUp and strict CSP mu-plugin cases (`compat.spec.ts`) and `perf.spec.ts` arrive in M3.11.
+`loading.spec.ts` covers the five load strategies with and without saved state on both fixtures, open triggers held behind a delayed `loader.js`, a 404 on `panel.js` (error state, then recovery), the uploads JSON fallback to REST, device skip, no JavaScript and the three Page CSS modes. `support/perf.ts` has `pluginRequests`, `seedSavedState` and `firstPaintSnapshot`. `@smoke` marks interaction without state on `stock`, eager without state on `stock`, interaction with state on `hostile`, the early-trigger test, the chunk failure test and the no-JS test.
+
+### Compat and performance specs
+
+Two more mu-plugins live in `tests/e2e/fixtures/mu-plugins/`. Both do nothing unless `WP_ENVIRONMENT_TYPE` is `local` and their cookie is present, like the fixture switch.
+
+| mu-plugin | Cookie | Effect |
+| --- | --- | --- |
+| `ka11y-fixture-moved.php` | `ka11y_fixture_moved=1` | Copies the loader build file to `wp-content/cache/asset-cleanup/js/ka11y-loader.js` when missing or stale, and filters `script_loader_src` for `kotlinskidev-a11y-loader` to that URL. Chunks must still come from the plugin `build/` URL |
+| `ka11y-fixture-csp.php` | `ka11y_fixture_csp=nonce` or `strict` | Sends `script-src 'nonce-{n}' 'self'` or `'nonce-{n}' 'strict-dynamic'` plus `style-src 'self' 'unsafe-inline'; connect-src 'self'; object-src 'none'; base-uri 'none'`, adds the nonce to every script tag and inline script, and removes the core emoji detector (its blob worker would violate `worker-src` and is not plugin code) |
+
+`compat.spec.ts` covers the moved loader (panel opens, saved state applies, every chunk request goes to the plugin `build/` URL, no failed request), both CSP modes (policy header has no `unsafe-eval`, zero `securitypolicyviolation` events, panel opens, saved state applies) and the Compatibility preset opt-out attributes on the bootstrap, config and loader tags. `@smoke` marks the moved-loader test and the `strict` panel test.
+
+`perf.spec.ts` compares the widget off (`visibility.mode=only_on` with an unmatched post ID) and on (Recommended) on `/` in fresh contexts with 4x CPU throttling, five interleaved runs per side. Median deltas, on minus off: CLS at most 0.005, LCP at most 50 ms, long-task total over 50 ms at most 30 ms. It also checks that no plugin stylesheet is in the head and that the launcher keeps its box with the loader held. `support/perf.ts` adds `installVitals`, `readVitals`, `throttleCpu`, `median` and `headHtml`. `@smoke` marks one run per side with CLS and request assertions only.
+
+Flake notes: the median test is the only timing-sensitive one. If it flakes on a slow runner, raise `RUNS` before loosening a budget.

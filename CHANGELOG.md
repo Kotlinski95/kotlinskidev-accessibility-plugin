@@ -16,6 +16,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Front end switch-over: one `loader.js` script on every page (strategy, position, fetch priority and optimizer opt-out attributes follow the Performance settings), the launcher server-rendered in a declarative shadow root, page CSS loaded lazily, and `build/manifest.php` for versions. The panel and feature chunks load on first use or from saved state. See `docs/PHASE3-SPEC.md`.
 - `kotlinskidev_a11y_legacy_config` filter: return `true` to keep the moved config fields inline until v0.3.0.
 - E2E `loading.spec.ts` (strategies, saved state, hostile fixture, early triggers, chunk failure, data fallback, device skip, no JavaScript, page CSS modes) and `tests/e2e/support/perf.ts`.
+- E2E `compat.spec.ts` (Asset CleanUp style moved loader, strict CSP with nonce) and `perf.spec.ts` (CLS, LCP and request gates), with `ka11y-fixture-moved` and `ka11y-fixture-csp` mu-plugins.
+- Nightly Lighthouse job running `lhci` three times (widget off via `visibility.mode=only_on`, Recommended, saved state) and comparing LCP, CLS and TBT medians (`lighthouserc.cjs`, `bin/lh-widget.php`, `bin/lh-seed-state.cjs`, `bin/lh-compare.mjs`), with `@lhci/cli` pinned to 0.15.1.
 
 ### Changed
 
