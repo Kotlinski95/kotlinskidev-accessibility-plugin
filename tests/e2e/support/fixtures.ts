@@ -13,6 +13,7 @@ export interface WidgetLocators {
   launcher: Locator;
   panel: Locator;
   feature(key: string): Locator;
+  featureState(key: string): Locator;
   profile(key: string): Locator;
   reset: Locator;
 }
@@ -36,10 +37,18 @@ export const widgetFor = (page: Page): WidgetLocators => ({
   host: page.locator(HOST),
   launcher: page.locator(LAUNCHER),
   panel: page.locator(PANEL),
-  feature: (key: string) => page.locator(`${PANEL} [data-feature="${key}"]`),
+  feature: (key: string) => page.locator(`${PANEL} button[data-feature="${key}"], ${PANEL} [data-feature="${key}"] [data-step="1"]`),
+  featureState: (key: string) => page.locator(`${PANEL} [data-feature="${key}"]`),
   profile: (key: string) => page.locator(`${PANEL} [data-profile="${key}"]`),
   reset: page.locator(`${PANEL} .ka11y-reset`),
 });
+
+export const expectFeaturePressed = async (widget: WidgetLocators, key: string, pressed: boolean): Promise<void> => {
+  const state = widget.featureState(key);
+  await expect
+    .poll(() => state.evaluate((node) => node.getAttribute('aria-pressed') ?? String(node.getAttribute('data-level') !== '0')))
+    .toBe(String(pressed));
+};
 
 export const test = base.extend<Fixtures & Options>({
   fixture: ['stock', { option: true }],

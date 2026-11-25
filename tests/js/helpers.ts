@@ -40,7 +40,7 @@ export const createConfig = (overrides: Partial<KotlinskidevA11yConfig> = {}): K
     panelTitle: 'Accessibility settings',
     open: 'Open',
     close: 'Close',
-    reset: 'Reset all settings',
+    resetSettings: 'Reset settings',
     'features.biggerText.label': 'Bigger text',
     'features.biggerText.description': 'Bigger',
     'features.highlightLinks.label': 'Highlight links',

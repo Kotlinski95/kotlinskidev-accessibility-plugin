@@ -1,4 +1,4 @@
-import { expect, FIXTURE_NAMES, test } from './support/fixtures';
+import { expectFeaturePressed, FIXTURE_NAMES, test } from './support/fixtures';
 import { ALL_FEATURE_CLASSES, reopen, resetAndAssert } from './support/flows';
 import { assertPageUsable, installLongContent } from './support/invariants';
 import { FEATURE_COMBINATIONS } from './support/pairwise';
@@ -40,7 +40,7 @@ for (const fixture of FIXTURE_NAMES) {
         await page.reload();
         await assertPageUsable(page);
         widget = await reopen(page);
-        for (const [key] of applied) await expect(widget.feature(key)).toHaveAttribute('aria-pressed', 'true');
+        for (const [key] of applied) await expectFeaturePressed(widget, key, true);
 
         await resetAndAssert(page, ALL_FEATURE_CLASSES);
       });

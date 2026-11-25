@@ -1,4 +1,4 @@
-import { expect, FIXTURE_NAMES, test } from './support/fixtures';
+import { expect, expectFeaturePressed, FIXTURE_NAMES, test } from './support/fixtures';
 import type { FixtureName } from './support/fixtures';
 import { ALL_FEATURE_CLASSES, reopen, resetAndAssert } from './support/flows';
 import { assertPageUsable, FEATURE_LEVELS, installLongContent, kebab, PROFILE_KEYS } from './support/invariants';
@@ -28,14 +28,14 @@ for (const fixture of FIXTURE_NAMES) {
 
           for (let level = 1; level <= levels; level += 1) {
             await widget.feature(key).click();
-            await expect(widget.feature(key)).toHaveAttribute('aria-pressed', 'true');
+            await expectFeaturePressed(widget, key, true);
             await page.keyboard.press('Escape');
             await assertPageUsable(page);
 
             await page.reload();
             await assertPageUsable(page);
             widget = await reopen(page);
-            await expect(widget.feature(key)).toHaveAttribute('aria-pressed', 'true');
+            await expectFeaturePressed(widget, key, true);
           }
 
           await resetAndAssert(page, [`ka11y-${kebab(key)}`]);
@@ -46,7 +46,7 @@ for (const fixture of FIXTURE_NAMES) {
             const widget = await reopen(page);
             test.skip((await widget.feature(key).count()) === 0, `${key} is not rendered on this page`);
             await widget.feature(key).click();
-            await expect(widget.feature(key)).toHaveAttribute('aria-pressed', 'true');
+            await expectFeaturePressed(widget, key, true);
             await page.keyboard.press('Escape');
             await assertPageUsable(page);
             await resetAndAssert(page, [`ka11y-${kebab(key)}`]);

@@ -16,3 +16,17 @@ export const createElement = <K extends keyof HTMLElementTagNameMap>(
   children.forEach((child) => element.append(child));
   return element;
 };
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+export const createSvg = (doc: Document, pathData: string): SVGSVGElement => {
+  const svg = doc.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('class', 'ka11y-svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  const path = doc.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', pathData);
+  svg.append(path);
+  return svg;
+};

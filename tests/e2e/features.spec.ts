@@ -1,4 +1,4 @@
-import { expect, gotoHome, openPanel, test } from './support/fixtures';
+import { expect, expectFeaturePressed, gotoHome, openPanel, test } from './support/fixtures';
 
 test.describe('feature toggles', () => {
   test.beforeEach(async ({ settings }) => {
@@ -9,14 +9,14 @@ test.describe('feature toggles', () => {
     const widget = await gotoHome(page);
     await openPanel(page, widget);
     await widget.feature('letterSpacing').click();
-    await expect(widget.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'letterSpacing', true);
     await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
 
     await page.reload();
     await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
     const reopened = await gotoHome(page);
     await openPanel(page, reopened);
-    await expect(reopened.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(reopened, 'letterSpacing', true);
   });
 
   test('readPage speaks the clicked block through speech synthesis without audio output', async ({ page }) => {
@@ -62,8 +62,8 @@ test.describe('feature toggles', () => {
     await widget.feature('biggerText').click();
     await expect(page.locator('html')).toHaveClass(/ka11y-letter-spacing/);
     await widget.reset.click();
-    await expect(widget.feature('letterSpacing')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'false');
+    await expectFeaturePressed(widget, 'letterSpacing', false);
+    await expectFeaturePressed(widget, 'biggerText', false);
     await expect(page.locator('html')).not.toHaveClass(/ka11y-letter-spacing/);
     await expect
       .poll(() => heading.evaluate((element) => parseFloat(getComputedStyle(element).fontSize)))
@@ -78,35 +78,35 @@ test.describe('feature toggles', () => {
     const widget = await gotoHome(page);
     await openPanel(page, widget);
     await widget.feature('highlightLinks').click();
-    await expect(widget.feature('highlightLinks')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'highlightLinks', true);
 
     await widget.profile('visionImpaired').click();
     await expect(widget.profile('visionImpaired')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('readableFont')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('bigCursor')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'biggerText', true);
+    await expectFeaturePressed(widget, 'readableFont', true);
+    await expectFeaturePressed(widget, 'highContrast', true);
+    await expectFeaturePressed(widget, 'bigCursor', true);
 
     await widget.profile('visionImpaired').click();
     await expect(widget.profile('visionImpaired')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('biggerText')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('readableFont')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('highlightLinks')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'biggerText', false);
+    await expectFeaturePressed(widget, 'readableFont', false);
+    await expectFeaturePressed(widget, 'highContrast', false);
+    await expectFeaturePressed(widget, 'highlightLinks', true);
   });
 
   test('contrast features are mutually exclusive', async ({ page }) => {
     const widget = await gotoHome(page);
     await openPanel(page, widget);
     await widget.feature('darkContrast').click();
-    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'darkContrast', true);
     await widget.feature('lightContrast').click();
-    await expect(widget.feature('lightContrast')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'false');
+    await expectFeaturePressed(widget, 'lightContrast', true);
+    await expectFeaturePressed(widget, 'darkContrast', false);
     await widget.feature('highContrast').click();
-    await expect(widget.feature('highContrast')).toHaveAttribute('aria-pressed', 'true');
-    await expect(widget.feature('lightContrast')).toHaveAttribute('aria-pressed', 'false');
-    await expect(widget.feature('darkContrast')).toHaveAttribute('aria-pressed', 'false');
+    await expectFeaturePressed(widget, 'highContrast', true);
+    await expectFeaturePressed(widget, 'lightContrast', false);
+    await expectFeaturePressed(widget, 'darkContrast', false);
   });
 
   test('filters apply to body children, never to html or body, and keep fixed elements in place', async ({ page }) => {
@@ -126,7 +126,7 @@ test.describe('feature toggles', () => {
     const before = await page.locator('#e2e-fixed').boundingBox();
     await openPanel(page, widget);
     await widget.feature('monochrome').click();
-    await expect(widget.feature('monochrome')).toHaveAttribute('aria-pressed', 'true');
+    await expectFeaturePressed(widget, 'monochrome', true);
 
     await expect
       .poll(() => page.evaluate(() => getComputedStyle(document.querySelector('#e2e-spacer') as HTMLElement).filter))

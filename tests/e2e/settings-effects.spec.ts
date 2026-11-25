@@ -127,11 +127,11 @@ test.describe('locale', () => {
     await openPanel(page, widget);
     await expect(page.locator('#ka11y-root #ka11y-panel-title')).toHaveText('Ustawienia dostępności');
     await expect(widget.reset).toContainText('Zresetuj ustawienia');
-    await expect(widget.feature('biggerText')).toContainText('Powiększ tekst');
-    await expect(widget.feature('letterSpacing')).toContainText('Odstępy między literami');
-    await expect(widget.feature('highContrast')).toContainText('Wysoki kontrast');
-    await expect(widget.feature('readPage')).toContainText('Czytnik strony');
-    await expect(widget.feature('readingMask')).toContainText('Maska czytania');
+    await expect(widget.featureState('biggerText')).toContainText('Powiększ tekst');
+    await expect(widget.featureState('letterSpacing')).toContainText('Odstępy między literami');
+    await expect(widget.featureState('highContrast')).toContainText('Wysoki kontrast');
+    await expect(widget.featureState('readPage')).toContainText('Czytnik strony');
+    await expect(widget.featureState('readingMask')).toContainText('Maska czytania');
   });
 
   test.describe('admin page', () => {
