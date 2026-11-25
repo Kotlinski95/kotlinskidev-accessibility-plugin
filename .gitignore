@@ -9,4 +9,4 @@ vendor
 /playwright-report
 /test-results
 /.wp-env.override.json
-.lighthouseci/
+lh-results/

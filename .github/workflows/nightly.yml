@@ -128,19 +128,19 @@ jobs:
       - name: Widget off
         run: |
           npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" off
-          LHCI_OUTPUT_DIR=.lighthouseci/off npx lhci autorun --config=lighthouserc.cjs
+          LHCI_OUTPUT_DIR=lh-results/off npx lhci autorun --config=lighthouserc.cjs
       - name: Widget on
         run: |
           npx wp-env run cli wp eval-file "wp-content/plugins/$(basename "$GITHUB_WORKSPACE")/bin/lh-widget.php" on
-          LHCI_OUTPUT_DIR=.lighthouseci/on npx lhci autorun --config=lighthouserc.cjs
+          LHCI_OUTPUT_DIR=lh-results/on npx lhci autorun --config=lighthouserc.cjs
       - name: Widget on with saved state
-        run: LHCI_OUTPUT_DIR=.lighthouseci/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
-      - run: node bin/lh-compare.mjs .lighthouseci/off .lighthouseci/on .lighthouseci/saved
+        run: LHCI_OUTPUT_DIR=lh-results/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
+      - run: node bin/lh-compare.mjs lh-results/off lh-results/on lh-results/saved
       - if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-results
-          path: .lighthouseci/
+          path: lh-results/
           retention-days: 7
       - if: always()
         run: npm run wp-env:stop

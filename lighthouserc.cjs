@@ -1,6 +1,6 @@
 const base = process.env.LHCI_BASE_URL || 'http://localhost:8889';
 const urls = (process.env.LHCI_URLS || `${base}/`).split(',').filter(Boolean);
-const outputDir = process.env.LHCI_OUTPUT_DIR || '.lighthouseci/on';
+const outputDir = process.env.LHCI_OUTPUT_DIR || 'lh-results/on';
 const puppeteerScript = process.env.LHCI_PUPPETEER_SCRIPT;
 
 module.exports = {
