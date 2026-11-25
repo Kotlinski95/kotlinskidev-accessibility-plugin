@@ -166,7 +166,7 @@ final class Button {
 		return true === $value || ( is_string( $value ) && in_array( strtolower( $value ), array( '1', 'true', 'yes' ), true ) ) || 1 === $value;
 	}
 
-	private function allowed_html(): array {
+	public function allowed_html(): array {
 		$shared = array(
 			'class'         => true,
 			'style'         => true,
