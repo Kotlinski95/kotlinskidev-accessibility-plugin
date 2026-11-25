@@ -2,8 +2,8 @@ import type { Page, Request } from '@playwright/test';
 
 export const SAVED_LEVELS: Readonly<Record<string, boolean | number>> = { readingLine: true, biggerText: 2 };
 
-const PLUGIN_PATHS = ['/kotlinskidev-accessibility/', '/kotlinskidev-a11y/'];
-const PLUGIN_BUILD_URL = /\/kotlinskidev-(accessibility|a11y)\/build\//;
+export const PLUGIN_BUILD_URL = /\/wp-content\/plugins\/[^/]+\/build\//;
+const PLUGIN_REQUEST_URL = /\/wp-content\/plugins\/[^/]+\/|\/kotlinskidev-a11y\//;
 
 export interface PluginRequests {
   names(): string[];
@@ -37,7 +37,7 @@ const nameOf = (request: Request): string => new URL(request.url()).pathname.spl
 export const pluginRequests = (page: Page): PluginRequests => {
   const seen: string[] = [];
   page.on('request', (request) => {
-    if (PLUGIN_PATHS.some((path) => request.url().includes(path))) seen.push(nameOf(request));
+    if (PLUGIN_REQUEST_URL.test(request.url())) seen.push(nameOf(request));
   });
   return {
     names: () => [...seen],

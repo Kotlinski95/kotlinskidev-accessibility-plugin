@@ -55,14 +55,14 @@ const assertFixedElementStaysFixed = async (page: Page): Promise<void> => {
 };
 
 const assertCookieWallClickable = async (page: Page): Promise<void> => {
-  const reachable = await page.evaluate((hostId) => {
+  const isReachable = (): Promise<boolean> => page.evaluate((hostId) => {
     const button = document.getElementById('cookie-accept');
     if (!button) return false;
     const box = button.getBoundingClientRect();
     const hit = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
     return hit === button || hit?.id === hostId;
   }, WIDGET_HOST);
-  expect(reachable).toBe(true);
+  await expect.poll(isReachable, { timeout: 5_000 }).toBe(true);
 };
 
 const assertLateNodeTreatment = async (page: Page): Promise<void> => {

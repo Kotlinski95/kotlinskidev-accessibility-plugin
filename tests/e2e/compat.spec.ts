@@ -1,11 +1,10 @@
 import type { BrowserContext, Page, Request } from '@playwright/test';
 import { expect, gotoHome, openPanel, test, widgetFor } from './support/fixtures';
 import { BASE_URL } from './support/env';
-import { seedSavedState } from './support/perf';
+import { PLUGIN_BUILD_URL, seedSavedState } from './support/perf';
 
-const PLUGIN_BUILD_PATH = /\/kotlinskidev-(accessibility|a11y)\/build\//;
 const MOVED_LOADER_PATH = '/wp-content/cache/asset-cleanup/js/ka11y-loader.js';
-const PLUGIN_FAILURE_URL = /kotlinskidev-(accessibility|a11y)\/build\/|ka11y|asset-cleanup/;
+const PLUGIN_FAILURE_URL = /\/wp-content\/plugins\/[^/]+\/build\/|ka11y|asset-cleanup/;
 const CHUNK_NAMES = new Set(['kernel.js', 'panel.js', 'content.js', 'color.js', 'orientation.js']);
 
 const setCookie = (context: BrowserContext, name: string, value: string): Promise<void> =>
@@ -27,7 +26,7 @@ const readViolations = (page: Page): Promise<string[]> =>
 const injectedScriptNonces = (page: Page): Promise<{ src: string; nonce: string | undefined }[]> =>
   page.evaluate(() =>
     Array.from(document.querySelectorAll<HTMLScriptElement>('script[src]'))
-      .filter((script) => /kotlinskidev-(accessibility|a11y)\/build\//.test(script.src))
+      .filter((script) => /\/wp-content\/plugins\/[^/]+\/build\//.test(script.src))
       .map((script) => ({ src: script.src, nonce: script.nonce })),
   );
 
@@ -75,7 +74,7 @@ test.describe('Asset CleanUp simulation', () => {
     expect(names.has('panel.js')).toBe(true);
     expect(names.has('color.js')).toBe(true);
     for (const request of chunks) {
-      expect(request.url()).toMatch(PLUGIN_BUILD_PATH);
+      expect(request.url()).toMatch(PLUGIN_BUILD_URL);
       expect(request.url()).not.toContain('/cache/asset-cleanup/');
     }
     expect(failures).toEqual([]);
