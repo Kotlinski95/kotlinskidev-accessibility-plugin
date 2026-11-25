@@ -1,8 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { PlaywrightTestProject } from '@playwright/test';
 
 const baseURL = process.env.WP_BASE_URL ?? 'http://localhost:8889';
 const isCi = process.env.CI !== undefined && process.env.CI !== '';
 const crossBrowser = process.env.KA11Y_CROSS_BROWSER === '1';
+
+const visualProjects: PlaywrightTestProject[] =
+  process.env.KA11Y_VISUAL === '1'
+    ? [
+        {
+          name: 'visual',
+          testMatch: ['**/visual.spec.ts'],
+          grep: /@visual/,
+          snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{testFileName}/{arg}{ext}',
+          expect: { toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 } },
+          use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
+        },
+      ]
+    : [];
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -22,14 +37,7 @@ export default defineConfig({
   },
   projects: [
     { name: 'chromium', testIgnore: ['**/visual.spec.ts'], use: { ...devices['Desktop Chrome'] } },
-    {
-      name: 'visual',
-      testMatch: ['**/visual.spec.ts'],
-      grep: /@visual/,
-      snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{testFileName}/{arg}{ext}',
-      expect: { toHaveScreenshot: { animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.01 } },
-      use: { ...devices['Desktop Chrome'], deviceScaleFactor: 1 },
-    },
+    ...visualProjects,
     {
       name: 'mobile-smoke',
       testMatch: ['**/invariants.spec.ts'],

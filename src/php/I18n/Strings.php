@@ -144,7 +144,9 @@ final class Strings {
 			'skipSearch'                              => __( 'Search', 'kotlinskidev-accessibility' ),
 			'skipComplementary'                       => __( 'Sidebar', 'kotlinskidev-accessibility' ),
 			'levelDefault'                            => __( 'Default', 'kotlinskidev-accessibility' ),
+			/* translators: %s: name of the setting being adjusted. */
 			'stepDecrease'                            => __( 'Decrease %s', 'kotlinskidev-accessibility' ),
+			/* translators: %s: name of the setting being adjusted. */
 			'stepIncrease'                            => __( 'Increase %s', 'kotlinskidev-accessibility' ),
 			'language'                                => __( 'Language', 'kotlinskidev-accessibility' ),
 			'skipChoose'                              => __( 'Choose…', 'kotlinskidev-accessibility' ),

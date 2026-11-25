@@ -116,8 +116,8 @@ Snapshots depend on the platform fonts and rasteriser, so the `visual` project w
 
 ```bash
 npm run wp-env:start
-npx playwright test --project=visual                      # compare against the baselines of this platform
-npx playwright test --project=visual --update-snapshots   # write or replace them
+KA11Y_VISUAL=1 npx playwright test --project=visual           # compare against the baselines of this platform
+KA11Y_VISUAL=1 npx playwright test --project=visual --update-snapshots # write or replace them
 ```
 
 Review the changed PNGs before committing a new baseline. Generate the `linux` set inside the Playwright Docker image when it is needed.
