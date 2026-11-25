@@ -26,8 +26,8 @@ jobs:
           - wp: '6.4'
             php: '8.4'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -55,7 +55,7 @@ jobs:
         env:
           CI: 'true'
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-wp${{ matrix.wp }}-php${{ matrix.php }}
           path: |
@@ -74,8 +74,8 @@ jobs:
       matrix:
         browser: [firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -94,7 +94,7 @@ jobs:
           CI: 'true'
           KA11Y_CROSS_BROWSER: '1'
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.browser }}
           path: |
@@ -109,8 +109,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -139,7 +139,7 @@ jobs:
         run: LHCI_OUTPUT_DIR=lh-results/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
       - run: node bin/lh-compare.mjs lh-results/off lh-results/on lh-results/saved
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: lighthouse-results
           path: lh-results/
