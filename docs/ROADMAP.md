@@ -155,6 +155,8 @@ Done when: an e2e page with one trigger of each kind passes keyboard and screen 
 
 ## Phase 5: UI parity, v0.4.0
 
+Status: done, release v0.4.0 pending. Spec: [PHASE5-SPEC.md](PHASE5-SPEC.md). Parity review and follow-ups: [PHASE5-PARITY.md](PHASE5-PARITY.md).
+
 1. Run OneTap in a separate wp-env site. Capture screens, video, timings, mobile and keyboard behaviour.
 2. Write a gap list and design spec. Match layout and behaviour. Copy no CSS, icons or text.
 3. Decide modality. Recommended: a non-modal dialog without `aria-modal`, because visitors need to see the page change.

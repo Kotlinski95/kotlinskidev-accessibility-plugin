@@ -186,6 +186,8 @@ The keyboard shortcut is configurable and works in every mode when enabled. The 
 | `kotlinskidev_a11y_should_render` | filter | Decide whether the widget renders on the request. |
 | `kotlinskidev_a11y_current_locale` | filter | Override the locale used for strings. |
 | `kotlinskidev_a11y_strings` | filter | Adjust the strings sent to the front end. |
+| `kotlinskidev_a11y_locale_label` | filter | `string $label, string $locale` in, string out. Native language name in the panel language select. Defaults to the `intl` display name, else the locale code. |
+| `kotlinskidev_a11y_icons` | filter | `array $icons` (name to SVG path data) in, array out. Only known names whose value is path data (`^[MmZzLlHhVvCcSsQqTtAa0-9eE.,+\s-]{1,1500}$`) are kept. Markup is never accepted. |
 | `kotlinskidev_a11y_cache_invalidated` | action | `string $reason`: `settings`, `update` or `translations`. |
 
 Update hooks are described in the README.
@@ -201,10 +203,16 @@ Namespace `kotlinskidev-a11y/v1`.
 | `/export` | GET | settings capability | Export settings. |
 | `/import` | POST | settings capability | Import settings. |
 | `/reset` | POST | settings capability | Reset settings. |
-| `/panel-data` | GET | public | Panel data for `locale`, with optional version `v`. |
+| `/panel-data` | GET | public | Panel data for `locale` (required, must be a locale the site uses, otherwise 404), with optional version `v`. The panel language switcher fetches it with another locale. The payload now also holds `panel`, `layout`, `locales` and `icons`. |
 | `/trigger-options` | GET | `edit_posts` | Enabled `features` and `profiles` keys, used by the block editor. |
 
 `/trigger-options` returns `{ "features": string[], "profiles": string[] }`.
+
+## Panel behaviour changes in 0.4.0
+
+- The panel dialog is non-modal. `aria-modal` is not set, Tab is not trapped, and Escape is handled only when focus is inside the panel or on the launcher.
+- No new events and no change to `PublicState`. The panel calls the same store methods, so `ka11y:open`, `ka11y:close` and `ka11y:change` (`source: 'panel'`) fire as before.
+- The language switcher changes only the widget language. It stores the choice in `localStorage` under `<storage.key>-locale` and fires no event.
 
 ## Security notes
 
@@ -225,3 +233,4 @@ Namespace `kotlinskidev-a11y/v1`.
 | Plugin version | API | Change |
 | --- | --- | --- |
 | 0.3.0 | 1 | Action vocabulary, trigger surfaces, JavaScript API, events, shortcode, block, PHP functions and the new filters. Removed the v0.2 `kotlinskidev_a11y_legacy_config` filter. |
+| 0.4.0 | 1 | No API change. New filters `kotlinskidev_a11y_locale_label` and `kotlinskidev_a11y_icons`, additive `/panel-data` payload, non-modal panel. |

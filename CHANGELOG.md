@@ -5,10 +5,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Appearance tab: style presets (`classic`, `brand`, `soft`, `contrast`), header, canvas and dark primary color tokens with a live contrast check, tile columns, section toggles and a language switcher toggle. Settings schema v4.
+- Panel language switcher that changes the widget language only and remembers the choice in `localStorage` under `<storage key>-locale`.
+- Inline SVG icon set built from path data, with the `kotlinskidev_a11y_icons` and `kotlinskidev_a11y_locale_label` filters.
+- `/panel-data` payload carries `panel`, `layout`, `locales` and `icons`.
+- Visual snapshot and panel UI e2e specs.
+
 ### Changed
 
 - Panel redesign: header with language switcher, section cards, icon tiles, steppers and a skip-to-content select; the dialog is non-modal and uses a side panel on desktop and a bottom sheet on mobile. The panel chunk budget is 8704 B gzip (was 7168): the chunk loads only on first open and the redesign, icons and language switcher account for the growth.
+- Internal shadow classes `.ka11y-toggle`, `.ka11y-profile`, `.ka11y-grid`, `.ka11y-feature`, `.ka11y-section` and `.ka11y-group` are removed. Custom CSS that targets them must be updated, see the README.
+- Escape closes the panel only when focus is inside it or on the launcher.
 
+### Fixed
+
+- Dark mode pressed tiles and the focus ring on the dark header now meet the 3:1 non-text contrast minimum.
+- The panel host no longer carries a `transform`, which broke fixed positioning of the panel.
 
 ## [0.3.0] - 2026-11-25
 

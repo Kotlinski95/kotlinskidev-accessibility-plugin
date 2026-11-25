@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Kotlinskidev Accessibility 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kotlinskidev-"
 "accessibility\n"
-"POT-Creation-Date: 2026-11-25T10:50:25+00:00\n"
+"POT-Creation-Date: 2026-11-25T15:26:17+00:00\n"
 "PO-Revision-Date: 2026-11-24 12:00+0000\n"
 "Last-Translator: Adrian Kotlinski\n"
 "Language-Team: Polish\n"
@@ -268,7 +268,7 @@ msgid "Use a light, high-legibility color scheme."
 msgstr "Używa jasnej, bardzo czytelnej kolorystyki."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:83
-#: src/php/I18n/Strings.php:83
+#: src/php/I18n/Strings.php:83 build/admin.js:1
 msgid "High contrast"
 msgstr "Wysoki kontrast"
 
@@ -532,60 +532,60 @@ msgid "Sidebar"
 msgstr "Panel boczny"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:138
-#: src/php/I18n/Strings.php:146 build/admin.js:1
+#: src/php/I18n/Strings.php:153 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Off"
 msgstr "Wyłączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:139
-#: src/php/I18n/Strings.php:147 build/admin.js:1
+#: src/php/I18n/Strings.php:154 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "On"
 msgstr "Włączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:140
-#: src/php/I18n/Strings.php:148 build/admin.js:1
+#: src/php/I18n/Strings.php:155 build/admin.js:1
 msgid "Low"
 msgstr "Niski"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:141
-#: src/php/I18n/Strings.php:149 build/admin.js:1
+#: src/php/I18n/Strings.php:156 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Medium"
 msgstr "Średni"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:142
-#: src/php/I18n/Strings.php:150 build/admin.js:1
+#: src/php/I18n/Strings.php:157 build/admin.js:1
 msgid "High"
 msgstr "Wysoki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:143
-#: src/php/I18n/Strings.php:151
+#: src/php/I18n/Strings.php:158
 msgid "Left"
 msgstr "Do lewej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:144
-#: src/php/I18n/Strings.php:152
+#: src/php/I18n/Strings.php:159
 msgid "Center"
 msgstr "Do środka"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:145
-#: src/php/I18n/Strings.php:153
+#: src/php/I18n/Strings.php:160
 msgid "Right"
 msgstr "Do prawej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:146
-#: src/php/I18n/Strings.php:154
+#: src/php/I18n/Strings.php:161
 msgid "The accessibility statement has not been published yet."
 msgstr "Deklaracja dostępności nie została jeszcze opublikowana."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:147
-#: src/php/I18n/Strings.php:155
+#: src/php/I18n/Strings.php:162
 msgid "Our commitment to accessibility"
 msgstr "Nasze zobowiązanie do zapewnienia dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:148
-#: src/php/I18n/Strings.php:156
+#: src/php/I18n/Strings.php:163
 msgid ""
 "We want this website to be usable by everyone, including people with "
 "disabilities."
@@ -594,22 +594,22 @@ msgstr ""
 "niepełnosprawnościami."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:149
-#: src/php/I18n/Strings.php:157
+#: src/php/I18n/Strings.php:164
 msgid "Conformance status"
 msgstr "Status zgodności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:150
-#: src/php/I18n/Strings.php:158
+#: src/php/I18n/Strings.php:165
 msgid "We are working towards conformance with WCAG 2.2 level AA."
 msgstr "Dążymy do zgodności ze standardem WCAG 2.2 na poziomie AA."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:151
-#: src/php/I18n/Strings.php:159
+#: src/php/I18n/Strings.php:166
 msgid "Feedback and contact"
 msgstr "Opinie i kontakt"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:152
-#: src/php/I18n/Strings.php:160
+#: src/php/I18n/Strings.php:167
 msgid ""
 "If you run into an accessibility barrier on this website, please contact the "
 "site owner and describe the problem."
@@ -618,12 +618,12 @@ msgstr ""
 "właścicielem witryny i opisz problem."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:153
-#: src/php/I18n/Strings.php:161
+#: src/php/I18n/Strings.php:168
 msgid "Date of this statement"
 msgstr "Data sporządzenia deklaracji"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:154
-#: src/php/I18n/Strings.php:162
+#: src/php/I18n/Strings.php:169
 msgid ""
 "This statement is reviewed regularly; the date of the last review is added "
 "by the site owner."
@@ -682,6 +682,38 @@ msgstr "Ukryj pasek dostępności"
 #: src/php/I18n/Strings.php:129
 msgid "Show accessibility toolbar"
 msgstr "Pokaż pasek dostępności"
+
+#: src/php/I18n/Strings.php:146 build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Default"
+msgstr "Domyślnie"
+
+#: src/php/I18n/Strings.php:147
+#, php-format
+msgid "Decrease %s"
+msgstr "Zmniejsz: %s"
+
+#: src/php/I18n/Strings.php:148
+#, php-format
+msgid "Increase %s"
+msgstr "Zwiększ: %s"
+
+#: src/php/I18n/Strings.php:149
+msgid "Language"
+msgstr "Język"
+
+#: src/php/I18n/Strings.php:150
+msgid "Choose…"
+msgstr "Wybierz…"
+
+#: src/php/I18n/Strings.php:151
+msgid "All adjustments were reset."
+msgstr "Wszystkie ustawienia zostały zresetowane."
+
+#: src/php/I18n/Strings.php:152 build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Reset settings"
+msgstr "Zresetuj ustawienia"
 
 #: src/php/requirements.php:28
 msgid ""
@@ -930,6 +962,102 @@ msgid "Show the toolbar"
 msgstr "Pokaż pasek"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Primary color"
+msgstr "Kolor główny"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Text on primary color"
+msgstr "Tekst na kolorze głównym"
+
+#: build/admin.js:1
+msgid "Primary color (dark)"
+msgstr "Kolor podstawowy (ciemny)"
+
+#: build/admin.js:1
+msgid "Text on primary color (dark)"
+msgstr "Tekst na kolorze podstawowym (ciemny)"
+
+#: build/admin.js:1
+msgid "Header background"
+msgstr "Tło nagłówka"
+
+#: build/admin.js:1
+msgid "Header text"
+msgstr "Tekst nagłówka"
+
+#: build/admin.js:1
+msgid "Light canvas"
+msgstr "Jasne tło panelu"
+
+#: build/admin.js:1
+msgid "Dark canvas"
+msgstr "Ciemne tło panelu"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Light surface"
+msgstr "Jasne tło"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Dark surface"
+msgstr "Ciemne tło"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Text on light surface"
+msgstr "Tekst na jasnym tle"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Text on dark surface"
+msgstr "Tekst na ciemnym tle"
+
+#: build/admin.js:1
+msgid "Classic"
+msgstr "Klasyczny"
+
+#: build/admin.js:1
+msgid "Brand header"
+msgstr "Nagłówek w kolorze marki"
+
+#: build/admin.js:1
+msgid "Soft"
+msgstr "Łagodny"
+
+#: build/admin.js:1
+msgid "Show the profiles card"
+msgstr "Pokaż kartę profili"
+
+#: build/admin.js:1
+msgid "Show the content card"
+msgstr "Pokaż kartę treści"
+
+#: build/admin.js:1
+msgid "Show the color card"
+msgstr "Pokaż kartę kolorów"
+
+#: build/admin.js:1
+msgid "Show the orientation card"
+msgstr "Pokaż kartę orientacji"
+
+#: build/admin.js:1
+msgid "Show the skip to content card"
+msgstr "Pokaż kartę przejścia do treści"
+
+#: build/admin.js:1
+msgid "passes"
+msgstr "spełnia"
+
+#: build/admin.js:1
+msgid "fails"
+msgstr "nie spełnia"
+
+#: build/admin.js:1
+msgid "%s: enter a valid color to check contrast."
+msgstr "%s: wpisz poprawny kolor, aby sprawdzić kontrast."
+
+#: build/admin.js:1
+msgid "%1$s:1 against %2$s, %3$s the %4$s:1 minimum"
+msgstr "%1$s:1 względem: %2$s, %3$s minimum %4$s:1"
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Theme"
 msgstr "Motyw"
 
@@ -957,33 +1085,54 @@ msgstr "Selektor CSS pasujący do Twojej witryny w trybie jasnym."
 msgid "Follow the visitor color scheme preference"
 msgstr "Stosuj preferowany przez odwiedzającego schemat kolorów"
 
+#: build/admin.js:1
+msgid "Panel layout"
+msgstr "Układ panelu"
+
+#: build/admin.js:1
+msgid "Tile columns"
+msgstr "Kolumny kafelków"
+
+#: build/admin.js:1
+msgid ""
+"Columns on desktop and tablet. Narrow panels use fewer columns automatically."
+msgstr ""
+"Liczba kolumn na komputerze i tablecie. Wąskie panele automatycznie używają "
+"mniejszej liczby kolumn."
+
+#: build/admin.js:1
+msgid "Hidden cards stay usable through triggers and the JavaScript API."
+msgstr "Ukryte karty nadal działają przez wyzwalacze i API JavaScript."
+
+#: build/admin.js:1
+msgid "Show the language switcher"
+msgstr "Pokaż przełącznik języka"
+
+#: build/admin.js:1
+msgid "Shown only when the site has two or more languages."
+msgstr "Widoczny tylko wtedy, gdy witryna ma co najmniej dwa języki."
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Colors"
 msgstr "Kolory"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Primary color"
-msgstr "Kolor główny"
+#: build/admin.js:1
+msgid "Color preset"
+msgstr "Zestaw kolorów"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Text on primary color"
-msgstr "Tekst na kolorze głównym"
+#: build/admin.js:1
+msgid ""
+"A preset fills in the colors below. Changing any color switches to Custom."
+msgstr ""
+"Zestaw uzupełnia kolory poniżej. Zmiana dowolnego koloru przełącza na Własny."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Light surface"
-msgstr "Jasne tło"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Dark surface"
-msgstr "Ciemne tło"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Text on light surface"
-msgstr "Tekst na jasnym tle"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Text on dark surface"
-msgstr "Tekst na ciemnym tle"
+#: build/admin.js:1
+msgid ""
+"Each color shows its contrast ratio. Text needs at least 4.5:1 and controls "
+"at least 3:1."
+msgstr ""
+"Każdy kolor pokazuje swój współczynnik kontrastu. Tekst wymaga co najmniej "
+"4,5:1, a elementy sterujące co najmniej 3:1."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Shape and type"
@@ -1125,10 +1274,6 @@ msgid "Enabled"
 msgstr "Włączona"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Default"
-msgstr "Domyślnie"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Attachment #%d"
 msgstr "Załącznik nr %d"
 
@@ -1237,10 +1382,6 @@ msgid "This restores every setting to its default value and cannot be undone."
 msgstr ""
 "Przywróci to domyślne wartości wszystkich ustawień. Tej operacji nie można "
 "cofnąć."
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Reset settings"
-msgstr "Zresetuj ustawienia"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings reset to defaults."
@@ -1417,13 +1558,17 @@ msgstr "Dostosowania w profilu: %s"
 msgid ""
 "No accessibility trigger was found on the home page. Visitors can open the "
 "panel only with the keyboard shortcut."
-msgstr "Na stronie głównej nie znaleziono wyzwalacza dostępności. Odwiedzający mogą otworzyć panel tylko skrótem klawiszowym."
+msgstr ""
+"Na stronie głównej nie znaleziono wyzwalacza dostępności. Odwiedzający mogą "
+"otworzyć panel tylko skrótem klawiszowym."
 
 #: build/admin.js:1
 msgid ""
 "No accessibility trigger was found on the home page, and the keyboard "
 "shortcut is off. Visitors cannot open the panel."
-msgstr "Na stronie głównej nie znaleziono wyzwalacza dostępności, a skrót klawiszowy jest wyłączony. Odwiedzający nie mogą otworzyć panelu."
+msgstr ""
+"Na stronie głównej nie znaleziono wyzwalacza dostępności, a skrót klawiszowy "
+"jest wyłączony. Odwiedzający nie mogą otworzyć panelu."
 
 #: build/admin.js:1
 msgid "The home page could not be checked."
@@ -1442,7 +1587,11 @@ msgid ""
 "The launcher moves into the first element matching this selector. If none "
 "matches, it falls back to the floating button. Reserve about 48 px of height "
 "in the mount to avoid layout shift."
-msgstr "Przycisk zostaje przeniesiony do pierwszego elementu pasującego do tego selektora. Jeśli żaden nie pasuje, wraca do pływającego przycisku. Zarezerwuj około 48 px wysokości w tym miejscu, aby uniknąć przesunięcia układu."
+msgstr ""
+"Przycisk zostaje przeniesiony do pierwszego elementu pasującego do tego "
+"selektora. Jeśli żaden nie pasuje, wraca do pływającego przycisku. "
+"Zarezerwuj około 48 px wysokości w tym miejscu, aby uniknąć przesunięcia "
+"układu."
 
 #: build/admin.js:1
 msgid "Launcher"
@@ -1457,7 +1606,10 @@ msgid ""
 "Floating keeps the button fixed in the corner. Inside a page element places "
 "it in the mount below. With no launcher button the panel opens only from "
 "your own triggers or the keyboard shortcut."
-msgstr "Pływający przycisk pozostaje w rogu ekranu. Wewnątrz elementu strony umieszcza go w miejscu osadzenia poniżej. Bez przycisku wywołującego panel otwiera się tylko z własnych wyzwalaczy lub skrótem klawiszowym."
+msgstr ""
+"Pływający przycisk pozostaje w rogu ekranu. Wewnątrz elementu strony "
+"umieszcza go w miejscu osadzenia poniżej. Bez przycisku wywołującego panel "
+"otwiera się tylko z własnych wyzwalaczy lub skrótem klawiszowym."
 
 #: build/admin.js:1
 msgid "%s is not a valid selector."
@@ -1475,7 +1627,9 @@ msgstr "%s ma ponad 200 znaków i nie zostanie zapisany."
 msgid ""
 "Only the first selectors that fit in %1$d entries and %2$d characters in "
 "total will be saved."
-msgstr "Zapisane zostaną tylko pierwsze selektory mieszczące się w %1$d pozycjach i %2$d znakach łącznie."
+msgstr ""
+"Zapisane zostaną tylko pierwsze selektory mieszczące się w %1$d pozycjach i "
+"%2$d znakach łącznie."
 
 #: build/admin.js:1
 msgid "Custom selectors"
@@ -1489,7 +1643,9 @@ msgstr "Elementy przełączające panel"
 msgid ""
 "Clicking an element matching one of these CSS selectors opens or closes the "
 "panel. Up to %1$d selectors, %2$d characters in total."
-msgstr "Kliknięcie elementu pasującego do jednego z tych selektorów CSS otwiera lub zamyka panel. Do %1$d selektorów, łącznie %2$d znaków."
+msgstr ""
+"Kliknięcie elementu pasującego do jednego z tych selektorów CSS otwiera lub "
+"zamyka panel. Do %1$d selektorów, łącznie %2$d znaków."
 
 #: build/admin.js:1
 msgid "URL actions"
@@ -1500,7 +1656,10 @@ msgid ""
 "Links such as ?ka11y=profile:key or #ka11y/feature:key can apply these "
 "actions. URL actions are never saved by themselves and cannot enable "
 "features that are turned off. Clear all to disable them."
-msgstr "Linki takie jak ?ka11y=profile:key lub #ka11y/feature:key mogą stosować te akcje. Akcje z adresu URL nie są same zapisywane i nie włączą wyłączonych funkcji. Odznacz wszystkie, aby je wyłączyć."
+msgstr ""
+"Linki takie jak ?ka11y=profile:key lub #ka11y/feature:key mogą stosować te "
+"akcje. Akcje z adresu URL nie są same zapisywane i nie włączą wyłączonych "
+"funkcji. Odznacz wszystkie, aby je wyłączyć."
 
 #: build/admin.js:1
 msgid "Allowed URL actions"
@@ -1550,7 +1709,9 @@ msgstr "Generator fragmentów kodu"
 msgid ""
 "Build a trigger for any button, link, template or menu item. Copy the output "
 "that fits where you place it."
-msgstr "Utwórz wyzwalacz dla dowolnego przycisku, linku, szablonu lub pozycji menu. Skopiuj wynik pasujący do miejsca, w którym go umieścisz."
+msgstr ""
+"Utwórz wyzwalacz dla dowolnego przycisku, linku, szablonu lub pozycji menu. "
+"Skopiuj wynik pasujący do miejsca, w którym go umieścisz."
 
 #: build/admin.js:1
 msgid "Action"
@@ -1729,6 +1890,16 @@ msgstr "Masz niezapisane zmiany."
 msgid "Settings saved."
 msgstr "Ustawienia zapisano."
 
+#: build/admin.js:1
+msgid "%1$s on %2$s"
+msgstr "%1$s na tle: %2$s"
+
+#: build/admin.js:1
+msgid ""
+"Settings saved, but these color pairs are below the minimum contrast: %s."
+msgstr ""
+"Ustawienia zapisane, ale te pary kolorów mają kontrast poniżej minimum: %s."
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings could not be saved."
 msgstr "Nie udało się zapisać ustawień."
@@ -1770,4 +1941,6 @@ msgctxt "block description"
 msgid ""
 "A button or link that opens the accessibility panel or runs an accessibility "
 "action."
-msgstr "Przycisk lub link, który otwiera panel dostępności albo uruchamia akcję dostępności."
+msgstr ""
+"Przycisk lub link, który otwiera panel dostępności albo uruchamia akcję "
+"dostępności."

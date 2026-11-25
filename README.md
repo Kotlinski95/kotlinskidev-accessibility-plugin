@@ -63,6 +63,37 @@ Anything can open the panel or change a feature. Pick the surface that fits:
 
 There is also a block, "Accessibility trigger", for the editor and Navigation menus. The Triggers tab holds the launcher mode (`floating`, `inline`, `hidden`), custom selectors, the URL action allowlist and a snippet generator. Full reference, including the JavaScript API, events and deprecation policy: [docs/API.md](docs/API.md).
 
+## Panel appearance
+
+The panel is a non-modal dialog: `role="dialog"` without `aria-modal`, no Tab trap, and clicking the page does not close it. Escape closes it when focus is in the panel or on the launcher. On desktop it is a side panel docked to the launcher's side; below the mobile breakpoint it is a bottom sheet with safe-area insets.
+
+Settings, in the Appearance tab:
+
+| Setting | What it does |
+| --- | --- |
+| Preset | `classic`, `brand`, `soft`, `contrast` or `custom`. A preset fills the color tokens; the preset name is never sent to the front end. Editing a token switches to `custom`. |
+| Color tokens | Primary and on-primary (light and dark), header background and text, canvas and surface for light and dark, text, radius. A live badge shows the contrast ratio and AA pass or fail for each pair. Saving is not blocked by a failing pair. |
+| Columns | 2 or 3 tiles per row. The layout drops to 2 and then 1 column when the panel is narrow. |
+| Sections | Show or hide the Profiles, Content, Color, Orientation and Skip to content cards. Hidden features stay usable through triggers and the API. |
+| Language switcher | Shows a language select in the panel header when the site has two or more known locales. It changes the widget language only, never the site. The choice is saved in `localStorage` under `<storage key>-locale`, which is `ka11y-locale` with the default key. The `ka11y` key is untouched. |
+
+Panel filters:
+
+```php
+add_filter( 'kotlinskidev_a11y_locale_label', function ( string $label, string $locale ): string {
+	return 'pl_PL' === $locale ? 'Polski' : $label;
+}, 10, 2 );
+
+add_filter( 'kotlinskidev_a11y_icons', function ( array $icons ): array {
+	$icons['reset'] = 'M3 12a9 9 0 1 0 3-6.7M3 4v5h5';
+	return $icons;
+} );
+```
+
+`kotlinskidev_a11y_locale_label` sets the native language name shown in the select. Without the PHP `intl` extension the label is the locale code, so set it here. `kotlinskidev_a11y_icons` maps an icon name to SVG path data (the `d` attribute only, 24 by 24 grid, stroke style). Names the plugin does not know and values with other characters are dropped.
+
+Upgrading from v0.3.x: the internal shadow classes `.ka11y-toggle`, `.ka11y-profile`, `.ka11y-grid`, `.ka11y-feature`, `.ka11y-section` and `.ka11y-group` are gone. Custom CSS that targets them must use `.ka11y-card`, `.ka11y-tile`, `.ka11y-stepper`, `.ka11y-tiles` and `.ka11y-body` instead, or the public `--ka11y-*` tokens. Do not apply `transform` or `filter` to `#ka11y-root` or `body`: it changes the containing block of the fixed panel.
+
 ## Performance
 
 Only a loader of at most 2 KB gzip runs on every page. The panel, the features and the page CSS load on first use. Visitors with saved settings still get them before first paint, whatever the strategy. Settings live in the Performance tab, which also shows the estimated cost per page.
@@ -161,6 +192,8 @@ Source keys: `repository`, `slug`, `asset_pattern`, `branch`. The token is read 
 | `kotlinskidev_a11y_button_html` | Change the markup of a trigger button. The result is filtered again. |
 | `kotlinskidev_a11y_trigger_selectors` | Add custom trigger selectors from code. |
 | `kotlinskidev_a11y_url_actions` | Narrow the actions allowed from `?ka11y=` and `#ka11y/` URLs. |
+| `kotlinskidev_a11y_locale_label` | Change the language name shown in the panel language select. |
+| `kotlinskidev_a11y_icons` | Replace icon path data by name. Path data only. |
 
 ## Privacy and storage (GDPR)
 
