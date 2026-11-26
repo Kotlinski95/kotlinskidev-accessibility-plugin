@@ -11,6 +11,13 @@ updates:
       development:
         dependency-type: development
         patterns: ['*']
+    ignore:
+      - dependency-name: jest
+        update-types: ['version-update:semver-major']
+      - dependency-name: jest-environment-jsdom
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/jest'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: composer
     directory: /
     schedule:

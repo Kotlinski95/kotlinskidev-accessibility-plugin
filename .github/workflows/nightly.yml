@@ -21,10 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         wp: ['6.4', 'latest']
-        php: ['8.1', '8.4']
+        php: ['8.1', '8.5']
         exclude:
           - wp: '6.4'
-            php: '8.4'
+            php: '8.5'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1

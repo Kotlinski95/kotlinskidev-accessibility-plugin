@@ -2,12 +2,12 @@
 
 | Workflow | Trigger | What runs |
 | --- | --- | --- |
-| `ci.yml` `php` | push to main, pull request | phpcs and PHPUnit on PHP 8.1 and 8.3 |
+| `ci.yml` `php` | push to main, pull request | phpcs and PHPUnit on PHP 8.1 (the supported minimum) and 8.5 (latest), PHPStan on 8.5 |
 | `ci.yml` `phpstan` | push to main, pull request | `composer run analyse` (level 8, config in `phpstan.neon.dist`) |
 | `ci.yml` `js` | push to main, pull request | ESLint, typecheck, Jest, build, version check |
 | `ci.yml` `e2e` | push to main, pull request | wp-env in Docker, Chromium. Pull requests run `--grep @smoke` when tagged tests exist, otherwise the full suite. Main runs the full suite. |
 | `ci.yml` `plugin-check` | push to main, pull request | Builds the package like the release (build, `composer --no-dev`, rsync with `.distignore`) and runs WordPress Plugin Check on `dist/kotlinskidev-accessibility` |
-| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke`, an `upgrade` job (`KA11Y_UPGRADE=1`), a `visual` job against committed Linux baselines, and a Lighthouse job that runs `lhci` three times against wp-env (widget off through `visibility.mode=only_on` with `includePostIds=[999999]`, widget on with Recommended, widget on with saved state seeded by `bin/lh-seed-state.cjs`), settings switched by `bin/lh-widget.php`, then `bin/lh-compare.mjs` compares the medians: LCP and TBT may rise by 5 percent of the off value but never less than 100 ms (LCP) and 50 ms (TBT) as noise floors, CLS by 0.01, and no render-blocking plugin URL is allowed (`lighthouserc.cjs`) |
+| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.5 (6.4 on 8.5 excluded), plus Firefox and WebKit `@smoke`, an `upgrade` job (`KA11Y_UPGRADE=1`), a `visual` job against committed Linux baselines, and a Lighthouse job that runs `lhci` three times against wp-env (widget off through `visibility.mode=only_on` with `includePostIds=[999999]`, widget on with Recommended, widget on with saved state seeded by `bin/lh-seed-state.cjs`), settings switched by `bin/lh-widget.php`, then `bin/lh-compare.mjs` compares the medians: LCP and TBT may rise by 5 percent of the off value but never less than 100 ms (LCP) and 50 ms (TBT) as noise floors, CLS by 0.01, and no render-blocking plugin URL is allowed (`lighthouserc.cjs`) |
 | `codeql.yml` | push to main, pull request, weekly | CodeQL for JavaScript, TypeScript and GitHub Actions (CodeQL has no PHP support) |
 | `release.yml` | tag `v*` | Builds and attaches `kotlinskidev-accessibility.zip` |
 
