@@ -5,6 +5,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-11-26
+
+### Fixed
+
+- After a plugin update the panel could fail with "Accessibility tools could not load" because the cache invalidation fired before the panel-data store was registered, so the old panel-data file was kept. The store now registers first.
+
 ## [0.4.0] - 2026-11-25
 
 ### Added
