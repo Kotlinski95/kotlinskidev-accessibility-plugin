@@ -37,6 +37,7 @@ The mu-plugin does nothing unless `WP_ENVIRONMENT_TYPE` is `local` (wp-env sets 
 | `chromium` | Every spec on desktop Chrome |
 | `mobile-smoke` | `invariants.spec.ts` on Pixel 5, only tests tagged `@smoke` |
 | `visual` | `visual.spec.ts` only, tests tagged `@visual`. Never part of `chromium`, the default run or CI |
+| `multisite` | `multisite.spec.ts` only, defined only when `KA11Y_MULTISITE=1`. Never part of `chromium` or the default run |
 
 Specs that loop over `FIXTURE_NAMES` wrap their tests in `test.describe('[stock]')` and `test.describe('[hostile]')`, each with `test.use({ fixture })`.
 
@@ -55,6 +56,19 @@ npx playwright test --grep-invert "combination"  # without pairwise rows
 ```
 
 `@smoke` is every single-level feature on `stock`, level 1 of each multi-level feature on `stock`, and every profile on `hostile`.
+
+### Multisite
+
+`multisite.spec.ts` needs its own wp-env instance so the single-site environment on port 8889 is never touched. `.wp-env.multisite.json` uses port 8891 and `bin/multisite-env.mjs` keeps its wp-env home in `~/.wp-env-ka11y-multisite` (override with `WP_ENV_HOME`), so Docker project, database and ports are separate. The script is idempotent: it starts the instance, converts it to a subdirectory network, creates the subsite `/sub/`, network-activates the plugin and writes the multisite `.htaccess`.
+
+```bash
+npm run build
+npm run wp-env:multisite:start
+KA11Y_MULTISITE=1 npx playwright test --project=multisite     # or npm run test:e2e:multisite
+npm run wp-env:multisite:stop
+```
+
+With `KA11Y_MULTISITE=1` the global setup skips the single-site login, so run the multisite project on its own and run the single-site projects without the variable. The spec resets the network option and the site options before each test and covers: a network default reaching a subsite that has not overridden it, a site override winning over later network changes, a network lock giving 409 on the site REST write and disabling the field, saving defaults and locks through the Network Admin page, `wp ka11y settings --network`, and a subsite administrator or anonymous user being refused on every network route and on the network page. PHPUnit covers the same rules without WordPress in `tests/php/Rest/NetworkSettingsControllerTest.php`, `tests/php/Cli/SettingsCommandTest.php` and `tests/php/Settings/RepositoryTest.php`.
 
 ### Adding a fixture
 

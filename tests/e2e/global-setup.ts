@@ -7,6 +7,7 @@ const LOGIN_PATH = '/wp-login.php';
 const TEST_COOKIE = 'wordpress_test_cookie=WP%20Cookie%20check';
 
 const globalSetup = async (): Promise<void> => {
+  if (process.env.KA11Y_MULTISITE === '1') return;
   const context = await request.newContext({ baseURL: BASE_URL, extraHTTPHeaders: { Cookie: TEST_COOKIE } });
   const response = await context.post(LOGIN_PATH, {
     form: {

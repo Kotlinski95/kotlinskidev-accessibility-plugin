@@ -79,6 +79,7 @@ export interface AdminConfig {
   version: string;
   homeUrl: string;
   cost: CostData;
+  scope?: 'site' | 'network';
 }
 
 export interface MediaSelection {

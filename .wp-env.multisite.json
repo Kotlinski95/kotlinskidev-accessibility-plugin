@@ -1,0 +1,15 @@
+{
+  "core": null,
+  "phpVersion": "8.2",
+  "plugins": ["."],
+  "port": 8891,
+  "testsEnvironment": false,
+  "config": {
+    "WP_DEBUG": true,
+    "WP_DEBUG_LOG": true,
+    "WP_DEBUG_DISPLAY": false,
+    "SCRIPT_DEBUG": false,
+    "KOTLINSKIDEV_A11Y_E2E": true,
+    "WP_ALLOW_MULTISITE": true
+  }
+}

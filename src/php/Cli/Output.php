@@ -37,9 +37,15 @@ final class Output {
 		return true === filter_var( $assoc_args[ $name ] ?? false, FILTER_VALIDATE_BOOLEAN );
 	}
 
-	public static function reject_network( array $assoc_args ): void {
-		if ( self::flag( $assoc_args, 'network' ) ) {
-			WP_CLI::error( __( 'Network settings are not available from the command line.', 'kotlinskidev-accessibility' ) );
+	public static function network( array $assoc_args ): bool {
+		if ( ! self::flag( $assoc_args, 'network' ) ) {
+			return false;
 		}
+
+		if ( ! is_multisite() ) {
+			WP_CLI::error( __( 'Network settings need a multisite installation.', 'kotlinskidev-accessibility' ) );
+		}
+
+		return true;
 	}
 }

@@ -65,9 +65,13 @@ final class SettingsPage {
 			return;
 		}
 
+		$this->render_mount( __( 'Accessibility', 'kotlinskidev-accessibility' ) );
+	}
+
+	public function render_mount( string $heading ): void {
 		printf(
 			'<div class="wrap ka11y-admin-wrap"><h1 class="wp-heading-inline">%1$s</h1><div id="%2$s" class="ka11y-admin"><noscript><p>%3$s</p></noscript></div></div>',
-			esc_html__( 'Accessibility', 'kotlinskidev-accessibility' ),
+			esc_html( $heading ),
 			esc_attr( self::MOUNT_ID ),
 			esc_html__( 'This settings page needs JavaScript.', 'kotlinskidev-accessibility' )
 		);
@@ -78,6 +82,10 @@ final class SettingsPage {
 			return;
 		}
 
+		$this->enqueue_assets( $this->config() );
+	}
+
+	public function enqueue_assets( array $config ): void {
 		$asset = $this->asset( 'admin' );
 
 		wp_enqueue_style( self::STYLE_HANDLE, KOTLINSKIDEV_A11Y_URL . 'build/admin.css', array(), $asset['version'] );
@@ -92,7 +100,7 @@ final class SettingsPage {
 		wp_set_script_translations( self::SCRIPT_HANDLE, self::TEXT_DOMAIN, KOTLINSKIDEV_A11Y_DIR . 'languages' );
 		wp_add_inline_script(
 			self::SCRIPT_HANDLE,
-			'window.kotlinskidevA11yAdmin = ' . Json::encode( $this->config(), self::JSON_FLAGS ) . ';',
+			'window.kotlinskidevA11yAdmin = ' . Json::encode( $config, self::JSON_FLAGS ) . ';',
 			'before'
 		);
 	}
@@ -108,6 +116,7 @@ final class SettingsPage {
 			'version'  => KOTLINSKIDEV_A11Y_VERSION,
 			'homeUrl'  => esc_url_raw( home_url( '/' ) ),
 			'cost'     => $this->cost(),
+			'scope'    => 'site',
 		);
 	}
 

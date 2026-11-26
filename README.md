@@ -226,7 +226,18 @@ Every command validates against the same schema, sanitizer, locks and health che
 | `wp ka11y access grant\|revoke <role>` | Adds or removes the customer capability on a role that exists. |
 | `wp ka11y access list [--format=table\|json\|yaml]` | Lists the roles that hold the customer capability and its name. |
 
-Locked paths exit 1 with `Locked by site configuration`. `import` and `reset` ask for confirmation unless you pass `--dry-run` or `--yes`. `--network` is accepted by the synopsis for the network defaults release and currently exits 1.
+Locked paths exit 1 with `Locked by site configuration`. `import` and `reset` ask for confirmation unless you pass `--dry-run` or `--yes`. `--network` (multisite only, otherwise exit 1) makes `get`, `set`, `import`, `export` and `reset` act on the network defaults instead of one site; its `--layer` values read the network option (`effective` is defaults plus network defaults, `stored` and `network` are the values the network changed).
+
+## Multisite network defaults
+
+On a multisite network, Network Admin > Settings > Accessibility sets defaults for every site. The page is the normal settings screen with the Maintenance tab showing "Locked on all sites" (one setting path per line) and the Updates card, and it needs the `manage_network_options` capability.
+
+- Layers, lowest to highest: plugin defaults, network defaults, the site's own values, locks. A site stores only values that differ from the layers below it, so a network change reaches every site that did not override that setting. Nothing is copied into new sites, and the plugin does not have to be network activated: network defaults apply to every site where it is active.
+- A setting locked on the network is fixed to the network value on every site. Site administrators see it disabled, and `POST /settings` for it answers 409. Locks from `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS` beat the `kotlinskidev_a11y_locked_settings` filter, which beats network locks.
+- On a site, reset returns to the network defaults. Site administrators cannot reach the network routes.
+- REST: `GET` and `POST /network/settings`, `GET /network/schema`, `GET /network/export`, `POST /network/import` and `POST /network/reset` in the `kotlinskidev-a11y/v1` namespace. They exist only on multisite, need `manage_network_options` and the `wp_rest` nonce, take `dry_run`, and the settings tree carries a `locked` list of paths.
+- Saving network defaults fires `kotlinskidev_a11y_cache_invalidated` with `settings` once. Per-site page caches that need purging must hook that action themselves.
+- Data lives in the network option `kotlinskidev_a11y_network_settings`; single-site code ignores it.
 
 ## Frontend hooks
 

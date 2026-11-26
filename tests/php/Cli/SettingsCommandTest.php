@@ -14,13 +14,30 @@ use WP_CLI;
 final class SettingsCommandTest extends CliTestCase {
 
 	private string $directory = '';
+	private array $site_options = array();
 
 	protected function setUp(): void {
 		parent::setUp();
 
 		$this->directory = sys_get_temp_dir() . '/ka11y-cli-' . bin2hex( random_bytes( 4 ) );
 		mkdir( $this->directory );
+		$this->site_options = array();
 		Functions\when( 'is_admin' )->justReturn( false );
+		Functions\when( 'get_site_option' )->alias( fn ( string $name, mixed $fallback = false ): mixed => $this->site_options[ $name ] ?? $fallback );
+		Functions\when( 'update_site_option' )->alias(
+			function ( string $name, mixed $value ): bool {
+				$this->site_options[ $name ] = $value;
+
+				return true;
+			}
+		);
+		Functions\when( 'delete_site_option' )->alias(
+			function ( string $name ): bool {
+				unset( $this->site_options[ $name ] );
+
+				return true;
+			}
+		);
 		Functions\when( 'do_action' )->justReturn( null );
 	}
 
@@ -111,9 +128,91 @@ final class SettingsCommandTest extends CliTestCase {
 		$this->assertStringContainsString( 'Invalid format', $this->failure_of( fn () => $this->command()->get( array(), array( 'format' => 'xml' ) ) ) );
 	}
 
-	public function test_network_flag_is_refused(): void {
-		$this->assertStringContainsString( 'Network settings', $this->failure_of( fn () => $this->command()->get( array(), array( 'network' => true ) ) ) );
-		$this->assertStringContainsString( 'Network settings', $this->failure_of( fn () => $this->command()->set( array( 'widget.size', 'lg' ), array( 'network' => true ) ) ) );
+	public function test_network_flag_is_refused_on_single_site(): void {
+		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->get( array(), array( 'network' => true ) ) ) );
+		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->set( array( 'widget.size', 'lg' ), array( 'network' => true ) ) ) );
+		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->import( array( 'x.json' ), array( 'network' => true ) ) ) );
+		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->export( array(), array( 'network' => true ) ) ) );
+		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->reset( array(), array( 'network' => true, 'yes' => true ) ) ) );
+		$this->assertSame( array(), $this->site_options );
+	}
+
+	private function multisite(): void {
+		Functions\when( 'is_multisite' )->justReturn( true );
+	}
+
+	public function test_network_set_writes_the_network_option_and_leaves_the_site_option(): void {
+		$this->multisite();
+
+		$this->command()->set( array( 'storage.mode', 'none' ), array( 'network' => true, 'format' => 'json' ) );
+
+		$this->assertSame( array( 'storage' => array( 'mode' => 'none' ) ), $this->site_options[ Repository::NETWORK_OPTION ]['settings'] );
+		$this->assertSame( array(), $this->stored );
+		$this->assertSame( 'storage.mode', WP_CLI::$tables[0]['items'][0]['path'] );
+	}
+
+	public function test_network_set_dry_run_saves_nothing(): void {
+		$this->multisite();
+
+		$this->command()->set( array( 'storage.mode', 'none' ), array( 'network' => true, 'dry-run' => true ) );
+
+		$this->assertSame( array(), $this->site_options );
+		$this->assertSame( array(), $this->stored );
+	}
+
+	public function test_network_set_validates_the_value(): void {
+		$this->multisite();
+
+		$this->assertStringContainsString( 'one of', $this->failure_of( fn () => $this->command()->set( array( 'storage.mode', 'nope' ), array( 'network' => true ) ) ) );
+		$this->assertSame( array(), $this->site_options );
+	}
+
+	public function test_network_get_reads_each_layer(): void {
+		$this->multisite();
+		$this->site_options[ Repository::NETWORK_OPTION ] = array( 'settings' => array( 'widget' => array( 'size' => 'lg' ) ) );
+
+		$this->command()->get( array( 'widget.size' ), array( 'network' => true ) );
+		$this->command()->get( array( 'widget.size' ), array( 'network' => true, 'layer' => 'defaults' ) );
+		$this->command()->get( array( 'widget.size' ), array( 'network' => true, 'layer' => 'stored' ) );
+
+		$this->assertSame( array( 'lg', 'md', 'lg' ), array_column( WP_CLI::$printed, 'value' ) );
+		$this->assertStringContainsString( 'no value', $this->failure_of( fn () => $this->command()->get( array( 'widget.launcher' ), array( 'network' => true, 'layer' => 'stored' ) ) ) );
+	}
+
+	public function test_network_export_has_network_scope_and_import_requires_it(): void {
+		$this->multisite();
+		$this->site_options[ Repository::NETWORK_OPTION ] = array(
+			'settings' => array( 'widget' => array( 'size' => 'lg' ) ),
+			'locked'   => array( 'widget.size' ),
+		);
+		$file = $this->directory . '/network.json';
+
+		$this->command()->export( array(), array( 'network' => true, 'file' => $file ) );
+
+		$envelope = (array) json_decode( (string) file_get_contents( $file ), true );
+
+		$this->assertSame( 'network', $envelope['scope'] );
+		$this->assertSame( array( 'widget.size' ), $envelope['locked'] );
+
+		$site = $this->write( 'site.json', (string) json_encode( array_merge( $envelope, array( 'scope' => 'site' ) ) ) );
+
+		$this->assertStringContainsString( 'different settings scope', $this->failure_of( fn () => $this->command()->import( array( $site ), array( 'network' => true, 'yes' => true ) ) ) );
+
+		unset( $this->site_options[ Repository::NETWORK_OPTION ] );
+		Repository::flush();
+		$this->command()->import( array( $file ), array( 'network' => true, 'yes' => true ) );
+
+		$this->assertSame( 'lg', $this->site_options[ Repository::NETWORK_OPTION ]['settings']['widget']['size'] );
+		$this->assertSame( array( 'widget.size' ), $this->site_options[ Repository::NETWORK_OPTION ]['locked'] );
+	}
+
+	public function test_network_reset_clears_the_network_option(): void {
+		$this->multisite();
+		$this->site_options[ Repository::NETWORK_OPTION ] = array( 'settings' => array( 'widget' => array( 'size' => 'lg' ) ) );
+
+		$this->command()->reset( array(), array( 'network' => true, 'yes' => true ) );
+
+		$this->assertArrayNotHasKey( Repository::NETWORK_OPTION, $this->site_options );
 	}
 
 	public static function bad_paths(): array {

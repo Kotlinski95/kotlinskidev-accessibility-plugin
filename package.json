@@ -19,7 +19,10 @@
     "release": "node bin/release.mjs",
     "wp-env:start": "wp-env start",
     "wp-env:stop": "wp-env stop",
-    "test:e2e": "playwright test"
+    "wp-env:multisite:start": "node bin/multisite-env.mjs start",
+    "wp-env:multisite:stop": "node bin/multisite-env.mjs stop",
+    "test:e2e": "playwright test",
+    "test:e2e:multisite": "KA11Y_MULTISITE=1 playwright test --project=multisite"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",

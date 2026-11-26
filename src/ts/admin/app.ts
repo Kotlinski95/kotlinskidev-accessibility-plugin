@@ -9,6 +9,7 @@ import { renderForm } from './form-renderer';
 import { installUnsavedGuard } from './guard';
 import { failureMessage } from './locks';
 import { createNotices } from './notices';
+import { NETWORK_LOCKS_PATH } from './panels/maintenance';
 import { createPreview } from './preview';
 import { createSearch } from './search';
 import type { TabsApi } from './tabs';
@@ -31,7 +32,7 @@ export const buildApp = (root: HTMLElement, config: AdminConfig, api: Api, schem
   const notices = createNotices();
   const formHost = h('div', { class: 'ka11y-form' });
   const locked: ReadonlySet<string> = new Set(schema.locked ?? []);
-  const paths = Object.keys(schema.definitions);
+  const paths = schema.scope === 'network' ? [...Object.keys(schema.definitions), NETWORK_LOCKS_PATH] : Object.keys(schema.definitions);
   let activeTab: string | undefined;
   let tabs: TabsApi | undefined;
 

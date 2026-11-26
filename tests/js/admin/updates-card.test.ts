@@ -134,3 +134,15 @@ describe('isSameOriginUrl', () => {
     expect(isSameOriginUrl('javascript:alert(1)', 'https://a.test')).toBe(false);
   });
 });
+
+describe('updates card in network scope', () => {
+  it('talks to the site-level update routes', async () => {
+    const ctx = sampleContext();
+    ctx.schema.scope = 'network';
+    ctx.config.restRoot = 'https://example.test/wp-json/kotlinskidev-a11y/v1/network/';
+    const { fetcher, calls } = fakeFetcher({ 'GET update-channel': state() });
+    document.body.replaceChildren(buildMaintenancePanel(ctx, fetcher));
+    await settle();
+    expect(calls[0]?.url).toBe('https://example.test/wp-json/kotlinskidev-a11y/v1/update-channel');
+  });
+});

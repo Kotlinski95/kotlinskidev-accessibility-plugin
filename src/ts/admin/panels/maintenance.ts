@@ -6,6 +6,48 @@ import { createToggleField } from '../fields/toggle';
 import { createUpdatesApi, globalFetcher, isSameOriginUrl } from '../updates';
 import type { ChannelState, ReleaseOption, UpdateChannel, UpdatesApi } from '../updates';
 
+export const NETWORK_LOCKS_PATH = 'locked';
+
+const parseLockedPaths = (text: string): string[] => [...new Set(text.split(/[\s,]+/).filter((line) => line !== ''))].sort();
+
+const unknownLockPaths = (paths: readonly string[], known: ReadonlySet<string>): string[] =>
+  paths.filter((path) => path === 'schemaVersion' || !known.has(path));
+
+const buildNetworkLocksCard = (ctx: FormContext): HTMLElement => {
+  const known: ReadonlySet<string> = new Set(Object.keys(ctx.schema.definitions));
+  const current = ctx.state.get(NETWORK_LOCKS_PATH);
+  const initial = Array.isArray(current) ? current.filter((path): path is string => typeof path === 'string') : [];
+  const textarea = h('textarea', { id: 'ka11y-network-locks', class: 'large-text code', rows: 6, spellcheck: false });
+  const help = h(
+    'p',
+    { class: 'description', id: 'ka11y-network-locks-help' },
+    __('One setting path per line, for example storage.mode. Each listed setting is fixed to the value set here on every site and cannot be changed by site administrators.', 'kotlinskidev-accessibility')
+  );
+  const error = h('p', { class: 'description ka11y-locks-error', id: 'ka11y-network-locks-error', role: 'alert', hidden: true });
+
+  textarea.value = initial.join('\n');
+  textarea.setAttribute('aria-describedby', `${help.id} ${error.id}`);
+
+  textarea.addEventListener('change', () => {
+    const paths = parseLockedPaths(textarea.value);
+    const unknown = unknownLockPaths(paths, known);
+    error.hidden = unknown.length === 0;
+    error.textContent = unknown.length === 0 ? '' : sprintf(__('These paths are not lockable settings: %s.', 'kotlinskidev-accessibility'), unknown.join(', '));
+    textarea.toggleAttribute('aria-invalid', unknown.length > 0);
+    if (unknown.length === 0) ctx.state.set(NETWORK_LOCKS_PATH, paths);
+  });
+
+  return h(
+    'section',
+    { class: 'ka11y-card ka11y-card--network-locks' },
+    h('h3', { class: 'ka11y-subheading' }, __('Locked on all sites', 'kotlinskidev-accessibility')),
+    h('label', { class: 'ka11y-field__label', for: textarea.id }, __('Locked settings', 'kotlinskidev-accessibility')),
+    textarea,
+    help,
+    error
+  );
+};
+
 const buildUninstallCard = (ctx: FormContext): HTMLElement =>
   h(
     'section',
@@ -109,10 +151,15 @@ const buildUpdatesCard = (ctx: FormContext, api: UpdatesApi): HTMLElement => {
   return card;
 };
 
-export const buildMaintenancePanel = (ctx: FormContext, fetcher: Fetcher | null = globalFetcher()): HTMLElement =>
-  h(
+const updatesRoot = (ctx: FormContext): FormContext['config'] => ({ ...ctx.config, restRoot: ctx.config.restRoot.replace(/network\/$/, '') });
+
+export const buildMaintenancePanel = (ctx: FormContext, fetcher: Fetcher | null = globalFetcher()): HTMLElement => {
+  const network = ctx.schema.scope === 'network';
+  return h(
     'div',
     { class: 'ka11y-panel ka11y-panel--maintenance' },
-    fetcher === null ? null : buildUpdatesCard(ctx, createUpdatesApi(ctx.config, fetcher)),
-    buildUninstallCard(ctx)
+    network ? buildNetworkLocksCard(ctx) : null,
+    fetcher === null ? null : buildUpdatesCard(ctx, createUpdatesApi(updatesRoot(ctx), fetcher)),
+    network ? null : buildUninstallCard(ctx)
   );
+};

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kotlinskidev\A11y\Cli;
 
 use Kotlinskidev\A11y\Settings\Importer;
+use Kotlinskidev\A11y\Settings\NetworkSettings;
 use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Sanitizer;
 use Kotlinskidev\A11y\Settings\Schema;
@@ -28,12 +29,14 @@ final class SettingsCommand {
 
 	private Repository $repository;
 	private Importer $importer;
+	private NetworkSettings $network;
 	private Sanitizer $sanitizer;
 	private Files $files;
 
-	public function __construct( ?Repository $repository = null, ?Importer $importer = null, ?Sanitizer $sanitizer = null, ?Files $files = null ) {
+	public function __construct( ?Repository $repository = null, ?Importer $importer = null, ?Sanitizer $sanitizer = null, ?Files $files = null, ?NetworkSettings $network = null ) {
 		$this->repository = $repository ?? new Repository();
 		$this->importer   = $importer ?? new Importer( $this->repository );
+		$this->network    = $network ?? new NetworkSettings( $this->repository );
 		$this->sanitizer  = $sanitizer ?? new Sanitizer();
 		$this->files      = $files ?? new Files();
 	}
@@ -54,7 +57,7 @@ final class SettingsCommand {
 			'optional'    => true,
 			'description' => $description,
 		);
-		$network = $flag( 'network', 'Reserved for network defaults, which are not available yet.' );
+		$network = $flag( 'network', 'Operate on the multisite network defaults instead of this site.' );
 		$dry_run = $flag( 'dry-run', 'Show the changes without saving.' );
 		$yes     = $flag( 'yes', 'Skip the confirmation prompt.' );
 
@@ -164,16 +167,15 @@ final class SettingsCommand {
 	}
 
 	public function get( array $args, array $assoc_args ): void {
-		Output::reject_network( $assoc_args );
-
-		$format = Output::format( $assoc_args, Output::VALUE_FORMATS, 'json' );
-		$layer  = $assoc_args['layer'] ?? 'effective';
+		$network = Output::network( $assoc_args );
+		$format  = Output::format( $assoc_args, Output::VALUE_FORMATS, 'json' );
+		$layer   = $assoc_args['layer'] ?? 'effective';
 
 		if ( ! is_string( $layer ) || ! in_array( $layer, self::LAYERS, true ) ) {
 			WP_CLI::error( __( 'Invalid layer. Use one of:', 'kotlinskidev-accessibility' ) . ' ' . implode( ', ', self::LAYERS ) . '.' );
 		}
 
-		$tree = $this->layer_tree( $layer );
+		$tree = $this->layer_tree( $layer, $network );
 		$path = $args[0] ?? null;
 
 		if ( null === $path ) {
@@ -212,17 +214,16 @@ final class SettingsCommand {
 	}
 
 	public function set( array $args, array $assoc_args ): void {
-		Output::reject_network( $assoc_args );
-
-		$format = Output::format( $assoc_args, Output::TABLE_FORMATS, 'table' );
-		$path   = (string) ( $args[0] ?? '' );
-		$raw    = (string) ( $args[1] ?? '' );
+		$network = Output::network( $assoc_args );
+		$format  = Output::format( $assoc_args, Output::TABLE_FORMATS, 'table' );
+		$path    = (string) ( $args[0] ?? '' );
+		$raw     = (string) ( $args[1] ?? '' );
 
 		$this->validate_path( $path, true );
 
 		$definition = (array) Schema::definition( $path );
 
-		if ( array_key_exists( $path, $this->repository->locked() ) ) {
+		if ( ! $network && array_key_exists( $path, $this->repository->locked() ) ) {
 			WP_CLI::error( __( 'Locked by site configuration:', 'kotlinskidev-accessibility' ) . ' ' . $path );
 		}
 
@@ -231,6 +232,12 @@ final class SettingsCommand {
 
 		if ( $clean !== $value ) {
 			$this->handle_adjusted( $definition, $clean );
+		}
+
+		if ( $network ) {
+			$this->set_network( $path, $clean, $format, Output::flag( $assoc_args, 'dry-run' ) );
+
+			return;
 		}
 
 		$before = $this->repository->get();
@@ -246,12 +253,11 @@ final class SettingsCommand {
 	}
 
 	public function import( array $args, array $assoc_args ): void {
-		Output::reject_network( $assoc_args );
-
+		$network = Output::network( $assoc_args );
 		$format  = Output::format( $assoc_args, Output::TABLE_FORMATS, 'table' );
 		$dry_run = Output::flag( $assoc_args, 'dry-run' );
 		$body    = $this->read_body( (string) ( $args[0] ?? '' ) );
-		$preview = $this->unwrap( $this->importer->run( $body, true ) );
+		$preview = $this->unwrap( $this->run_import( $body, true, $network ) );
 
 		$this->warn_about( 'dropped', (array) $preview['dropped'] );
 		$this->warn_about( 'adjusted', (array) $preview['adjusted'] );
@@ -266,7 +272,7 @@ final class SettingsCommand {
 		$this->show_changes( (array) $preview['changes'], $format );
 
 		if ( array() === $preview['changes'] ) {
-			$this->unwrap( $this->importer->run( $body, false ) );
+			$this->unwrap( $this->run_import( $body, false, $network ) );
 			WP_CLI::success( __( 'Nothing to change.', 'kotlinskidev-accessibility' ) );
 
 			return;
@@ -274,16 +280,15 @@ final class SettingsCommand {
 
 		WP_CLI::confirm( __( 'Import these settings?', 'kotlinskidev-accessibility' ), $assoc_args );
 
-		$this->unwrap( $this->importer->run( $body, false ) );
+		$this->unwrap( $this->run_import( $body, false, $network ) );
 
 		WP_CLI::success( __( 'Settings imported.', 'kotlinskidev-accessibility' ) );
 	}
 
 	public function export( array $args, array $assoc_args ): void {
-		Output::reject_network( $assoc_args );
-
-		$json = (string) wp_json_encode( $this->importer->envelope(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
-		$file = $assoc_args['file'] ?? null;
+		$envelope = Output::network( $assoc_args ) ? $this->network->envelope() : $this->importer->envelope();
+		$json     = (string) wp_json_encode( $envelope, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
+		$file     = $assoc_args['file'] ?? null;
 
 		if ( null === $file ) {
 			WP_CLI::line( $json );
@@ -305,12 +310,11 @@ final class SettingsCommand {
 	}
 
 	public function reset( array $args, array $assoc_args ): void {
-		Output::reject_network( $assoc_args );
-
+		$network  = Output::network( $assoc_args );
 		$format   = Output::format( $assoc_args, Output::TABLE_FORMATS, 'table' );
 		$dry_run  = Output::flag( $assoc_args, 'dry-run' );
 		$prefixes = array_values( array_unique( array_map( 'strval', $args ) ) );
-		$locked   = $this->repository->locked();
+		$locked   = $network ? array() : $this->repository->locked();
 
 		foreach ( $prefixes as $prefix ) {
 			$this->validate_path( $prefix, false );
@@ -324,10 +328,7 @@ final class SettingsCommand {
 			}
 		}
 
-		$before = $this->repository->get();
-		$sparse = $this->repository->reset_stored( $prefixes );
-		$after  = $this->repository->effective_from( $sparse );
-		$list   = $this->repository->changes( $before, $after, $sparse );
+		$list = $network ? $this->network_reset_changes( $prefixes ) : $this->site_reset_changes( $prefixes );
 
 		if ( $dry_run ) {
 			$this->report( $list, $format, true );
@@ -345,18 +346,57 @@ final class SettingsCommand {
 
 		WP_CLI::confirm( __( 'Reset these settings?', 'kotlinskidev-accessibility' ), $assoc_args );
 
-		$this->repository->reset( $prefixes );
+		if ( $network ) {
+			$this->network->reset( $prefixes );
+		} else {
+			$this->repository->reset( $prefixes );
+		}
 
 		WP_CLI::success( __( 'Settings reset.', 'kotlinskidev-accessibility' ) );
 	}
 
-	private function layer_tree( string $layer ): array {
+	private function layer_tree( string $layer, bool $network ): array {
+		if ( $network ) {
+			return match ( $layer ) {
+				'stored', 'network' => $this->repository->network_tree(),
+				'defaults'          => Schema::defaults(),
+				default             => $this->network->tree(),
+			};
+		}
+
 		return match ( $layer ) {
 			'stored'   => $this->repository->stored(),
 			'network'  => $this->repository->network_tree(),
 			'defaults' => Schema::defaults(),
 			default    => $this->repository->get(),
 		};
+	}
+
+	private function set_network( string $path, mixed $clean, string $format, bool $dry_run ): void {
+		$before = $this->network->payload();
+		$tree   = $this->network->tree();
+
+		Schema::assign( $tree, $path, $clean );
+
+		$next  = $this->network->resolve( $tree, $this->network->locked() );
+		$after = $dry_run ? $this->network->preview( $next ) : $this->network->commit( $next );
+
+		$this->report( $this->network->changes( $before, $after ), $format, $dry_run );
+	}
+
+	private function run_import( array $body, bool $dry_run, bool $network ): array|WP_Error {
+		return $network ? $this->network->import( $body, $dry_run ) : $this->importer->run( $body, $dry_run );
+	}
+
+	private function network_reset_changes( array $prefixes ): array {
+		return $this->network->changes( $this->network->payload(), $this->network->payload_after_reset( $prefixes ) );
+	}
+
+	private function site_reset_changes( array $prefixes ): array {
+		$before = $this->repository->get();
+		$sparse = $this->repository->reset_stored( $prefixes );
+
+		return $this->repository->changes( $before, $this->repository->effective_from( $sparse ), $sparse );
 	}
 
 	private function validate_path( string $path, bool $leaf ): void {

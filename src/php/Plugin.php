@@ -27,6 +27,7 @@ final class Plugin {
 
 		$counter->register();
 		add_action( 'rest_api_init', array( new Rest\SettingsController(), 'register_routes' ) );
+		add_action( 'rest_api_init', array( new Rest\NetworkSettingsController(), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\AltTextController( $counter ), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\PanelDataController(), 'register_routes' ) );
 		add_action( 'rest_api_init', array( new Rest\TriggerOptionsController(), 'register_routes' ) );
@@ -43,6 +44,7 @@ final class Plugin {
 
 		if ( is_admin() ) {
 			( new Admin\SettingsPage() )->register();
+			( new Admin\NetworkSettingsPage() )->register();
 			( new Admin\AltTextPage() )->register();
 			( new Admin\DashboardWidget( $counter ) )->register();
 			( new Admin\PerformanceNotice() )->register();

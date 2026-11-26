@@ -1,7 +1,7 @@
 import { renderForm } from '../../../src/ts/admin/form-renderer';
 import { applyLockedState, failureMessage, lockedPathsOf } from '../../../src/ts/admin/locks';
 import { buildMaintenancePanel } from '../../../src/ts/admin/panels/maintenance';
-import { change, sampleContext } from './helpers';
+import { change, sampleContext, sampleDefaults } from './helpers';
 
 jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
 
@@ -22,6 +22,47 @@ describe('maintenance tab', () => {
     const form = renderForm(sampleContext());
     expect(form.element.querySelectorAll('[data-ka11y-path="maintenance.keepDataOnUninstall"]')).toHaveLength(1);
     expect(form.element.querySelector('.ka11y-panel--maintenance [data-ka11y-path="maintenance.keepDataOnUninstall"]')).not.toBeNull();
+  });
+});
+
+describe('network scope', () => {
+  const networkContext = () => {
+    const ctx = sampleContext({ ...sampleDefaults(), locked: ['storage.key'] });
+    ctx.schema.scope = 'network';
+    ctx.config.restRoot = 'https://example.test/wp-json/kotlinskidev-a11y/v1/network/';
+    return ctx;
+  };
+
+  it('shows the locked paths list instead of the uninstall card', () => {
+    const panel = buildMaintenancePanel(networkContext(), null);
+    const textarea = panel.querySelector('textarea') as HTMLTextAreaElement;
+    expect(panel.querySelector('h3')?.textContent).toBe('Locked on all sites');
+    expect(textarea.value).toBe('storage.key');
+    expect(panel.querySelector('[data-ka11y-path="maintenance.keepDataOnUninstall"]')).toBeNull();
+  });
+
+  it('stores a sorted, deduplicated list of valid paths', () => {
+    const ctx = networkContext();
+    const textarea = buildMaintenancePanel(ctx, null).querySelector('textarea') as HTMLTextAreaElement;
+    textarea.value = 'widget.size\nstorage.key\nwidget.size';
+    change(textarea, 'change');
+    expect(ctx.state.get('locked')).toEqual(['storage.key', 'widget.size']);
+    expect(textarea.hasAttribute('aria-invalid')).toBe(false);
+  });
+
+  it('rejects unknown paths and keeps the previous list', () => {
+    const ctx = networkContext();
+    const panel = buildMaintenancePanel(ctx, null);
+    const textarea = panel.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.value = 'storage.key\nnope.nope\nschemaVersion';
+    change(textarea, 'change');
+    expect(ctx.state.get('locked')).toEqual(['storage.key']);
+    expect(textarea.getAttribute('aria-invalid')).not.toBeNull();
+    expect(panel.querySelector('.ka11y-locks-error')?.textContent).toBe('These paths are not lockable settings: nope.nope, schemaVersion.');
+  });
+
+  it('keeps the site view unchanged', () => {
+    expect(buildMaintenancePanel(sampleContext(), null).querySelector('textarea')).toBeNull();
   });
 });
 

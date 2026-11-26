@@ -123,6 +123,10 @@ final class Repository {
 		return $this->layers()['network'];
 	}
 
+	public function network_locked(): array {
+		return $this->layers()['network_locked'];
+	}
+
 	public function source( string $path ): string {
 		if ( array_key_exists( $path, $this->locked() ) ) {
 			return 'locked';
@@ -323,9 +327,10 @@ final class Repository {
 
 		$locks  = new Locks( $this->sanitizer );
 		$layers = array(
-			'network'  => $network['settings'],
-			'defaults' => $merged,
-			'locks'    => $locks->resolve( $map, $locks->declared_constant() ),
+			'network'        => $network['settings'],
+			'network_locked' => $network['locked'],
+			'defaults'       => $merged,
+			'locks'          => $locks->resolve( $map, $locks->declared_constant() ),
 		);
 
 		self::$layers = $layers;
@@ -363,9 +368,11 @@ final class Repository {
 		}
 
 		$locked = array_values(
-			array_filter(
-				is_array( $raw['locked'] ?? null ) ? $raw['locked'] : array(),
-				static fn ( mixed $path ): bool => is_string( $path ) && null !== Schema::definition( $path )
+			array_unique(
+				array_filter(
+					is_array( $raw['locked'] ?? null ) ? $raw['locked'] : array(),
+					static fn ( mixed $path ): bool => is_string( $path ) && null !== Schema::definition( $path )
+				)
 			)
 		);
 
