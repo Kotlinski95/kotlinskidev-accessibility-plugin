@@ -188,9 +188,35 @@ The keyboard shortcut is configurable and works in every mode when enabled. The 
 | `kotlinskidev_a11y_strings` | filter | Adjust the strings sent to the front end. |
 | `kotlinskidev_a11y_locale_label` | filter | `string $label, string $locale` in, string out. Native language name in the panel language select. Defaults to the `intl` display name, else the locale code. |
 | `kotlinskidev_a11y_icons` | filter | `array $icons` (name to SVG path data) in, array out. Only known names whose value is path data (`^[MmZzLlHhVvCcSsQqTtAa0-9eE.,+\s-]{1,1500}$`) are kept. Markup is never accepted. |
+| `kotlinskidev_a11y_customer_capability` | filter | `string $capability` in (default `kotlinskidev_a11y_customize`), string out. Must start with `kotlinskidev_a11y_`. |
+| `kotlinskidev_a11y_customer_paths` | filter | `array $paths` in, array out. Settings path prefixes a customer may edit. Can only narrow the default list. |
+| `kotlinskidev_a11y_locked_settings` | filter | `array $locked` (path to value) in, array out. Fixed settings. `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS` wins over it. |
+| `kotlinskidev_a11y_known_locales` | filter | `array $locales` in, array out. Locales offered by the language switcher. |
+| `kotlinskidev_a11y_default_locale` | filter | `string $locale` in, string out. Locale of the statement shortcode when none matches. |
+| `kotlinskidev_a11y_update_channel` | filter | `string $channel` (`stable` or `beta`) in, string out. Runs after the constant. |
+| `kotlinskidev_a11y_enable_updater` | filter | `bool $enabled` in, bool out. `false` turns off the update check, checksum verification, rollback and update routes. |
+| `kotlinskidev_a11y_update_source` | filter | `array $source` in, array out. Keys `repository`, `slug`, `asset_pattern`, `branch`. |
+| `kotlinskidev_a11y_update_token` | filter | `string $token` in, string out. Token for private update sources; never stored. |
+| `kotlinskidev_a11y_rollback_releases` | filter | `array $releases` in, array out. Each item has `version`, `package` and `sha256_url` on one https host; replaces the GitHub list. |
 | `kotlinskidev_a11y_cache_invalidated` | action | `string $reason`: `settings`, `update` or `translations`. |
 
-Update hooks are described in the README.
+Update behaviour is described in the README.
+
+## Constants
+
+Set in `wp-config.php` before the plugin loads.
+
+| Constant | Value | Effect |
+| --- | --- | --- |
+| `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS` | `array` of setting path to value | Fixes those settings on the site. Invalid entries are dropped and reported by Site Health. |
+| `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` | `'stable'` or `'beta'` | Fixes the update channel; the admin control is disabled. |
+| `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` | `true` | Turns off the update check, checksum verification, rollback and update routes. |
+
+The plugin also defines `KOTLINSKIDEV_A11Y_VERSION`, `KOTLINSKIDEV_A11Y_FILE`, `KOTLINSKIDEV_A11Y_DIR` and `KOTLINSKIDEV_A11Y_URL`, which are read-only and not part of the API.
+
+## WP-CLI
+
+`wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`. Synopsis, flags and exit codes are in the README. Output formats `table`, `json` and `yaml` are stable.
 
 ## REST routes
 
@@ -198,13 +224,21 @@ Namespace `kotlinskidev-a11y/v1`.
 
 | Route | Method | Access | Purpose |
 | --- | --- | --- | --- |
-| `/settings` | GET, POST | settings capability | Read and save settings. |
-| `/schema` | GET | settings capability | Settings schema, presets and defaults. |
+| `/settings` | GET, POST | settings capability, or the customer capability for its editable subtree | Read and save settings. `dry_run` previews and returns `changes`. Locked paths answer 409, bodies over 262144 B answer 413. |
+| `/schema` | GET | settings capability or customer capability | Settings schema, presets, defaults, `effectiveDefaults`, `locked` and `sources`. |
 | `/export` | GET | settings capability | Export settings. |
-| `/import` | POST | settings capability | Import settings. |
-| `/reset` | POST | settings capability | Reset settings. |
+| `/import` | POST | settings capability | Import settings; takes `dry_run`. Refuses files from a newer plugin version with 409. |
+| `/reset` | POST | settings capability | Reset all settings, or only `paths`; takes `dry_run`. |
 | `/panel-data` | GET | public | Panel data for `locale` (required, must be a locale the site uses, otherwise 404), with optional version `v`. The panel language switcher fetches it with another locale. The payload now also holds `panel`, `layout`, `locales` and `icons`. |
 | `/trigger-options` | GET | `edit_posts` | Enabled `features` and `profiles` keys, used by the block editor. |
+| `/alt-text/<id>` | POST | `upload_files` and `edit_post` | Save the alt text of one attachment. |
+| `/update-channel` | GET, POST | `update_plugins` and nonce | Read or set the update channel. POST answers 409 when a constant fixes it. Not registered when the updater is off. |
+| `/releases` | GET | `update_plugins` and nonce | Stable releases older than the installed one that can be rolled back to. Not registered when the updater is off. |
+| `/network/settings` | GET, POST | `manage_network_options` and nonce | Network defaults and locks. Multisite only. |
+| `/network/schema` | GET | `manage_network_options` and nonce | Schema for the network page. |
+| `/network/export` | GET | `manage_network_options` and nonce | Export network defaults. |
+| `/network/import` | POST | `manage_network_options` and nonce | Import network defaults. |
+| `/network/reset` | POST | `manage_network_options` and nonce | Reset network defaults. |
 
 `/trigger-options` returns `{ "features": string[], "profiles": string[] }`.
 
@@ -236,3 +270,4 @@ The full policy for every surface, and the list of current deprecations, is in [
 | --- | --- | --- |
 | 0.3.0 | 1 | Action vocabulary, trigger surfaces, JavaScript API, events, shortcode, block, PHP functions and the new filters. Removed the v0.2 `kotlinskidev_a11y_legacy_config` filter. |
 | 0.4.0 | 1 | No API change. New filters `kotlinskidev_a11y_locale_label` and `kotlinskidev_a11y_icons`, additive `/panel-data` payload, non-modal panel. |
+| 1.0.0 | 1 | No change to the JavaScript API, events or actions. Added settings management: dry runs, locks, customer capability, network routes, update routes, WP-CLI, the constants `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and `KOTLINSKIDEV_A11Y_DISABLE_UPDATER`, and the filters `kotlinskidev_a11y_customer_capability`, `_customer_paths`, `_locked_settings`, `_known_locales`, `_default_locale`, `_update_channel`, `_enable_updater` and `_rollback_releases`. |

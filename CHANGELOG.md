@@ -7,23 +7,39 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
-- Settings core, schema v5: settings resolve in layers (defaults, network defaults, site values, locks) and the site option stores only values that differ from the defaults below it. Locks come from `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, the `kotlinskidev_a11y_locked_settings` filter or network locks; invalid locks are dropped.
-- Versioned export envelope and import with a version check. `POST /settings`, `/import` and `/reset` take `dry_run` and return the changes, `/reset` takes `paths`, locked paths return 409, bodies over 262144 B return 413, and `/schema` lists `effectiveDefaults`, `locked` and `sources`. `maintenance.keepDataOnUninstall` is added to the schema.
-- Golden payload tests prove the inline config, panel data, bootstrap prefix and token CSS are byte-identical to v0.4.0, and a CI guard fails pull requests that touch front-end source unless they carry the `frontend-change` label.
-- A change to locks or network defaults purges page caches, detected by a fingerprint checked on admin requests and cron.
-- Update channels: a Maintenance tab Updates card (for `update_plugins` users) switches between stable and beta, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and the `kotlinskidev_a11y_update_channel` filter override it. `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` or the `kotlinskidev_a11y_enable_updater` filter turn the updater, rollback and update routes off.
-- Plugin zips are checked against their `.sha256` before unzipping, and the release workflow now writes the checksum, attests build provenance, pins every action by commit SHA, uses `CHANGELOG.md` as the release notes and marks `-beta` and `-rc` tags as pre-releases. `npm run release` takes `--pre beta|rc`.
-- Rollback to the 3 newest older releases (not below v0.4.0) from the Updates card, via `GET /releases`, `GET` and `POST /update-channel` and a confirmation page. It backs settings up to `kotlinskidev_a11y_settings_backup` and downloads the zip only after the checksum check.
-- WP-CLI: `wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`. Every path and value is validated against the schema and sanitizer, locked paths exit 1, `--dry-run` previews changes, `--format` selects table, json or yaml, and `doctor` exits 1 when a check is critical (`--fail-on=recommended` is stricter). Nothing prints the update token.
+- Settings management: search, change preview before save, import and reset, per-tab reset, unsaved-changes counter, locked and inherited field states, a Maintenance tab and a session-expiry retry. Dry runs return `changes`, `dropped`, `adjusted` and `locked`.
+- Versioned export envelope with a version check on import. Files from a newer plugin version are refused with 409, older files are migrated.
+- Layered settings (schema v5): plugin defaults, network defaults, site values, locks. Locks come from `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, the `kotlinskidev_a11y_locked_settings` filter or network locks, and invalid locks are dropped and reported.
+- Customer capability `kotlinskidev_a11y_customize`: edits only labels, statement, color tokens, panel options and mode. Server-enforced, with the filters `kotlinskidev_a11y_customer_capability` and `kotlinskidev_a11y_customer_paths`.
+- WP-CLI: `wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`, with `--dry-run`, `--format` and `--network`. Nothing prints the update token.
+- Multisite network defaults: a Network Admin page, `/network/*` REST routes, a "Locked on all sites" list and a multisite e2e project.
+- Site Health checks (build files, update source, optimizer conflicts, page cache language, locked settings, panel data store, unverified package) and a debug section. `wp ka11y doctor` prints the same results.
+- Update channels (stable and beta) with `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and the `kotlinskidev_a11y_update_channel` filter, and rollback to the 3 newest older releases (not below v0.4.0) with a settings backup. `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` or `kotlinskidev_a11y_enable_updater` turn the updater off.
+- Privacy policy guide text for the WordPress privacy tool, and an uninstall choice, `maintenance.keepDataOnUninstall`, to keep data. Uninstall also removes the settings backup, hashes, update state, capability and user meta.
+- Release workflow writes `kotlinskidev-accessibility.zip.sha256`, attests build provenance, uses `CHANGELOG.md` as release notes and marks `-beta` and `-rc` tags as pre-releases. `npm run release` takes `--pre beta|rc`.
+- Golden tests prove the inline config, panel data, bootstrap prefix and token CSS are byte-identical to v0.4.0, and a CI guard fails pull requests that touch front-end source without the `frontend-change` label.
+- Upgrade tests from each of the six releases, a downgrade test to v0.4.0, a `visual-baselines` workflow for Linux baselines and a Skip card visual case.
+- Page caches purge when locks or network defaults change.
+- `SECURITY.md`, `docs/DEPRECATION.md` and a refreshed `docs/API.md` and README with a "Managing the plugin" overview.
+- Polish translations for every new string.
 
-- Multisite network defaults: a Network Admin page (Settings > Accessibility, `manage_network_options`) reuses the admin app to set defaults and a "Locked on all sites" list, `GET`/`POST /network/settings`, `/network/schema`, `/network/export`, `/network/import` and `/network/reset` serve it, and `wp ka11y settings ... --network` works on multisite. A multisite e2e project (`KA11Y_MULTISITE=1`, `.wp-env.multisite.json`, `npm run wp-env:multisite:start`) covers inheritance, overrides, locks and access.
-- Maintenance: `SECURITY.md`, `docs/DEPRECATION.md`, CodeQL for JavaScript, TypeScript and Actions, split Dependabot groups with a major-version hold on the update checker, `composer audit` and `npm audit` in CI, and every action pinned by SHA. A `@upgrade` Playwright project (`KA11Y_UPGRADE=1`) upgrades from each of the six releases and downgrades to v0.4.0 nightly, a `visual-baselines` workflow builds Linux baselines, and a Skip card visual case is added.
+### Changed
+
+- The site option stores only values that differ from the defaults below it, so unchanged settings follow future default changes.
+- `/schema` lists `effectiveDefaults`, `locked` and `sources`, `/reset` takes `paths`, and bodies over 262144 B return 413.
+- Dependabot is split into groups with a major-version hold on the update checker.
 
 ### Fixed
 
-- The panel data cache is now purged when the plugin version changes: `VersionWatcher` fired the `update` invalidation before `PanelDataStore` listened, so an update from v0.2.0 or later kept the panel data file of the old version and the panel failed to load.
-- Sparse storage no longer flips a site value that equals the plugin default but differs from a network default, saving keeps the stored value of locked paths, and `POST /import` of a version-less tree is no longer treated as v1. `/reset` rejects empty `paths` and oversized bodies, `dry_run` must be a boolean, and a real import with conflicting locked paths returns 409.
-- Language switcher returns the shipped translation for locales without an installed core language pack: `Strings::for_locale()` loads `languages/kotlinskidev-accessibility-{locale}.mo` when `switch_to_locale()` does nothing, then restores the previous text domain.
+- The panel data cache is purged when the plugin version changes. `VersionWatcher` fired the `update` invalidation before `PanelDataStore` listened, so an update from v0.2.0 or later kept the old panel data file and the panel failed to load.
+- Sparse storage no longer flips a site value that equals the plugin default but differs from a network default, saving keeps the stored value of locked paths, and `POST /import` of a version-less tree is no longer treated as v1.
+- `/reset` rejects empty `paths`, `dry_run` must be a boolean, and a real import with conflicting locked paths returns 409.
+- The language switcher returns the shipped translation for locales without an installed core language pack.
+
+### Security
+
+- Plugin zips are checked against their `.sha256` before unzipping, and a mismatch aborts the update. A package installed without a checksum is flagged in the admin and in Site Health.
+- CodeQL for JavaScript, TypeScript and Actions, `composer audit` and `npm audit` in CI, and every GitHub Action pinned by commit SHA.
 
 ## [0.4.0] - 2026-11-25
 

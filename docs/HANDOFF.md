@@ -1,23 +1,39 @@
 # Handoff
 
-Read this, then `CLAUDE.md` (project profile). Plans: `docs/ROADMAP.md` (phases 0 to 6), `docs/PHASE3-SPEC.md`, `docs/PHASE4-SPEC.md`, `docs/PHASE5-SPEC.md`, `docs/PHASE5-PARITY.md`, `docs/API.md` (public API), `docs/TESTING.md`. Do not re-read whole specs: open only the milestone being worked on.
+Read this, then `CLAUDE.md` (project profile). Plans: `docs/ROADMAP.md` (phases 0 to 6), `docs/PHASE3-SPEC.md`, `docs/PHASE4-SPEC.md`, `docs/PHASE5-SPEC.md`, `docs/PHASE5-PARITY.md`, `docs/PHASE6-SPEC.md`, `docs/API.md` (public API), `docs/TESTING.md`. Do not re-read whole specs: open only the milestone being worked on.
 
 ## Where we are
 
-- Repo `~/Projects/kotlinskidev-accessibility` (public GitHub `Kotlinski95/kotlinskidev-accessibility-plugin`). Released: v0.3.0 (triggers and public API). v0.4.0 (Phase 5, UI parity) is done and verified (M5.1 to M5.9) and waits for the release step M5.10 (`npm run release`, `npm run check-version`, commit, tag, push only when the owner asks).
-- Phase 5 shipped: non-modal panel (side panel and bottom sheet), icon tiles, steppers, language switcher, presets and color tokens with contrast check, columns and section toggles (settings schema v4), icon set with filters, pl_PL translations for every new string. Specs: `docs/PHASE5-SPEC.md`, parity review `docs/PHASE5-PARITY.md`.
-- Earlier phases: 0 (hotfix v0.1.2/v0.1.3), 1 (agent kit repo `Kotlinski95/kotlinskidev-claude-kit`), 2 (test harness), 3 (v0.2.0), 4 (v0.3.0).
+- Repo `~/Projects/kotlinskidev-accessibility` (public GitHub `Kotlinski95/kotlinskidev-accessibility-plugin`). Released: v0.4.0 (Phase 5, UI parity). Phase 6 (management, `docs/PHASE6-SPEC.md`) is implemented through M6.9 and sits under `[Unreleased]` in `CHANGELOG.md`; v1.0.0-beta.1 is pending release (M6.10).
+- Phase 6 shipped: layered settings with locks, settings search, change preview and per-tab reset, versioned import and export, customer capability, WP-CLI (`settings`, `doctor`, `access`), multisite network defaults, Site Health checks, update channels, checksum verification and rollback, uninstall keep-data choice, privacy policy guide text, upgrade and downgrade tests, pl_PL translations.
+- Earlier phases: 0 (hotfix v0.1.2/v0.1.3), 1 (agent kit repo `Kotlinski95/kotlinskidev-claude-kit`), 2 (test harness), 3 (v0.2.0), 4 (v0.3.0), 5 (v0.4.0).
 
 ## Next
 
-- M5.10: release v0.4.0 after the owner approves the snapshots.
+Release steps (PHASE6-SPEC section 15), only when the owner asks:
+
+1. Verify command, `@smoke`, `@upgrade`, multisite and `@visual` green; `check-budget` identical to v0.4.0 for the front end.
+2. Owner uploads `kotlinskidev-accessibility.zip.sha256` to the v0.4.0 release (D8).
+3. `npm run release -- --major --pre beta` gives `1.0.0-beta.1`; `npm run check-version`; commit `chore: release v1.0.0-beta.1`; tag and push. The workflow publishes a pre-release with notes, checksum and attestation.
+4. Owner switches the channel to Beta on the kotlinskidev site, updates, runs `wp ka11y doctor` and the manual list in PHASE6-SPEC 13.4. 7 days soak (D11). Bugs go into beta.2 and restart the soak.
+5. `npm run release -- --major` gives `1.0.0`; CHANGELOG `[1.0.0]` lists everything since 0.4.0; commit `chore: release v1.0.0`, tag, push.
+6. After release: remove the front-end diff guard from CI, set the rollback floor review for the next minor, update this section.
+
+The owner must do:
+
+- Upload the v0.4.0 `kotlinskidev-accessibility.zip.sha256` asset (D8).
+- Run the `visual-baselines` workflow and commit the Linux baseline artifact so `@visual` can run in CI.
+- Do a manual screen-reader pass and a Navigation block check (trigger block as a menu item).
+- Run the 7-day beta soak on the kotlinskidev site.
+
+Other open work:
+
 - Phase 4b (theme repo, own `feature/T{n}` branch off master): block `kotlinskidev/speed-dial` and child `speed-dial-item` using the Phase 4 API.
-- Phase 6: management (roles, WP-CLI, multisite, Site Health, beta channel, rollback, private update server option).
 - Parity follow-ups from `docs/PHASE5-PARITY.md`: stepper row balance (P1), Skip card baseline (P7).
 
 ## Known gap: visual baselines
 
-- Visual baselines in `tests/e2e/__screenshots__/darwin/` are macOS only. Docker Linux baselines are not generated, so `@visual` is not run in CI. Generate them in the Docker image before enabling it.
+- Visual baselines in `tests/e2e/__screenshots__/darwin/` are macOS only. Linux baselines come from the `visual-baselines` workflow artifact, which the owner commits before `@visual` runs in CI.
 
 ## Rules that bit us
 

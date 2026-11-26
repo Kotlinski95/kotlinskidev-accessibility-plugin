@@ -155,7 +155,7 @@ Done when: an e2e page with one trigger of each kind passes keyboard and screen 
 
 ## Phase 5: UI parity, v0.4.0
 
-Status: done, release v0.4.0 pending. Spec: [PHASE5-SPEC.md](PHASE5-SPEC.md). Parity review and follow-ups: [PHASE5-PARITY.md](PHASE5-PARITY.md).
+Status: done, released as v0.4.0. Spec: [PHASE5-SPEC.md](PHASE5-SPEC.md). Parity review and follow-ups: [PHASE5-PARITY.md](PHASE5-PARITY.md).
 
 1. Run OneTap in a separate wp-env site. Capture screens, video, timings, mobile and keyboard behaviour.
 2. Write a gap list and design spec. Match layout and behaviour. Copy no CSS, icons or text.
@@ -166,6 +166,8 @@ Status: done, release v0.4.0 pending. Spec: [PHASE5-SPEC.md](PHASE5-SPEC.md). Pa
 Done when: the gap list is closed and the snapshots are approved by the owner.
 
 ## Phase 6: management, v1.0
+
+Status: done in code (M6.1 to M6.9). Pending: v1.0.0-beta.1 release, 7-day beta soak on the kotlinskidev site, then v1.0.0. Spec: [PHASE6-SPEC.md](PHASE6-SPEC.md).
 
 - Settings: search, per-tab reset, change preview, unsaved-changes guard, import and export with version check, locked settings through a constant or filter.
 - Roles: a customer capability limited to labels, statement and appearance.

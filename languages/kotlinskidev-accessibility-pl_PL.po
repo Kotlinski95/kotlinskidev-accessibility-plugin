@@ -6,8 +6,8 @@ msgstr ""
 "Project-Id-Version: Kotlinskidev Accessibility 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kotlinskidev-"
 "accessibility\n"
-"POT-Creation-Date: 2026-11-25T15:26:17+00:00\n"
-"PO-Revision-Date: 2026-11-24 12:00+0000\n"
+"POT-Creation-Date: 2026-11-26T07:33:55+00:00\n"
+"PO-Revision-Date: 2026-11-26 12:00+0000\n"
 "Last-Translator: Adrian Kotlinski\n"
 "Language-Team: Polish\n"
 "Language: pl_PL\n"
@@ -20,7 +20,7 @@ msgstr ""
 "|| n%100>=20) ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
-#: kotlinskidev-accessibility.php
+#: kotlinskidev-accessibility.php src/php/Health/SiteHealth.php:61
 msgid "Kotlinskidev Accessibility"
 msgstr "Kotlinskidev Accessibility"
 
@@ -60,7 +60,7 @@ msgstr "Szukaj po tytule"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:129
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:136
-#: src/php/Admin/AltTextPage.php:124 src/php/I18n/Strings.php:144
+#: src/php/Admin/AltTextPage.php:124 src/php/I18n/Strings.php:172
 msgid "Search"
 msgstr "Szukaj"
 
@@ -93,9 +93,12 @@ msgstr "Stronicowanie"
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:38
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:39
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:63
-#: src/php/Admin/DashboardWidget.php:34 src/php/Admin/SettingsPage.php:43
-#: src/php/Admin/SettingsPage.php:44 src/php/Admin/SettingsPage.php:68
-#: src/php/I18n/Strings.php:123 src/php/I18n/Strings.php:125 build/admin.js:1
+#: src/php/Admin/DashboardWidget.php:34
+#: src/php/Admin/NetworkSettingsPage.php:26
+#: src/php/Admin/NetworkSettingsPage.php:27 src/php/Admin/SettingsPage.php:45
+#: src/php/Admin/SettingsPage.php:46 src/php/Admin/SettingsPage.php:68
+#: src/php/Health/SiteHealth.php:48 src/php/I18n/Strings.php:151
+#: src/php/I18n/Strings.php:153 build/admin.js:2
 msgid "Accessibility"
 msgstr "Dostępność"
 
@@ -120,472 +123,472 @@ msgid "Open settings"
 msgstr "Otwórz ustawienia"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/DashboardWidget.php:66
-#: src/php/Admin/DashboardWidget.php:66
+#: src/php/Admin/DashboardWidget.php:66 src/php/Health/SiteHealth.php:75
 msgid "Plugin version"
 msgstr "Wersja wtyczki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:50
-#: src/php/Admin/SettingsPage.php:55
+#: src/php/Admin/SettingsPage.php:57
 msgid "Settings"
 msgstr "Ustawienia"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:65
-#: src/php/Admin/SettingsPage.php:70
+#: src/php/Admin/SettingsPage.php:76
 msgid "This settings page needs JavaScript."
 msgstr "Ta strona ustawień wymaga włączonej obsługi JavaScript."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:57
-#: src/php/I18n/Strings.php:57
+#: src/php/I18n/Strings.php:85
 msgid "Bigger text"
 msgstr "Powiększ tekst"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:58
-#: src/php/I18n/Strings.php:58
+#: src/php/I18n/Strings.php:86
 msgid "Increase the text size across the page."
 msgstr "Zwiększa rozmiar tekstu na całej stronie."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:59
-#: src/php/I18n/Strings.php:59
+#: src/php/I18n/Strings.php:87
 msgid "Line height"
 msgstr "Wysokość linii"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:60
-#: src/php/I18n/Strings.php:60
+#: src/php/I18n/Strings.php:88
 msgid "Increase the space between lines of text."
 msgstr "Zwiększa odstępy między wierszami tekstu."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:61
-#: src/php/I18n/Strings.php:61
+#: src/php/I18n/Strings.php:89
 msgid "Letter spacing"
 msgstr "Odstępy między literami"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:62
-#: src/php/I18n/Strings.php:62
+#: src/php/I18n/Strings.php:90
 msgid "Increase the space between letters."
 msgstr "Zwiększa odstępy między literami."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:63
-#: src/php/I18n/Strings.php:63
+#: src/php/I18n/Strings.php:91
 msgid "Font weight"
 msgstr "Grubość czcionki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:64
-#: src/php/I18n/Strings.php:64
+#: src/php/I18n/Strings.php:92
 msgid "Make text bolder."
 msgstr "Pogrubia tekst."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:65
-#: src/php/I18n/Strings.php:65
+#: src/php/I18n/Strings.php:93
 msgid "Readable font"
 msgstr "Czytelna czcionka"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:66
-#: src/php/I18n/Strings.php:66
+#: src/php/I18n/Strings.php:94
 msgid "Switch to a plain, easy-to-read font."
 msgstr "Przełącza na prostą, łatwą do czytania czcionkę."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:67
-#: src/php/I18n/Strings.php:67
+#: src/php/I18n/Strings.php:95
 msgid "Dyslexia-friendly font"
 msgstr "Czcionka przyjazna dyslektykom"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:68
-#: src/php/I18n/Strings.php:68
+#: src/php/I18n/Strings.php:96
 msgid "Use a font designed to ease reading with dyslexia."
 msgstr ""
 "Używa czcionki zaprojektowanej z myślą o ułatwieniu czytania osobom z "
 "dysleksją."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:69
-#: src/php/I18n/Strings.php:69
+#: src/php/I18n/Strings.php:97
 msgid "Text alignment"
 msgstr "Wyrównanie tekstu"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:70
-#: src/php/I18n/Strings.php:70
+#: src/php/I18n/Strings.php:98
 msgid "Cycle text alignment between left, center and right."
 msgstr "Przełącza wyrównanie tekstu: do lewej, do środka i do prawej."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:71
-#: src/php/I18n/Strings.php:71
+#: src/php/I18n/Strings.php:99
 msgid "Highlight links"
 msgstr "Wyróżnij linki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:72
-#: src/php/I18n/Strings.php:72
+#: src/php/I18n/Strings.php:100
 msgid "Underline and emphasize every link."
 msgstr "Podkreśla i wyróżnia każdy link."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:73
-#: src/php/I18n/Strings.php:73
+#: src/php/I18n/Strings.php:101
 msgid "Big cursor"
 msgstr "Duży kursor"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:74
-#: src/php/I18n/Strings.php:74
+#: src/php/I18n/Strings.php:102
 msgid "Enlarge the mouse pointer."
 msgstr "Powiększa wskaźnik myszy."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:75
-#: src/php/I18n/Strings.php:75
+#: src/php/I18n/Strings.php:103
 msgid "Text magnifier"
 msgstr "Lupa tekstu"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:76
-#: src/php/I18n/Strings.php:76
+#: src/php/I18n/Strings.php:104
 msgid "Show a magnified view of the text under the pointer."
 msgstr "Pokazuje powiększony podgląd tekstu pod wskaźnikiem."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:77
-#: src/php/I18n/Strings.php:77
+#: src/php/I18n/Strings.php:105
 msgid "Cognitive reading"
 msgstr "Czytanie wspomagane"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:78
-#: src/php/I18n/Strings.php:78
+#: src/php/I18n/Strings.php:106
 msgid "Bold the first half of each word to guide reading."
 msgstr ""
 "Pogrubia pierwszą połowę każdego słowa, aby prowadzić wzrok podczas czytania."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:79
-#: src/php/I18n/Strings.php:79
+#: src/php/I18n/Strings.php:107
 msgid "Dark contrast"
 msgstr "Ciemny kontrast"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:80
-#: src/php/I18n/Strings.php:80
+#: src/php/I18n/Strings.php:108
 msgid "Use a dark, high-legibility color scheme."
 msgstr "Używa ciemnej, bardzo czytelnej kolorystyki."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:81
-#: src/php/I18n/Strings.php:81
+#: src/php/I18n/Strings.php:109
 msgid "Light contrast"
 msgstr "Jasny kontrast"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:82
-#: src/php/I18n/Strings.php:82
+#: src/php/I18n/Strings.php:110
 msgid "Use a light, high-legibility color scheme."
 msgstr "Używa jasnej, bardzo czytelnej kolorystyki."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:83
-#: src/php/I18n/Strings.php:83 build/admin.js:1
+#: src/php/I18n/Strings.php:111 build/admin.js:1
 msgid "High contrast"
 msgstr "Wysoki kontrast"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:84
-#: src/php/I18n/Strings.php:84
+#: src/php/I18n/Strings.php:112
 msgid "Increase the contrast of all colors."
 msgstr "Zwiększa kontrast wszystkich kolorów."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:85
-#: src/php/I18n/Strings.php:85
+#: src/php/I18n/Strings.php:113
 msgid "Monochrome"
 msgstr "Tryb monochromatyczny"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:86
-#: src/php/I18n/Strings.php:86
+#: src/php/I18n/Strings.php:114
 msgid "Remove all color from the page."
 msgstr "Usuwa wszystkie kolory ze strony."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:87
-#: src/php/I18n/Strings.php:87
+#: src/php/I18n/Strings.php:115
 msgid "Saturation"
 msgstr "Nasycenie"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:88
-#: src/php/I18n/Strings.php:88
+#: src/php/I18n/Strings.php:116
 msgid "Lower or raise the color saturation."
 msgstr "Zmniejsza lub zwiększa nasycenie kolorów."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:89
-#: src/php/I18n/Strings.php:89
+#: src/php/I18n/Strings.php:117
 msgid "Reading line"
 msgstr "Linia czytania"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:90
-#: src/php/I18n/Strings.php:90
+#: src/php/I18n/Strings.php:118
 msgid "Show a horizontal guide line that follows the pointer."
 msgstr "Pokazuje poziomą linię pomocniczą podążającą za wskaźnikiem."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:91
-#: src/php/I18n/Strings.php:91
+#: src/php/I18n/Strings.php:119
 msgid "Reading mask"
 msgstr "Maska czytania"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:92
-#: src/php/I18n/Strings.php:92
+#: src/php/I18n/Strings.php:120
 msgid "Dim everything except the line being read."
 msgstr "Przyciemnia wszystko poza czytaną linią."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:93
-#: src/php/I18n/Strings.php:93
+#: src/php/I18n/Strings.php:121
 msgid "Read page"
 msgstr "Czytnik strony"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:94
-#: src/php/I18n/Strings.php:94
+#: src/php/I18n/Strings.php:122
 msgid "Read the page content aloud."
 msgstr "Odczytuje treść strony na głos."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:95
-#: src/php/I18n/Strings.php:95
+#: src/php/I18n/Strings.php:123
 msgid "Keyboard navigation"
 msgstr "Nawigacja klawiaturą"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:96
-#: src/php/I18n/Strings.php:96
+#: src/php/I18n/Strings.php:124
 msgid "Strengthen focus outlines and enable navigation hotkeys."
 msgstr "Wzmacnia obrys fokusu i włącza skróty klawiszowe do nawigacji."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:97
-#: src/php/I18n/Strings.php:97
+#: src/php/I18n/Strings.php:125
 msgid "Hide images"
 msgstr "Ukryj obrazy"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:98
-#: src/php/I18n/Strings.php:98
+#: src/php/I18n/Strings.php:126
 msgid "Hide all images on the page."
 msgstr "Ukrywa wszystkie obrazy na stronie."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:99
-#: src/php/I18n/Strings.php:99
+#: src/php/I18n/Strings.php:127
 msgid "Mute sounds"
 msgstr "Wycisz dźwięki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:100
-#: src/php/I18n/Strings.php:100
+#: src/php/I18n/Strings.php:128
 msgid "Mute all audio and video on the page."
 msgstr "Wycisza wszystkie dźwięki i filmy na stronie."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:101
-#: src/php/I18n/Strings.php:101
+#: src/php/I18n/Strings.php:129
 msgid "Highlight titles"
 msgstr "Wyróżnij nagłówki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:102
-#: src/php/I18n/Strings.php:102
+#: src/php/I18n/Strings.php:130
 msgid "Outline every heading on the page."
 msgstr "Obramowuje każdy nagłówek na stronie."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:103
-#: src/php/I18n/Strings.php:103
+#: src/php/I18n/Strings.php:131
 msgid "Highlight all"
 msgstr "Wyróżnij wszystko"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:104
-#: src/php/I18n/Strings.php:104
+#: src/php/I18n/Strings.php:132
 msgid "Outline all interactive elements and headings."
 msgstr "Obramowuje wszystkie elementy interaktywne i nagłówki."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:105
-#: src/php/I18n/Strings.php:105
+#: src/php/I18n/Strings.php:133
 msgid "Stop animations"
 msgstr "Zatrzymaj animacje"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:106
-#: src/php/I18n/Strings.php:106
+#: src/php/I18n/Strings.php:134
 msgid "Stop animations, moving images and autoplay video."
 msgstr "Zatrzymuje animacje, ruchome obrazy i automatycznie odtwarzane filmy."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:107
-#: src/php/I18n/Strings.php:107
+#: src/php/I18n/Strings.php:135
 msgid "Skip to content"
 msgstr "Pomiń do treści"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:108
-#: src/php/I18n/Strings.php:108
+#: src/php/I18n/Strings.php:136
 msgid "Jump straight to a main part of the page."
 msgstr "Przechodzi bezpośrednio do wybranej części strony."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:109
-#: src/php/I18n/Strings.php:109
+#: src/php/I18n/Strings.php:137
 msgid "Vision impaired"
 msgstr "Osoby słabowidzące"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:110
-#: src/php/I18n/Strings.php:110
+#: src/php/I18n/Strings.php:138
 msgid "Seizure safe"
 msgstr "Bezpieczne dla osób z napadami"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:111
-#: src/php/I18n/Strings.php:111
+#: src/php/I18n/Strings.php:139
 msgid "ADHD friendly"
 msgstr "Przyjazne dla osób z ADHD"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:112
-#: src/php/I18n/Strings.php:112
+#: src/php/I18n/Strings.php:140
 msgid "Blindness"
 msgstr "Osoby niewidome"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:113
-#: src/php/I18n/Strings.php:113
+#: src/php/I18n/Strings.php:141
 msgid "Epilepsy safe"
 msgstr "Bezpieczne dla osób z padaczką"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:114
-#: src/php/I18n/Strings.php:114
+#: src/php/I18n/Strings.php:142
 msgid "Accessibility settings"
 msgstr "Ustawienia dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:115
-#: src/php/I18n/Strings.php:115
+#: src/php/I18n/Strings.php:143
 msgid "Open accessibility settings"
 msgstr "Otwórz ustawienia dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:116
-#: src/php/I18n/Strings.php:117
+#: src/php/I18n/Strings.php:145
 msgid "Close"
 msgstr "Zamknij"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:117
-#: src/php/I18n/Strings.php:118
+#: src/php/I18n/Strings.php:146
 msgid "Reset all settings"
 msgstr "Zresetuj ustawienia"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:118
-#: src/php/I18n/Strings.php:119 build/admin.js:1
+#: src/php/I18n/Strings.php:147 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Hide toolbar"
 msgstr "Ukryj pasek narzędzi"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:119
-#: src/php/I18n/Strings.php:120
+#: src/php/I18n/Strings.php:148
 msgid "Hide for this session"
 msgstr "Ukryj na czas tej sesji"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:120
-#: src/php/I18n/Strings.php:121
+#: src/php/I18n/Strings.php:149
 msgid "Hide for"
 msgstr "Ukryj na"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:121
-#: src/php/I18n/Strings.php:122
+#: src/php/I18n/Strings.php:150
 msgid "days"
 msgstr "dni"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:122
-#: src/php/I18n/Strings.php:127 src/php/I18n/Strings.php:130 build/admin.js:1
+#: src/php/I18n/Strings.php:155 src/php/I18n/Strings.php:158 build/admin.js:2
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Accessibility statement"
 msgstr "Deklaracja dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:123
-#: src/php/I18n/Strings.php:131 build/admin.js:1
+#: src/php/I18n/Strings.php:159 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Keyboard shortcut"
 msgstr "Skrót klawiszowy"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:124
-#: src/php/I18n/Strings.php:132
+#: src/php/I18n/Strings.php:160
 msgid "Accessibility profiles"
 msgstr "Profile dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:125
-#: src/php/I18n/Strings.php:133 build/admin.js:1
+#: src/php/I18n/Strings.php:161 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Content"
 msgstr "Treść"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:126
-#: src/php/I18n/Strings.php:134 build/admin.js:1
+#: src/php/I18n/Strings.php:162 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Color"
 msgstr "Kolor"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:127
-#: src/php/I18n/Strings.php:135 build/admin.js:1
+#: src/php/I18n/Strings.php:163 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Orientation"
 msgstr "Orientacja"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:128
-#: src/php/I18n/Strings.php:136
+#: src/php/I18n/Strings.php:164
 msgid "Adjustments"
 msgstr "Dostosowania"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:129
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:132
-#: src/php/I18n/Strings.php:137 src/php/I18n/Strings.php:140
+#: src/php/I18n/Strings.php:165 src/php/I18n/Strings.php:168
 msgid "Main content"
 msgstr "Treść główna"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:130
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:133
-#: src/php/I18n/Strings.php:138 src/php/I18n/Strings.php:141
+#: src/php/I18n/Strings.php:166 src/php/I18n/Strings.php:169
 msgid "Navigation"
 msgstr "Nawigacja"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:131
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:135
-#: src/php/I18n/Strings.php:139 src/php/I18n/Strings.php:143
+#: src/php/I18n/Strings.php:167 src/php/I18n/Strings.php:171
 msgid "Footer"
 msgstr "Stopka"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:134
-#: src/php/I18n/Strings.php:142
+#: src/php/I18n/Strings.php:170
 msgid "Header"
 msgstr "Nagłówek"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:137
-#: src/php/I18n/Strings.php:145
+#: src/php/I18n/Strings.php:173
 msgid "Sidebar"
 msgstr "Panel boczny"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:138
-#: src/php/I18n/Strings.php:153 build/admin.js:1
+#: src/php/I18n/Strings.php:183 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Off"
 msgstr "Wyłączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:139
-#: src/php/I18n/Strings.php:154 build/admin.js:1
+#: src/php/I18n/Strings.php:184 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "On"
 msgstr "Włączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:140
-#: src/php/I18n/Strings.php:155 build/admin.js:1
+#: src/php/I18n/Strings.php:185 build/admin.js:1
 msgid "Low"
 msgstr "Niski"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:141
-#: src/php/I18n/Strings.php:156 build/admin.js:1
+#: src/php/I18n/Strings.php:186 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Medium"
 msgstr "Średni"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:142
-#: src/php/I18n/Strings.php:157 build/admin.js:1
+#: src/php/I18n/Strings.php:187 build/admin.js:1
 msgid "High"
 msgstr "Wysoki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:143
-#: src/php/I18n/Strings.php:158
+#: src/php/I18n/Strings.php:188
 msgid "Left"
 msgstr "Do lewej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:144
-#: src/php/I18n/Strings.php:159
+#: src/php/I18n/Strings.php:189
 msgid "Center"
 msgstr "Do środka"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:145
-#: src/php/I18n/Strings.php:160
+#: src/php/I18n/Strings.php:190
 msgid "Right"
 msgstr "Do prawej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:146
-#: src/php/I18n/Strings.php:161
+#: src/php/I18n/Strings.php:191
 msgid "The accessibility statement has not been published yet."
 msgstr "Deklaracja dostępności nie została jeszcze opublikowana."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:147
-#: src/php/I18n/Strings.php:162
+#: src/php/I18n/Strings.php:192
 msgid "Our commitment to accessibility"
 msgstr "Nasze zobowiązanie do zapewnienia dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:148
-#: src/php/I18n/Strings.php:163
+#: src/php/I18n/Strings.php:193
 msgid ""
 "We want this website to be usable by everyone, including people with "
 "disabilities."
@@ -594,22 +597,22 @@ msgstr ""
 "niepełnosprawnościami."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:149
-#: src/php/I18n/Strings.php:164
+#: src/php/I18n/Strings.php:194
 msgid "Conformance status"
 msgstr "Status zgodności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:150
-#: src/php/I18n/Strings.php:165
+#: src/php/I18n/Strings.php:195
 msgid "We are working towards conformance with WCAG 2.2 level AA."
 msgstr "Dążymy do zgodności ze standardem WCAG 2.2 na poziomie AA."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:151
-#: src/php/I18n/Strings.php:166
+#: src/php/I18n/Strings.php:196
 msgid "Feedback and contact"
 msgstr "Opinie i kontakt"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:152
-#: src/php/I18n/Strings.php:167
+#: src/php/I18n/Strings.php:197
 msgid ""
 "If you run into an accessibility barrier on this website, please contact the "
 "site owner and describe the problem."
@@ -618,12 +621,12 @@ msgstr ""
 "właścicielem witryny i opisz problem."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:153
-#: src/php/I18n/Strings.php:168
+#: src/php/I18n/Strings.php:198
 msgid "Date of this statement"
 msgstr "Data sporządzenia deklaracji"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:154
-#: src/php/I18n/Strings.php:169
+#: src/php/I18n/Strings.php:199
 msgid ""
 "This statement is reviewed regularly; the date of the last review is added "
 "by the site owner."
@@ -637,9 +640,15 @@ msgid "The requested item is not a media attachment."
 msgstr "Wskazany element nie jest załącznikiem multimedialnym."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Rest/SettingsController.php:129
-#: src/php/Rest/SettingsController.php:130
+#: src/php/Rest/NetworkSettingsController.php:271
+#: src/php/Rest/SettingsController.php:361 src/php/Settings/Importer.php:190
+#: src/php/Settings/NetworkSettings.php:307
 msgid "The request body must be a JSON object."
 msgstr "Treść żądania musi być obiektem JSON."
+
+#: src/php/Admin/NetworkSettingsPage.php:39
+msgid "Accessibility network defaults"
+msgstr "Domyślne ustawienia dostępności w sieci"
 
 #: src/php/Admin/PerformanceNotice.php:61
 msgid ""
@@ -661,59 +670,692 @@ msgstr "Zamknij komunikat"
 msgid "You do not have permission to do this."
 msgstr "Nie masz uprawnień do wykonania tej czynności."
 
-#: src/php/I18n/Strings.php:116
+#: src/php/Admin/RollbackPage.php:46 src/php/Admin/RollbackPage.php:75
+msgid "Roll back Kotlinskidev Accessibility"
+msgstr "Przywróć poprzednią wersję Kotlinskidev Accessibility"
+
+#: src/php/Admin/RollbackPage.php:56
+msgid "You are not allowed to roll back this plugin."
+msgstr "Nie masz uprawnień do przywrócenia poprzedniej wersji tej wtyczki."
+
+#: src/php/Admin/RollbackPage.php:65
+msgid "This rollback link is invalid or expired."
+msgstr ""
+"Ten link do przywrócenia poprzedniej wersji jest nieprawidłowy lub wygasł."
+
+#: src/php/Admin/RollbackPage.php:72 src/php/Update/Rollback.php:87
+msgid "That version is not available for rollback."
+msgstr "Ta wersja nie jest dostępna do przywrócenia."
+
+#. translators: %s: plugin version
+#: src/php/Admin/RollbackPage.php:90
+#, php-format
+msgid ""
+"Roll back to %1$s. Settings stay. Features added after %2$s stop working."
+msgstr ""
+"Przywróć wersję %1$s. Ustawienia zostają. Funkcje dodane po wersji %2$s "
+"przestaną działać."
+
+#: src/php/Admin/RollbackPage.php:98
+msgid "Roll back"
+msgstr "Przywróć wersję"
+
+#. translators: %s: plugin version
+#: src/php/Admin/RollbackPage.php:112
+#, php-format
+msgid ""
+"Rolled back to %s. A settings backup is stored in the "
+"kotlinskidev_a11y_settings_backup option."
+msgstr ""
+"Przywrócono wersję %s. Kopia ustawień jest zapisana w opcji "
+"kotlinskidev_a11y_settings_backup."
+
+#: src/php/Admin/UnverifiedPackageNotice.php:31
+msgid ""
+"Accessibility: the last plugin update was installed without a SHA-256 "
+"checksum, so its integrity was not verified. Install the latest release to "
+"restore verified updates."
+msgstr ""
+"Dostępność: ostatnia aktualizacja wtyczki została zainstalowana bez sumy "
+"kontrolnej SHA-256, więc nie zweryfikowano jej integralności. Zainstaluj "
+"najnowszą wersję, aby przywrócić weryfikowane aktualizacje."
+
+#: src/php/Cli/AccessCommand.php:65
+msgid "Already granted:"
+msgstr "Już przyznano:"
+
+#: src/php/Cli/AccessCommand.php:65 src/php/Cli/AccessCommand.php:80
+msgid "for role"
+msgstr "dla roli"
+
+#: src/php/Cli/AccessCommand.php:72
+msgid "Granted"
+msgstr "Przyznano"
+
+#: src/php/Cli/AccessCommand.php:72
+msgid "to role"
+msgstr "roli"
+
+#: src/php/Cli/AccessCommand.php:80
+msgid "Not granted:"
+msgstr "Nie przyznano:"
+
+#: src/php/Cli/AccessCommand.php:87
+msgid "Revoked"
+msgstr "Odebrano"
+
+#: src/php/Cli/AccessCommand.php:87
+msgid "from role"
+msgstr "roli"
+
+#: src/php/Cli/AccessCommand.php:108
+msgid "Unknown role:"
+msgstr "Nieznana rola:"
+
+#: src/php/Cli/DoctorCommand.php:52
+msgid "Invalid fail level. Use one of:"
+msgstr "Nieprawidłowy poziom błędu. Użyj jednego z:"
+
+#: src/php/Cli/DoctorCommand.php:64
+msgid "check(s) failed at the"
+msgstr "test(y) nie powiodło się, próg:"
+
+#: src/php/Cli/DoctorCommand.php:64 src/php/Cli/DoctorCommand.php:67
+msgid "level."
+msgstr "(--fail-on)."
+
+#: src/php/Cli/DoctorCommand.php:67
+msgid "No check failed at the"
+msgstr "Żaden test nie zakończył się błędem, próg:"
+
+#: src/php/Cli/Files.php:34 src/php/Cli/Files.php:58
+msgid "Only local file paths are allowed."
+msgstr "Dozwolone są tylko lokalne ścieżki plików."
+
+#: src/php/Cli/Files.php:40
+msgid "The target directory does not exist."
+msgstr "Katalog docelowy nie istnieje."
+
+#: src/php/Cli/Files.php:46
+msgid "The file already exists. Use --force to overwrite it."
+msgstr "Plik już istnieje. Użyj --force, aby go nadpisać."
+
+#: src/php/Cli/Files.php:49
+msgid "The file could not be written."
+msgstr "Nie udało się zapisać pliku."
+
+#: src/php/Cli/Files.php:64
+msgid "The file does not exist or is not a readable regular file."
+msgstr "Plik nie istnieje lub nie jest czytelnym zwykłym plikiem."
+
+#: src/php/Cli/Files.php:67
+msgid "The file is too large."
+msgstr "Plik jest za duży."
+
+#: src/php/Cli/Output.php:18
+msgid "Invalid format. Use one of:"
+msgstr "Nieprawidłowy format. Użyj jednego z:"
+
+#: src/php/Cli/Output.php:46
+msgid "Network settings need a multisite installation."
+msgstr "Ustawienia sieci wymagają instalacji wieloserwerowej (multisite)."
+
+#: src/php/Cli/SettingsCommand.php:175
+msgid "Invalid layer. Use one of:"
+msgstr "Nieprawidłowa warstwa. Użyj jednej z:"
+
+#: src/php/Cli/SettingsCommand.php:194
+msgid "This setting has no value in the chosen layer:"
+msgstr "To ustawienie nie ma wartości w wybranej warstwie:"
+
+#: src/php/Cli/SettingsCommand.php:227 src/php/Cli/SettingsCommand.php:327
+msgid "Locked by site configuration:"
+msgstr "Zablokowane przez konfigurację witryny:"
+
+#: src/php/Cli/SettingsCommand.php:276 src/php/Cli/SettingsCommand.php:342
+#: src/php/Cli/SettingsCommand.php:576
+msgid "Nothing to change."
+msgstr "Nic do zmiany."
+
+#: src/php/Cli/SettingsCommand.php:281 build/admin.js:1
+msgid "Import these settings?"
+msgstr "Zaimportować te ustawienia?"
+
+#: src/php/Cli/SettingsCommand.php:285
+msgid "Settings imported."
+msgstr "Zaimportowano ustawienia."
+
+#: src/php/Cli/SettingsCommand.php:300
+msgid "The file option needs a path."
+msgstr "Opcja pliku wymaga ścieżki."
+
+#: src/php/Cli/SettingsCommand.php:309 build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Settings exported."
+msgstr "Ustawienia wyeksportowano."
+
+#: src/php/Cli/SettingsCommand.php:323
+msgid "This path cannot be reset:"
+msgstr "Tej ścieżki nie można zresetować:"
+
+#: src/php/Cli/SettingsCommand.php:347
+msgid "Reset these settings?"
+msgstr "Zresetować te ustawienia?"
+
+#: src/php/Cli/SettingsCommand.php:355
+msgid "Settings reset."
+msgstr "Zresetowano ustawienia."
+
+#: src/php/Cli/SettingsCommand.php:404
+msgid "Invalid setting path:"
+msgstr "Nieprawidłowa ścieżka ustawienia:"
+
+#: src/php/Cli/SettingsCommand.php:410
+msgid "This path cannot be changed:"
+msgstr "Tej ścieżki nie można zmienić:"
+
+#: src/php/Cli/SettingsCommand.php:418
+msgid "This path is a group, not a single setting:"
+msgstr "Ta ścieżka to grupa, a nie pojedyncze ustawienie:"
+
+#: src/php/Cli/SettingsCommand.php:422
+msgid "Did you mean"
+msgstr "Czy chodziło o"
+
+#: src/php/Cli/SettingsCommand.php:424
+msgid "Unknown setting path:"
+msgstr "Nieznana ścieżka ustawienia:"
+
+#: src/php/Cli/SettingsCommand.php:445
+msgid "The value is too large."
+msgstr "Wartość jest za duża."
+
+#: src/php/Cli/SettingsCommand.php:456
+msgid ""
+"This setting holds a list or a map. Pass the value as JSON with --as-json."
+msgstr ""
+"To ustawienie zawiera listę lub mapę. Podaj wartość jako JSON z opcją --as-"
+"json."
+
+#: src/php/Cli/SettingsCommand.php:464
+msgid "The value is not valid JSON, or it is nested too deeply."
+msgstr ""
+"Wartość nie jest prawidłowym JSON-em lub jest zagnieżdżona zbyt głęboko."
+
+#: src/php/Cli/SettingsCommand.php:481
+msgid "Use one of: true, false, 1, 0, on, off, yes, no."
+msgstr "Użyj jednej z wartości: true, false, 1, 0, on, off, yes, no."
+
+#: src/php/Cli/SettingsCommand.php:490
+msgid "The value must be a whole number."
+msgstr "Wartość musi być liczbą całkowitą."
+
+#: src/php/Cli/SettingsCommand.php:496
+msgid "The value must be between"
+msgstr "Wartość musi mieścić się między"
+
+#: src/php/Cli/SettingsCommand.php:496
+msgid "and"
+msgstr "i"
+
+#: src/php/Cli/SettingsCommand.php:504
+msgid "The value must be one of:"
+msgstr "Wartość musi być jedną z:"
+
+#: src/php/Cli/SettingsCommand.php:512
+msgid "The value was cleaned before saving."
+msgstr "Wartość została oczyszczona przed zapisaniem."
+
+#: src/php/Cli/SettingsCommand.php:517
+msgid "The value is not valid for this setting. The closest valid value is:"
+msgstr ""
+"Wartość jest nieprawidłowa dla tego ustawienia. Najbliższa prawidłowa "
+"wartość to:"
+
+#: src/php/Cli/SettingsCommand.php:530
+msgid "The file could not be read or is too large."
+msgstr "Nie udało się odczytać pliku lub jest za duży."
+
+#: src/php/Cli/SettingsCommand.php:536
+msgid "The file must contain a JSON object."
+msgstr "Plik musi zawierać obiekt JSON."
+
+#: src/php/Cli/SettingsCommand.php:559
+msgid "Unknown settings ignored:"
+msgstr "Pominięto nieznane ustawienia:"
+
+#: src/php/Cli/SettingsCommand.php:560
+msgid "Values adjusted by validation:"
+msgstr "Wartości poprawione przez walidację:"
+
+#: src/php/Cli/SettingsCommand.php:561
+msgid "Locked settings skipped:"
+msgstr "Pominięto zablokowane ustawienia:"
+
+#: src/php/Cli/SettingsCommand.php:571
+msgid "Dry run: nothing was saved."
+msgstr "Próba bez zapisu: nic nie zostało zapisane."
+
+#: src/php/Cli/SettingsCommand.php:576 build/admin.js:2
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Settings saved."
+msgstr "Ustawienia zapisano."
+
+#: src/php/Health/Checks.php:99
+msgid "Plugin build files are present"
+msgstr "Pliki wtyczki są na miejscu"
+
+#: src/php/Health/Checks.php:99
+msgid "Every script and stylesheet listed in the build manifest exists."
+msgstr "Każdy skrypt i arkusz stylów z manifestu kompilacji istnieje."
+
+#: src/php/Health/Checks.php:105
+msgid "Plugin build files are missing"
+msgstr "Brakuje plików wtyczki"
+
+#: src/php/Health/Checks.php:106
+msgid "The widget cannot load. Missing:"
+msgstr "Widżet nie może się załadować. Brakuje:"
+
+#: src/php/Health/Checks.php:106
+msgid ""
+"Install kotlinskidev-accessibility.zip from the latest GitHub release, not "
+"\"Source code (zip)\"."
+msgstr ""
+"Zainstaluj kotlinskidev-accessibility.zip z najnowszego wydania na GitHubie, "
+"a nie „Source code (zip)”."
+
+#: src/php/Health/Checks.php:108
+msgid "Open the plugins screen"
+msgstr "Otwórz ekran wtyczek"
+
+#: src/php/Health/Checks.php:115
+msgid "Plugin updates are not managed here"
+msgstr "Aktualizacjami wtyczki nie zarządza się tutaj"
+
+#: src/php/Health/Checks.php:115
+msgid ""
+"The updater is disabled or this is a subsite, so no update source is checked."
+msgstr ""
+"Aktualizator jest wyłączony albo to podwitryna, więc źródło aktualizacji nie "
+"jest sprawdzane."
+
+#: src/php/Health/Checks.php:122
+msgid "The update source is not an https address."
+msgstr "Źródło aktualizacji nie jest adresem https."
+
+#: src/php/Health/Checks.php:128
+msgid "The updater has not checked for updates yet."
+msgstr "Aktualizator jeszcze nie sprawdzał aktualizacji."
+
+#: src/php/Health/Checks.php:130
+msgid "The last update check is older than 48 hours."
+msgstr "Ostatnie sprawdzenie aktualizacji było ponad 48 godzin temu."
+
+#: src/php/Health/Checks.php:133
+msgid "unknown"
+msgstr "nieznane"
+
+#: src/php/Health/Checks.php:136
+msgid "Plugin updates are reachable"
+msgstr "Aktualizacje wtyczki są dostępne"
+
+#: src/php/Health/Checks.php:136 src/php/Health/Checks.php:143
+msgid "Update source host:"
+msgstr "Host źródła aktualizacji:"
+
+#: src/php/Health/Checks.php:142
+msgid "Plugin updates may not work"
+msgstr "Aktualizacje wtyczki mogą nie działać"
+
+#: src/php/Health/Checks.php:145 src/php/Health/Checks.php:257
+msgid "Check for updates"
+msgstr "Sprawdź aktualizacje"
+
+#: src/php/Health/Checks.php:164
+msgid "Open the performance settings"
+msgstr "Otwórz ustawienia wydajności"
+
+#: src/php/Health/Checks.php:171
+msgid "A performance plugin may delay the accessibility widget"
+msgstr "Wtyczka wydajności może opóźniać widżet dostępności"
+
+#: src/php/Health/Checks.php:172
+msgid "Detected without a matching opt-out:"
+msgstr "Wykryto bez odpowiedniego wyłączenia:"
+
+#: src/php/Health/Checks.php:172
+msgid ""
+"Use the compatibility performance preset, or the custom preset with the "
+"matching opt-out."
+msgstr ""
+"Użyj presetu wydajności Zgodność albo presetu własnego z odpowiednim "
+"wyłączeniem."
+
+#: src/php/Health/Checks.php:181
+msgid "Autoptimize may aggregate the accessibility widget scripts"
+msgstr "Autoptimize może łączyć skrypty widżetu dostępności"
+
+#: src/php/Health/Checks.php:182
+msgid ""
+"Exclude kotlinskidev-accessibility scripts from Autoptimize aggregation."
+msgstr "Wyklucz skrypty kotlinskidev-accessibility z łączenia w Autoptimize."
+
+#: src/php/Health/Checks.php:187
+msgid "No performance plugin conflicts found"
+msgstr "Nie znaleziono konfliktów z wtyczkami wydajności"
+
+#: src/php/Health/Checks.php:187
+msgid "No known optimizer is active without a matching opt-out."
+msgstr ""
+"Żaden znany optymalizator nie jest aktywny bez odpowiedniego wyłączenia."
+
+#: src/php/Health/Checks.php:194
+msgid "Page cache and languages are compatible"
+msgstr "Pamięć podręczna stron i języki są zgodne"
+
+#: src/php/Health/Checks.php:194
+msgid ""
+"The site has one language, no page cache, or a cache that listens for plugin "
+"changes."
+msgstr ""
+"Witryna ma jeden język, nie ma pamięci podręcznej stron albo pamięć "
+"podręczna reaguje na zmiany wtyczki."
+
+#: src/php/Health/Checks.php:200
+msgid "Page cache may serve the wrong widget language"
+msgstr "Pamięć podręczna stron może pokazywać widżet w złym języku"
+
+#: src/php/Health/Checks.php:201
+msgid ""
+"Several languages and a page cache were detected, and nothing clears the "
+"cache when the widget changes. Make the cache vary per language and hook "
+"kotlinskidev_a11y_cache_invalidated to purge it."
+msgstr ""
+"Wykryto kilka języków i pamięć podręczną stron, a nic nie czyści pamięci "
+"podręcznej po zmianie widżetu. Ustaw wariant pamięci podręcznej dla każdego "
+"języka i podepnij czyszczenie pod kotlinskidev_a11y_cache_invalidated."
+
+#: src/php/Health/Checks.php:209
+msgid "Settings locks are valid"
+msgstr "Blokady ustawień są prawidłowe"
+
+#: src/php/Health/Checks.php:209
+msgid "Every settings lock passes the schema."
+msgstr "Każda blokada ustawienia zgadza się ze schematem."
+
+#: src/php/Health/Checks.php:221
+msgid "Some settings locks were ignored"
+msgstr "Niektóre blokady ustawień zostały pominięte"
+
+#: src/php/Health/Checks.php:222
+msgid "Invalid locks:"
+msgstr "Nieprawidłowe blokady:"
+
+#: src/php/Health/Checks.php:233
+msgid "Panel data folder is writable"
+msgstr "Folder danych panelu jest zapisywalny"
+
+#: src/php/Health/Checks.php:233
+msgid "Panel data is served as static files."
+msgstr "Dane panelu są serwowane jako pliki statyczne."
+
+#: src/php/Health/Checks.php:239
+msgid "Panel data folder is not writable"
+msgstr "Folder danych panelu nie jest zapisywalny"
+
+#: src/php/Health/Checks.php:240
+msgid ""
+"The uploads folder kotlinskidev-a11y cannot be written, so panel data falls "
+"back to the REST API."
+msgstr ""
+"Do folderu kotlinskidev-a11y w uploads nie można zapisywać, więc dane panelu "
+"są pobierane przez REST API."
+
+#: src/php/Health/Checks.php:248
+msgid "The installed update was verified"
+msgstr "Zainstalowana aktualizacja została zweryfikowana"
+
+#: src/php/Health/Checks.php:248
+msgid "No plugin update was installed without a SHA-256 checksum."
+msgstr ""
+"Żadna aktualizacja wtyczki nie została zainstalowana bez sumy kontrolnej "
+"SHA-256."
+
+#: src/php/Health/Checks.php:254
+msgid "A plugin update was installed without a checksum"
+msgstr "Aktualizacja wtyczki została zainstalowana bez sumy kontrolnej"
+
+#: src/php/Health/Checks.php:255
+msgid ""
+"The last update came from a release that publishes no SHA-256 checksum, so "
+"its integrity was not checked. Install the latest release to restore "
+"verified updates."
+msgstr ""
+"Ostatnia aktualizacja pochodzi z wydania bez sumy kontrolnej SHA-256, więc "
+"nie sprawdzono jej integralności. Zainstaluj najnowsze wydanie, aby "
+"przywrócić weryfikowane aktualizacje."
+
+#: src/php/Health/SiteHealth.php:76
+msgid "PHP version"
+msgstr "Wersja PHP"
+
+#: src/php/Health/SiteHealth.php:77
+msgid "WordPress version"
+msgstr "Wersja WordPressa"
+
+#: src/php/Health/SiteHealth.php:78
+msgid "Settings schema version"
+msgstr "Wersja schematu ustawień"
+
+#: src/php/Health/SiteHealth.php:79
+msgid "Updater enabled"
+msgstr "Aktualizator włączony"
+
+#: src/php/Health/SiteHealth.php:80
+msgid "Update source host"
+msgstr "Host źródła aktualizacji"
+
+#: src/php/Health/SiteHealth.php:81
+msgid "Update token set"
+msgstr "Token aktualizacji ustawiony"
+
+#: src/php/Health/SiteHealth.php:82
+msgid "Network defaults active"
+msgstr "Ustawienia domyślne sieci aktywne"
+
+#: src/php/Health/SiteHealth.php:83 build/admin.js:2
+msgid "Locked settings"
+msgstr "Zablokowane ustawienia"
+
+#: src/php/Health/SiteHealth.php:83
+msgid "none"
+msgstr "brak"
+
+#: src/php/Health/SiteHealth.php:84
+msgid "Loading strategy"
+msgstr "Strategia ładowania"
+
+#: src/php/Health/SiteHealth.php:85
+msgid "Page CSS"
+msgstr "CSS strony"
+
+#: src/php/Health/SiteHealth.php:86 build/admin.js:1
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Storage mode"
+msgstr "Sposób zapisu"
+
+#: src/php/Health/SiteHealth.php:87
+msgid "Keep data on uninstall"
+msgstr "Zachowaj dane po usunięciu"
+
+#: src/php/Health/SiteHealth.php:93
+msgid "Accessibility widget build files"
+msgstr "Widżet dostępności: pliki wtyczki"
+
+#: src/php/Health/SiteHealth.php:94
+msgid "Accessibility widget update source"
+msgstr "Widżet dostępności: źródło aktualizacji"
+
+#: src/php/Health/SiteHealth.php:95
+msgid "Accessibility widget and performance plugins"
+msgstr "Widżet dostępności i wtyczki wydajności"
+
+#: src/php/Health/SiteHealth.php:96
+msgid "Accessibility widget and page cache languages"
+msgstr "Widżet dostępności i języki pamięci podręcznej stron"
+
+#: src/php/Health/SiteHealth.php:97
+msgid "Accessibility widget settings locks"
+msgstr "Widżet dostępności: blokady ustawień"
+
+#: src/php/Health/SiteHealth.php:98
+msgid "Accessibility widget panel data folder"
+msgstr "Widżet dostępności: folder danych panelu"
+
+#: src/php/Health/SiteHealth.php:124
+msgid "yes"
+msgstr "tak"
+
+#: src/php/Health/SiteHealth.php:124
+msgid "no"
+msgstr "nie"
+
+#: src/php/I18n/Strings.php:144
 msgid "Accessibility tools could not load. Select the button to try again."
 msgstr ""
 "Nie udało się załadować narzędzi dostępności. Wybierz przycisk, aby "
 "spróbować ponownie."
 
-#: src/php/I18n/Strings.php:124
+#: src/php/I18n/Strings.php:152
 msgid "Close accessibility settings"
 msgstr "Zamknij ustawienia dostępności"
 
-#: src/php/I18n/Strings.php:126
+#: src/php/I18n/Strings.php:154
 msgid "Reset accessibility settings"
 msgstr "Zresetuj ustawienia dostępności"
 
-#: src/php/I18n/Strings.php:128
+#: src/php/I18n/Strings.php:156
 msgid "Hide accessibility toolbar"
 msgstr "Ukryj pasek dostępności"
 
-#: src/php/I18n/Strings.php:129
+#: src/php/I18n/Strings.php:157
 msgid "Show accessibility toolbar"
 msgstr "Pokaż pasek dostępności"
 
-#: src/php/I18n/Strings.php:146 build/admin.js:1
+#: src/php/I18n/Strings.php:174 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Default"
 msgstr "Domyślnie"
 
-#: src/php/I18n/Strings.php:147
+#. translators: %s: name of the setting being adjusted.
+#: src/php/I18n/Strings.php:176
 #, php-format
 msgid "Decrease %s"
 msgstr "Zmniejsz: %s"
 
-#: src/php/I18n/Strings.php:148
+#. translators: %s: name of the setting being adjusted.
+#: src/php/I18n/Strings.php:178
 #, php-format
 msgid "Increase %s"
 msgstr "Zwiększ: %s"
 
-#: src/php/I18n/Strings.php:149
+#: src/php/I18n/Strings.php:179
 msgid "Language"
 msgstr "Język"
 
-#: src/php/I18n/Strings.php:150
+#: src/php/I18n/Strings.php:180
 msgid "Choose…"
 msgstr "Wybierz…"
 
-#: src/php/I18n/Strings.php:151
+#: src/php/I18n/Strings.php:181
 msgid "All adjustments were reset."
 msgstr "Wszystkie ustawienia zostały zresetowane."
 
-#: src/php/I18n/Strings.php:152 build/admin.js:1
+#: src/php/I18n/Strings.php:182 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset settings"
 msgstr "Zresetuj ustawienia"
+
+#: src/php/Privacy/PolicyText.php:24
+msgid ""
+"The accessibility widget does not track visitors, run analytics or build "
+"profiles. It does not collect personal data and it makes no requests to "
+"external services from the visitor's browser."
+msgstr ""
+"Widżet dostępności nie śledzi odwiedzających, nie prowadzi analityki ani nie "
+"tworzy profili. Nie zbiera danych osobowych i nie wysyła żądań do "
+"zewnętrznych usług z przeglądarki odwiedzającego."
+
+#: src/php/Privacy/PolicyText.php:25
+msgid ""
+"Suggested text for a cookie or consent policy: the widget saves a visitor's "
+"explicit accessibility choices on the visitor's own device so they apply on "
+"the next visit. This storage is strictly necessary to honour that choice. "
+"Nothing is sent to the site or to third parties. When the storage mode is "
+"set to none, nothing is stored."
+msgstr ""
+"Propozycja tekstu do polityki cookies lub zgód: widżet zapisuje jawne wybory "
+"dotyczące dostępności na urządzeniu odwiedzającego, aby obowiązywały podczas "
+"kolejnej wizyty. To przechowywanie jest ściśle niezbędne do uwzględnienia "
+"tego wyboru. Nic nie jest wysyłane do witryny ani do podmiotów trzecich. Gdy "
+"tryb przechowywania jest ustawiony na brak, nic nie jest zapisywane."
+
+#: src/php/Privacy/PolicyText.php:29
+msgid ""
+"Local storage key \"ka11y\" (the key name can be changed in the settings): "
+"the chosen accessibility options, or a first-party cookie with the same name "
+"and the configured lifetime when the cookie mode is on."
+msgstr ""
+"Klucz localStorage „ka11y” (nazwę klucza można zmienić w ustawieniach): "
+"wybrane opcje dostępności albo własne ciasteczko o tej samej nazwie i "
+"skonfigurowanym czasie życia, gdy włączony jest tryb ciasteczek."
+
+#: src/php/Privacy/PolicyText.php:30
+msgid ""
+"Local storage key \"ka11y-locale\": the interface language the visitor "
+"picked in the widget."
+msgstr ""
+"Klucz localStorage „ka11y-locale”: język interfejsu wybrany przez "
+"odwiedzającego w widżecie."
+
+#: src/php/Privacy/PolicyText.php:31
+msgid ""
+"Local storage key \"ka11y-hidden\": the choice to hide the floating toolbar."
+msgstr ""
+"Klucz localStorage „ka11y-hidden”: wybór ukrycia pływającego paska narzędzi."
+
+#: src/php/Privacy/PolicyText.php:35
+msgid "The settings are stored in the site database as one option."
+msgstr "Ustawienia są zapisane w bazie danych witryny jako jedna opcja."
+
+#: src/php/Privacy/PolicyText.php:36
+msgid ""
+"Generated panel data files are stored in the uploads folder \"kotlinskidev-"
+"a11y\". They contain interface texts and no visitor data."
+msgstr ""
+"Wygenerowane pliki danych panelu są zapisywane w folderze uploads "
+"„kotlinskidev-a11y”. Zawierają teksty interfejsu i nie zawierają danych "
+"odwiedzających."
+
+#: src/php/Privacy/PolicyText.php:37
+msgid ""
+"For administrators only, the server checks GitHub for plugin updates. These "
+"requests come from the server, contain no visitor data and carry the site "
+"address in the standard WordPress user agent."
+msgstr ""
+"Tylko dla administratorów serwer sprawdza w serwisie GitHub dostępność "
+"aktualizacji wtyczki. Te żądania pochodzą z serwera, nie zawierają danych "
+"odwiedzających i przekazują adres witryny w standardowym agencie użytkownika "
+"WordPressa."
+
+#: src/php/Privacy/PolicyText.php:41
+msgid "What the widget stores in the visitor's browser"
+msgstr "Co widżet zapisuje w przeglądarce odwiedzającego"
+
+#: src/php/Privacy/PolicyText.php:43
+msgid "What the plugin stores in the site"
+msgstr "Co wtyczka zapisuje w witrynie"
 
 #: src/php/requirements.php:28
 msgid ""
@@ -725,9 +1367,200 @@ msgstr ""
 "wtyczki. Usuń ją, a następnie zainstaluj kotlinskidev-accessibility.zip z "
 "najnowszego wydania na GitHubie, a nie „Source code (zip)”."
 
+#: src/php/Rest/NetworkSettingsController.php:255
+#: src/php/Rest/SettingsController.php:333
+msgid "The request body is too large."
+msgstr "Treść żądania jest za duża."
+
+#: src/php/Rest/NetworkSettingsController.php:263
+#: src/php/Rest/SettingsController.php:341
+msgid "The paths must be a list of known setting paths."
+msgstr "Ścieżki muszą być listą znanych ścieżek ustawień."
+
 #: src/php/Rest/PanelDataController.php:63
 msgid "Unknown locale."
 msgstr "Nieznany język."
+
+#: src/php/Rest/SettingsController.php:124 src/php/Settings/Importer.php:53
+msgid "Some of these settings are locked by site configuration."
+msgstr "Niektóre z tych ustawień są zablokowane przez konfigurację witryny."
+
+#: src/php/Rest/SettingsController.php:236
+msgid "You are not allowed to change some of these settings."
+msgstr "Nie masz uprawnień do zmiany niektórych z tych ustawień."
+
+#: src/php/Rest/UpdateController.php:70
+msgid "You are not allowed to manage updates."
+msgstr "Nie masz uprawnień do zarządzania aktualizacjami."
+
+#: src/php/Rest/UpdateController.php:76
+msgid "The security token is missing or expired."
+msgstr "Token zabezpieczający jest nieobecny lub wygasł."
+
+#: src/php/Rest/UpdateController.php:90
+msgid "Unknown update channel."
+msgstr "Nieznany kanał aktualizacji."
+
+#: src/php/Rest/UpdateController.php:94
+msgid "The update channel is set in wp-config.php."
+msgstr "Kanał aktualizacji jest ustawiony w wp-config.php."
+
+#: src/php/Settings/Importer.php:134 src/php/Settings/NetworkSettings.php:251
+msgid ""
+"This file was made by a newer version of the plugin. Update the plugin first."
+msgstr ""
+"Ten plik został utworzony przez nowszą wersję wtyczki. Najpierw zaktualizuj "
+"wtyczkę."
+
+#: src/php/Settings/Importer.php:142 src/php/Settings/NetworkSettings.php:259
+msgid "This file belongs to a different settings scope."
+msgstr "Ten plik należy do innego zakresu ustawień."
+
+#: src/php/Settings/Repository.php:395
+msgid "A settings lock was ignored:"
+msgstr "Pominięto blokadę ustawienia:"
+
+#: src/php/Update/PackageVerifier.php:55
+msgid ""
+"The release is not served from a trusted HTTPS location, so its SHA-256 "
+"checksum cannot be checked."
+msgstr ""
+"Wydanie nie jest serwowane z zaufanej lokalizacji HTTPS, więc nie można "
+"sprawdzić jego sumy kontrolnej SHA-256."
+
+#: src/php/Update/PackageVerifier.php:61
+msgid ""
+"This release has no SHA-256 checksum file, so it cannot be installed safely."
+msgstr ""
+"To wydanie nie ma pliku sumy kontrolnej SHA-256, więc nie można go "
+"bezpiecznie zainstalować."
+
+#: src/php/Update/PackageVerifier.php:75
+msgid ""
+"The downloaded package does not match its SHA-256 checksum and was discarded."
+msgstr ""
+"Pobrany pakiet nie zgadza się ze swoją sumą kontrolną SHA-256 i został "
+"odrzucony."
+
+#: src/php/Update/Rollback.php:103
+msgid "The rollback did not complete."
+msgstr "Przywracanie poprzedniej wersji nie zostało ukończone."
+
+#: src/php/Update/Rollback.php:192
+msgid "Could not reach GitHub to list releases."
+msgstr "Nie udało się połączyć z GitHubem, aby pobrać listę wydań."
+
+#: src/php/Update/Rollback.php:198
+msgid "GitHub returned no release list."
+msgstr "GitHub nie zwrócił listy wydań."
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: build/admin.js:1
+msgid "(empty)"
+msgstr "(puste)"
+
+#: build/admin.js:1
+msgid "(none)"
+msgstr "(brak)"
+
+#: build/admin.js:1
+msgid "Adjusted to a valid value: %s."
+msgstr "Poprawiono do prawidłowej wartości: %s."
+
+#: build/admin.js:1
+msgid "Locked by site configuration and left unchanged: %s."
+msgstr "Zablokowane przez konfigurację witryny i pozostawione bez zmian: %s."
+
+#: build/admin.js:1
+msgid "Ignored unknown settings: %s."
+msgstr "Pominięto nieznane ustawienia: %s."
+
+#: build/admin.js:1
+msgid "%d change"
+msgid_plural "%d changes"
+msgstr[0] "%d zmiana"
+msgstr[1] "%d zmiany"
+msgstr[2] "%d zmian"
+
+#: build/admin.js:1
+msgid "Setting"
+msgstr "Ustawienie"
+
+#: build/admin.js:1
+msgid "Current"
+msgstr "Obecnie"
+
+#: build/admin.js:1
+msgid "New"
+msgstr "Nowa wartość"
+
+#: build/admin.js:1
+msgid "Changes"
+msgstr "Zmiany"
+
+#: build/admin.js:1
+msgid "%d more change is not shown."
+msgid_plural "%d more changes are not shown."
+msgstr[0] "Nie pokazano jeszcze %d zmiany."
+msgstr[1] "Nie pokazano jeszcze %d zmian."
+msgstr[2] "Nie pokazano jeszcze %d zmian."
+
+#: build/admin.js:1
+msgid "Locked settings: %s."
+msgstr "Zablokowane ustawienia: %s."
+
+#: build/admin.js:1
+msgid "Locked by site configuration"
+msgstr "Zablokowane przez konfigurację witryny"
+
+#: build/admin.js:1
+msgid "You have %d unsaved change."
+msgid_plural "You have %d unsaved changes."
+msgstr[0] "Masz %d niezapisaną zmianę."
+msgstr[1] "Masz %d niezapisane zmiany."
+msgstr[2] "Masz %d niezapisanych zmian."
+
+#: build/admin.js:1
+msgid "Your %d unsaved change will be lost."
+msgid_plural "Your %d unsaved changes will be lost."
+msgstr[0] "Twoja %d niezapisana zmiana zostanie utracona."
+msgstr[1] "Twoje %d niezapisane zmiany zostaną utracone."
+msgstr[2] "Twoje %d niezapisanych zmian zostanie utraconych."
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "You have unsaved changes."
+msgstr "Masz niezapisane zmiany."
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Reset failed."
+msgstr "Resetowanie nie powiodło się."
+
+#: build/admin.js:1
+msgid "Reset the %s tab"
+msgstr "Zresetuj kartę %s"
+
+#: build/admin.js:1
+msgid "Reset the %s tab?"
+msgstr "Zresetować kartę %s?"
+
+#: build/admin.js:1
+msgid "This restores the settings on this tab to their default values."
+msgstr "To przywraca domyślne wartości ustawień na tej karcie."
+
+#: build/admin.js:1
+msgid "Reset tab"
+msgstr "Zresetuj kartę"
+
+#: build/admin.js:1
+msgid "The %s tab already uses its default values."
+msgstr "Karta %s używa już wartości domyślnych."
+
+#: build/admin.js:1
+msgid "The %s tab was reset to its defaults."
+msgstr "Karta %s została zresetowana do wartości domyślnych."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Desktop"
@@ -777,11 +1610,13 @@ msgstr "Duży"
 msgid "Automatic"
 msgstr "Automatyczny"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:1 build/admin.js:2
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Light"
 msgstr "Jasny"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:1 build/admin.js:2
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Dark"
 msgstr "Ciemny"
 
@@ -917,7 +1752,7 @@ msgstr "Zastosuj profil"
 msgid "HTML"
 msgstr "HTML"
 
-#: build/admin.js:1
+#: build/admin.js:1 build/admin.js:2
 msgid "Link"
 msgstr "Link"
 
@@ -1202,10 +2037,6 @@ msgstr ""
 "zapamiętuj wyborów”, aby niczego nie zapisywać."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Storage mode"
-msgstr "Sposób zapisu"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Remember for (days)"
 msgstr "Zapamiętaj na (dni)"
 
@@ -1301,7 +2132,8 @@ msgstr "Użyj ikony domyślnej"
 msgid "Widget position per device"
 msgstr "Pozycja widżetu na poszczególnych urządzeniach"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:1 build/admin.js:2
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Device"
 msgstr "Urządzenie"
 
@@ -1338,10 +2170,6 @@ msgid "Show a border around the icon"
 msgstr "Pokaż obramowanie wokół ikony"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Cancel"
-msgstr "Anuluj"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The file could not be read."
 msgstr "Nie udało się odczytać pliku."
 
@@ -1353,21 +2181,37 @@ msgstr "Plik nie zawiera poprawnego formatu JSON."
 msgid "The file must contain a settings object."
 msgstr "Plik musi zawierać obiekt ustawień."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Settings exported."
-msgstr "Ustawienia wyeksportowano."
+#: build/admin.js:1
+msgid "Importing this file changes these settings."
+msgstr "Import tego pliku zmieni te ustawienia."
+
+#: build/admin.js:1
+msgid ""
+"This file was exported from version %1$s (settings format %2$d). Importing "
+"it changes these settings."
+msgstr ""
+"Ten plik wyeksportowano z wersji %1$s (format ustawień %2$d). Import zmieni "
+"te ustawienia."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Export failed."
 msgstr "Eksport nie powiódł się."
 
+#: build/admin.js:1
+msgid "This file matches the current settings. Nothing to import."
+msgstr "Ten plik odpowiada obecnym ustawieniom. Nie ma nic do zaimportowania."
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Choose a JSON file to import first."
-msgstr "Najpierw wybierz plik JSON do zaimportowania."
+msgid "Import settings"
+msgstr "Importuj ustawienia"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings imported and saved."
 msgstr "Ustawienia zaimportowano i zapisano."
+
+#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Choose a JSON file to import first."
+msgstr "Najpierw wybierz plik JSON do zaimportowania."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import failed."
@@ -1383,13 +2227,13 @@ msgstr ""
 "Przywróci to domyślne wartości wszystkich ustawień. Tej operacji nie można "
 "cofnąć."
 
+#: build/admin.js:1
+msgid "Every setting already uses its default value."
+msgstr "Każde ustawienie ma już wartość domyślną."
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings reset to defaults."
 msgstr "Przywrócono domyślne ustawienia."
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Reset failed."
-msgstr "Resetowanie nie powiodło się."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Export"
@@ -1407,18 +2251,14 @@ msgstr "Pobierz ustawienia"
 msgid "Import"
 msgstr "Import"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Upload a settings file. It replaces the saved settings immediately."
-msgstr ""
-"Prześlij plik z ustawieniami. Natychmiast zastąpi on zapisane ustawienia."
+#: build/admin.js:1
+msgid ""
+"Upload a settings file. You review the changes before anything is saved."
+msgstr "Wgraj plik ustawień. Zmiany obejrzysz przed zapisaniem."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings file"
 msgstr "Plik ustawień"
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Import settings"
-msgstr "Importuj ustawienia"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset"
@@ -1432,11 +2272,117 @@ msgstr "Przywróć domyślne wartości wszystkich ustawień."
 msgid "Reset to defaults"
 msgstr "Przywróć domyślne"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:1
+msgid ""
+"One setting path per line, for example storage.mode. Each listed setting is "
+"fixed to the value set here on every site and cannot be changed by site "
+"administrators."
+msgstr ""
+"Jedna ścieżka ustawienia w wierszu, na przykład storage.mode. Każde z "
+"wymienionych ustawień jest ustalone na wartość podaną tutaj we wszystkich "
+"witrynach i administratorzy witryn nie mogą go zmienić."
+
+#: build/admin.js:2
+msgid "These paths are not lockable settings: %s."
+msgstr "Te ścieżki nie są ustawieniami, które można zablokować: %s."
+
+#: build/admin.js:2
+msgid "Locked on all sites"
+msgstr "Zablokowane we wszystkich witrynach"
+
+#: build/admin.js:2
+msgid "Uninstall"
+msgstr "Odinstalowanie"
+
+#: build/admin.js:2
+msgid ""
+"Choose what happens to your settings when the plugin is deleted from the "
+"Plugins screen."
+msgstr ""
+"Wybierz, co stanie się z Twoimi ustawieniami po usunięciu wtyczki z ekranu "
+"Wtyczki."
+
+#: build/admin.js:2
+msgid "Keep my settings when the plugin is deleted"
+msgstr "Zachowaj moje ustawienia po usunięciu wtyczki"
+
+#: build/admin.js:2
+msgid "When off, deleting the plugin also deletes its settings."
+msgstr "Gdy wyłączone, usunięcie wtyczki usuwa też jej ustawienia."
+
+#: build/admin.js:2
+msgid "Stable"
+msgstr "Stabilny"
+
+#: build/admin.js:2
+msgid "Beta (includes pre-releases)"
+msgstr "Beta (zawiera wersje wstępne)"
+
+#: build/admin.js:2
+msgid "Roll back to %s (pre-release)"
+msgstr "Przywróć wersję %s (wstępna)"
+
+#: build/admin.js:2
+msgid "Roll back to %s"
+msgstr "Przywróć wersję %s"
+
+#: build/admin.js:2
+msgid "No older versions are available for rollback."
+msgstr "Brak starszych wersji do przywrócenia."
+
+#: build/admin.js:2
+msgid ""
+"Roll back installs an older release after checking its SHA-256 checksum. "
+"Your settings are backed up first and stay."
+msgstr ""
+"Przywrócenie instaluje starsze wydanie po sprawdzeniu jego sumy kontrolnej "
+"SHA-256. Najpierw tworzona jest kopia Twoich ustawień, a ustawienia zostają."
+
+#: build/admin.js:2
+msgid "Locked by site configuration."
+msgstr "Zablokowane przez konfigurację witryny."
+
+#: build/admin.js:2
+msgid ""
+"Beta releases are tested but may change. Switching back to Stable waits for "
+"the next stable release."
+msgstr ""
+"Wydania beta są testowane, ale mogą się zmieniać. Powrót do kanału Stabilny "
+"czeka na następne stabilne wydanie."
+
+#: build/admin.js:2
+msgid "Updates are turned off by site configuration."
+msgstr "Aktualizacje są wyłączone przez konfigurację witryny."
+
+#: build/admin.js:2
+msgid "Show older versions"
+msgstr "Pokaż starsze wersje"
+
+#: build/admin.js:2
+msgid "Could not load older versions."
+msgstr "Nie udało się wczytać starszych wersji."
+
+#: build/admin.js:2
+msgid "Update channel saved."
+msgstr "Zapisano kanał aktualizacji."
+
+#: build/admin.js:2
+msgid "Could not save the update channel."
+msgstr "Nie udało się zapisać kanału aktualizacji."
+
+#: build/admin.js:2
+msgid "Updates"
+msgstr "Aktualizacje"
+
+#: build/admin.js:2
+msgid "Update channel"
+msgstr "Kanał aktualizacji"
+
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Filter labels"
 msgstr "Filtruj etykiety"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid ""
 "Override any widget text per language. Empty fields use the default text "
 "shown as a placeholder."
@@ -1444,51 +2390,51 @@ msgstr ""
 "Zastąp dowolny tekst widżetu osobno dla każdego języka. Puste pola używają "
 "tekstu domyślnego widocznego jako podpowiedź."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Widget labels"
 msgstr "Etykiety widżetu"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement page ID"
 msgstr "ID strony z deklaracją"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use 0 to link to the address below instead."
 msgstr "Wpisz 0, aby zamiast tego użyć adresu poniżej."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement address"
 msgstr "Adres deklaracji"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Statement content"
 msgstr "Treść deklaracji"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Cost per page"
 msgstr "Koszt na stronę"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Downloaded on every page: "
 msgstr "Pobierane na każdej stronie: "
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Downloaded when a visitor opens the widget: "
 msgstr "Pobierane, gdy odwiedzający otworzy widżet: "
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Compressed sizes, estimated from the current settings."
 msgstr "Rozmiary po kompresji, oszacowane na podstawie bieżących ustawień."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Preset"
 msgstr "Profil"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Performance preset"
 msgstr "Profil wydajności"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Recommended loads the least JavaScript. Compatibility loads everything at "
 "once for sites whose optimizers break on-demand loading. Custom lets you set "
@@ -1498,63 +2444,63 @@ msgstr ""
 "witryn, na których optymalizatory psują ładowanie na żądanie. Własny pozwala "
 "ustawić każdą opcję osobno."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Loading"
 msgstr "Ładowanie"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Script loading"
 msgstr "Ładowanie skryptu"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Script position"
 msgstr "Położenie skryptu"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Fetch priority"
 msgstr "Priorytet pobierania"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Prefetch the panel"
 msgstr "Wstępnie pobieraj panel"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Styles"
 msgstr "Style"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Page adjustment styles"
 msgstr "Style dostosowań strony"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Devices"
 msgstr "Urządzenia"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Skip downloads on devices where the widget is hidden"
 msgstr "Pomijaj pobieranie na urządzeniach, na których widżet jest ukryty"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Optimizers"
 msgstr "Optymalizatory"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Exclude the widget scripts from"
 msgstr "Wyklucz skrypty widżetu z"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Profiles switch on a ready-made set of adjustments with one click."
 msgstr "Profile jednym kliknięciem włączają gotowy zestaw dostosowań."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Offer the %s profile"
 msgstr "Udostępnij profil: %s"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Adjustments in the %s profile"
 msgstr "Dostosowania w profilu: %s"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "No accessibility trigger was found on the home page. Visitors can open the "
 "panel only with the keyboard shortcut."
@@ -1562,7 +2508,7 @@ msgstr ""
 "Na stronie głównej nie znaleziono wyzwalacza dostępności. Odwiedzający mogą "
 "otworzyć panel tylko skrótem klawiszowym."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "No accessibility trigger was found on the home page, and the keyboard "
 "shortcut is off. Visitors cannot open the panel."
@@ -1570,19 +2516,19 @@ msgstr ""
 "Na stronie głównej nie znaleziono wyzwalacza dostępności, a skrót klawiszowy "
 "jest wyłączony. Odwiedzający nie mogą otworzyć panelu."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "The home page could not be checked."
 msgstr "Nie udało się sprawdzić strony głównej."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Dismiss this notice"
 msgstr "Zamknij to powiadomienie"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Mount selector"
 msgstr "Selektor miejsca osadzenia"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "The launcher moves into the first element matching this selector. If none "
 "matches, it falls back to the floating button. Reserve about 48 px of height "
@@ -1593,15 +2539,15 @@ msgstr ""
 "Zarezerwuj około 48 px wysokości w tym miejscu, aby uniknąć przesunięcia "
 "układu."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Launcher"
 msgstr "Przycisk wywołujący"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Launcher mode"
 msgstr "Tryb przycisku wywołującego"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Floating keeps the button fixed in the corner. Inside a page element places "
 "it in the mount below. With no launcher button the panel opens only from "
@@ -1611,19 +2557,19 @@ msgstr ""
 "umieszcza go w miejscu osadzenia poniżej. Bez przycisku wywołującego panel "
 "otwiera się tylko z własnych wyzwalaczy lub skrótem klawiszowym."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%s is not a valid selector."
 msgstr "%s nie jest prawidłowym selektorem."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%s is too broad and will not be saved."
 msgstr "%s jest zbyt ogólny i nie zostanie zapisany."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%s is longer than 200 characters and will not be saved."
 msgstr "%s ma ponad 200 znaków i nie zostanie zapisany."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Only the first selectors that fit in %1$d entries and %2$d characters in "
 "total will be saved."
@@ -1631,15 +2577,15 @@ msgstr ""
 "Zapisane zostaną tylko pierwsze selektory mieszczące się w %1$d pozycjach i "
 "%2$d znakach łącznie."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Custom selectors"
 msgstr "Własne selektory"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Elements that toggle the panel"
 msgstr "Elementy przełączające panel"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Clicking an element matching one of these CSS selectors opens or closes the "
 "panel. Up to %1$d selectors, %2$d characters in total."
@@ -1647,11 +2593,11 @@ msgstr ""
 "Kliknięcie elementu pasującego do jednego z tych selektorów CSS otwiera lub "
 "zamyka panel. Do %1$d selektorów, łącznie %2$d znaków."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "URL actions"
 msgstr "Akcje z adresu URL"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Links such as ?ka11y=profile:key or #ka11y/feature:key can apply these "
 "actions. URL actions are never saved by themselves and cannot enable "
@@ -1661,51 +2607,51 @@ msgstr ""
 "akcje. Akcje z adresu URL nie są same zapisywane i nie włączą wyłączonych "
 "funkcji. Odznacz wszystkie, aby je wyłączyć."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Allowed URL actions"
 msgstr "Dozwolone akcje z adresu URL"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Feature: %s"
 msgstr "Funkcja: %s"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Profile: %s"
 msgstr "Profil: %s"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Level"
 msgstr "Poziom"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Toggle on and off"
 msgstr "Przełącznik włącz/wyłącz"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Button"
 msgstr "Przycisk"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Copy"
 msgstr "Kopiuj"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%s copied."
 msgstr "Skopiowano: %s."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%s could not be copied."
 msgstr "Nie udało się skopiować: %s."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Copy %s"
 msgstr "Kopiuj: %s"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Snippet generator"
 msgstr "Generator fragmentów kodu"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Build a trigger for any button, link, template or menu item. Copy the output "
 "that fits where you place it."
@@ -1713,35 +2659,35 @@ msgstr ""
 "Utwórz wyzwalacz dla dowolnego przycisku, linku, szablonu lub pozycji menu. "
 "Skopiuj wynik pasujący do miejsca, w którym go umieścisz."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Action"
 msgstr "Akcja"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Label"
 msgstr "Etykieta"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Leave empty to use the default label for the action."
 msgstr "Zostaw puste, aby użyć domyślnej etykiety akcji."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Element"
 msgstr "Element"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Extra class"
 msgstr "Dodatkowa klasa"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Space separated class names, for example button is-style-outline."
 msgstr "Nazwy klas oddzielone spacjami, na przykład button is-style-outline."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Preview"
 msgstr "Podgląd"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Use __guest for logged-out visitors. Role rules are skipped on cached pages, "
 "so a page cache can show the widget to the wrong audience."
@@ -1750,7 +2696,7 @@ msgstr ""
 "stronach w pamięci podręcznej, więc pamięć podręczna stron może pokazać "
 "widżet niewłaściwym odbiorcom."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Template slugs such as single, page or front-page, or a page template file "
 "such as templates/full-width.php."
@@ -1758,157 +2704,180 @@ msgstr ""
 "Slugi szablonów, takie jak single, page lub front-page, albo plik szablonu "
 "strony, na przykład templates/full-width.php."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Post and page IDs"
 msgstr "ID wpisów i stron"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Post types"
 msgstr "Typy treści"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Templates"
 msgstr "Szablony"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "User roles"
 msgstr "Role użytkowników"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "URL patterns"
 msgstr "Wzorce adresów URL"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Use * as a wildcard, for example /checkout/*."
 msgstr "Użyj * jako symbolu wieloznacznego, na przykład /checkout/*."
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Show the widget"
 msgstr "Pokaż widżet"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Only on"
 msgstr "Tylko na"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Except on"
 msgstr "Poza"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Show the widget on"
 msgstr "Pokaż widżet na"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Visible"
 msgstr "Widoczny"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Breakpoints"
 msgstr "Punkty graniczne"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Largest tablet width (px)"
 msgstr "Maksymalna szerokość tabletu (px)"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Screens up to this width count as tablet."
 msgstr "Ekrany do tej szerokości są traktowane jako tablet."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Largest mobile width (px)"
 msgstr "Maksymalna szerokość telefonu (px)"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Screens up to this width count as mobile."
 msgstr "Ekrany do tej szerokości są traktowane jako telefon."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "General"
 msgstr "Ogólne"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Features"
 msgstr "Funkcje"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Profiles"
 msgstr "Profile"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Visibility"
 msgstr "Widoczność"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Appearance"
 msgstr "Wygląd"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Languages"
 msgstr "Języki"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Behavior"
 msgstr "Zachowanie"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Triggers"
 msgstr "Wyzwalacze"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "Performance"
 msgstr "Wydajność"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2
+msgid "Maintenance"
+msgstr "Konserwacja"
+
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Import / Export"
 msgstr "Import / Eksport"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Accessibility settings sections"
 msgstr "Sekcje ustawień dostępności"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "The widget is hidden on this device."
 msgstr "Widżet jest ukryty na tym urządzeniu."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Live preview"
 msgstr "Podgląd na żywo"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Preview device"
 msgstr "Urządzenie podglądu"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2
+msgid "No settings found."
+msgstr "Nie znaleziono ustawień."
+
+#: build/admin.js:2
+msgid "%d setting found."
+msgid_plural "%d settings found."
+msgstr[0] "Znaleziono %d ustawienie."
+msgstr[1] "Znaleziono %d ustawienia."
+msgstr[2] "Znaleziono %d ustawień."
+
+#: build/admin.js:2
+msgid "Search results"
+msgstr "Wyniki wyszukiwania"
+
+#: build/admin.js:2
+msgid "Search settings"
+msgstr "Szukaj w ustawieniach"
+
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Save changes"
 msgstr "Zapisz zmiany"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "You have unsaved changes."
-msgstr "Masz niezapisane zmiany."
-
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Settings saved."
-msgstr "Ustawienia zapisano."
-
-#: build/admin.js:1
+#: build/admin.js:2
 msgid "%1$s on %2$s"
 msgstr "%1$s na tle: %2$s"
 
-#: build/admin.js:1
+#: build/admin.js:2
 msgid ""
 "Settings saved, but these color pairs are below the minimum contrast: %s."
 msgstr ""
 "Ustawienia zapisane, ale te pary kolorów mają kontrast poniżej minimum: %s."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings could not be saved."
 msgstr "Nie udało się zapisać ustawień."
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2
+msgid "Save these changes?"
+msgstr "Zapisać te zmiany?"
+
+#: build/admin.js:2
+msgid "These settings will change on your site."
+msgstr "Te ustawienia zmienią się w Twojej witrynie."
+
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Loading settings"
 msgstr "Wczytywanie ustawień"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
+#: build/admin.js:2 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Settings could not be loaded."
 msgstr "Nie udało się wczytać ustawień."
 
@@ -1926,6 +2895,11 @@ msgstr "Zapisano tekst alternatywny dla: %s."
 #: dist/stage/kotlinskidev-accessibility/build/alt-text.js:1
 msgid "Alt text could not be saved."
 msgstr "Nie udało się zapisać tekstu alternatywnego."
+
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Upload a settings file. It replaces the saved settings immediately."
+msgstr ""
+"Prześlij plik z ustawieniami. Natychmiast zastąpi on zapisane ustawienia."
 
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Exclusions"
