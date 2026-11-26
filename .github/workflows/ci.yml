@@ -47,6 +47,7 @@ jobs:
           restore-keys: composer-${{ matrix.php }}-
       - run: composer install --no-interaction --prefer-dist
       - run: composer audit
+      - run: find src kotlinskidev-accessibility.php uninstall.php -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
       - run: vendor/bin/phpcs --standard=phpcs.xml.dist
       - run: composer test:unit
 

@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { basename, resolve } from 'node:path';
 import { tryWpCli, wpCli } from './wp-cli';
 
 const ROOT = resolve(__dirname, '..', '..', '..');
@@ -8,7 +8,7 @@ const RELEASES_DIR = resolve(ROOT, 'tests', '.releases');
 const CONTAINER_PLUGINS = '/var/www/html/wp-content/plugins';
 const RELEASE_FOLDER = 'ka11y-release';
 const RELEASE_PLUGIN = `${RELEASE_FOLDER}/kotlinskidev-accessibility.php`;
-const CURRENT_PLUGIN = 'kotlinskidev-accessibility';
+const CURRENT_PLUGIN = basename(ROOT);
 const OPTION_NAME = 'kotlinskidev_a11y_settings';
 
 interface ReleaseManifest {

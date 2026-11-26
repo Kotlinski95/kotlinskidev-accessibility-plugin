@@ -80,7 +80,7 @@ final class Rollback {
 		return null;
 	}
 
-	public function run( string $version ): true|WP_Error {
+	public function run( string $version ): bool|WP_Error {
 		$candidate = $this->candidate( $version );
 
 		if ( null === $candidate ) {

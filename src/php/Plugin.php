@@ -49,6 +49,7 @@ final class Plugin {
 			( new Admin\DashboardWidget( $counter ) )->register();
 			( new Admin\PerformanceNotice() )->register();
 			( new Admin\UnverifiedPackageNotice() )->register();
+			( new Privacy\PolicyText() )->register();
 		}
 
 		if ( is_admin() || wp_doing_cron() ) {

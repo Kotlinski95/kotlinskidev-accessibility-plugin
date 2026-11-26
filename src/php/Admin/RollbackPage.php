@@ -99,7 +99,7 @@ final class RollbackPage {
 		echo '</form>';
 	}
 
-	private function render_result( true|WP_Error $result, string $version ): void {
+	private function render_result( bool|WP_Error $result, string $version ): void {
 		if ( $result instanceof WP_Error ) {
 			echo '<div class="notice notice-error"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
 
