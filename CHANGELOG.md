@@ -5,6 +5,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0-beta.1] - 2026-11-26
+
 ### Added
 
 - Settings management: search, change preview before save, import and reset, per-tab reset, unsaved-changes counter, locked and inherited field states, a Maintenance tab and a session-expiry retry. Dry runs return `changes`, `dropped`, `adjusted` and `locked`.
