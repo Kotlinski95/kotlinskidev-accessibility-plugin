@@ -1,0 +1,291 @@
+{
+    "schemaVersion": 5,
+    "features": {
+        "biggerText": {
+            "enabled": true,
+            "default": 2
+        },
+        "lineHeight": {
+            "enabled": true,
+            "default": false
+        },
+        "letterSpacing": {
+            "enabled": true,
+            "default": false
+        },
+        "fontWeight": {
+            "enabled": true,
+            "default": false
+        },
+        "readableFont": {
+            "enabled": true,
+            "default": false
+        },
+        "dyslexicFont": {
+            "enabled": true,
+            "default": false
+        },
+        "textAlign": {
+            "enabled": true,
+            "default": false
+        },
+        "highlightLinks": {
+            "enabled": true,
+            "default": false
+        },
+        "bigCursor": {
+            "enabled": true,
+            "default": false
+        },
+        "textMagnifier": {
+            "enabled": true,
+            "default": false
+        },
+        "cognitiveReading": {
+            "enabled": true,
+            "default": false
+        },
+        "darkContrast": {
+            "enabled": true,
+            "default": false
+        },
+        "lightContrast": {
+            "enabled": true,
+            "default": false
+        },
+        "highContrast": {
+            "enabled": true,
+            "default": false
+        },
+        "monochrome": {
+            "enabled": true,
+            "default": false
+        },
+        "saturation": {
+            "enabled": true,
+            "default": false
+        },
+        "readingLine": {
+            "enabled": true,
+            "default": false
+        },
+        "readingMask": {
+            "enabled": true,
+            "default": false
+        },
+        "readPage": {
+            "enabled": false,
+            "default": false
+        },
+        "keyboardNavigation": {
+            "enabled": true,
+            "default": false
+        },
+        "hideImages": {
+            "enabled": true,
+            "default": false
+        },
+        "muteSounds": {
+            "enabled": true,
+            "default": false
+        },
+        "highlightTitles": {
+            "enabled": true,
+            "default": false
+        },
+        "highlightAll": {
+            "enabled": true,
+            "default": false
+        },
+        "stopAnimations": {
+            "enabled": true,
+            "default": false
+        },
+        "skipToContent": {
+            "enabled": true,
+            "default": false
+        }
+    },
+    "profiles": {
+        "visionImpaired": {
+            "enabled": true,
+            "features": [
+                "biggerText",
+                "highContrast",
+                "readableFont",
+                "highlightLinks",
+                "bigCursor"
+            ]
+        },
+        "seizureSafe": {
+            "enabled": true,
+            "features": [
+                "stopAnimations",
+                "muteSounds",
+                "saturation"
+            ]
+        },
+        "adhdFriendly": {
+            "enabled": true,
+            "features": [
+                "readingMask",
+                "stopAnimations",
+                "highlightTitles",
+                "muteSounds"
+            ]
+        },
+        "blindness": {
+            "enabled": true,
+            "features": [
+                "keyboardNavigation",
+                "readPage",
+                "highlightAll",
+                "skipToContent"
+            ]
+        },
+        "epilepsySafe": {
+            "enabled": true,
+            "features": [
+                "stopAnimations",
+                "muteSounds",
+                "monochrome"
+            ]
+        }
+    },
+    "widget": {
+        "position": {
+            "desktop": "bottom-right",
+            "tablet": "bottom-right",
+            "mobile": "top-left"
+        },
+        "offsetX": {
+            "desktop": 20,
+            "tablet": 20,
+            "mobile": 20
+        },
+        "offsetY": {
+            "desktop": 20,
+            "tablet": 20,
+            "mobile": 20
+        },
+        "size": "lg",
+        "icon": "universal",
+        "iconBorder": false,
+        "launcher": "floating",
+        "mount": ""
+    },
+    "visibility": {
+        "devices": {
+            "desktop": true,
+            "tablet": true,
+            "mobile": true
+        },
+        "breakpoints": {
+            "tablet": 1024,
+            "mobile": 768
+        },
+        "excludePostIds": [],
+        "excludePostTypes": [
+            "product"
+        ],
+        "excludeRoles": [
+            "editor"
+        ],
+        "excludeUrlPatterns": [],
+        "mode": "everywhere",
+        "includePostIds": [],
+        "includePostTypes": [],
+        "includeTemplates": [],
+        "includeRoles": [],
+        "includeUrlPatterns": [],
+        "excludeTemplates": []
+    },
+    "theme": {
+        "mode": "auto",
+        "darkSelector": "html.dark-mode, body.dark-mode",
+        "lightSelector": "html.light-mode, body.light-mode",
+        "followPrefersColorScheme": true
+    },
+    "tokens": {
+        "primary": "#aa3300",
+        "onPrimary": "#ffffff",
+        "primaryDark": "#7aa7ff",
+        "onPrimaryDark": "#0b1a33",
+        "headerBg": "#16181d",
+        "onHeader": "#ffffff",
+        "canvasLight": "#f2f4f7",
+        "canvasDark": "#101114",
+        "surfaceLight": "#ffffff",
+        "surfaceDark": "#1b1b1f",
+        "textLight": "#1b1b1f",
+        "textDark": "#f2f2f2",
+        "radius": "12px",
+        "zIndex": 2147483000,
+        "fontFamily": "inherit"
+    },
+    "panel": {
+        "columns": 2,
+        "sections": {
+            "profiles": true,
+            "content": true,
+            "color": true,
+            "orientation": true,
+            "skip": true
+        },
+        "languageSwitcher": true,
+        "preset": "classic"
+    },
+    "customCss": "",
+    "storage": {
+        "mode": "cookie",
+        "ttlDays": 30,
+        "key": "ka11y"
+    },
+    "statement": {
+        "pageId": 0,
+        "url": "",
+        "content": []
+    },
+    "shortcut": {
+        "enabled": true,
+        "combo": "Ctrl+Shift+U"
+    },
+    "hideToolbar": {
+        "allow": true,
+        "days": [
+            2,
+            14
+        ]
+    },
+    "triggers": {
+        "selectors": [
+            ".menu-a11y > a"
+        ],
+        "urlActions": [
+            "open",
+            "feature",
+            "profile"
+        ]
+    },
+    "labels": {
+        "en_US": {
+            "open": "Open the tools"
+        }
+    },
+    "advanced": {
+        "excludeSelectors": "#wpadminbar, .skip"
+    },
+    "performance": {
+        "preset": "recommended",
+        "strategy": "interaction",
+        "position": "footer",
+        "fetchPriority": "low",
+        "prefetch": "hover",
+        "pageCss": "lazy",
+        "deviceSkip": true,
+        "optOut": []
+    },
+    "maintenance": {
+        "keepDataOnUninstall": false
+    }
+}

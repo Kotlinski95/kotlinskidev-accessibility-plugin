@@ -87,6 +87,30 @@ test.describe('@visual panel', () => {
   });
 });
 
+test.describe('@visual skip card', () => {
+  test.beforeEach(async ({ settings }) => {
+    await settings.reset();
+  });
+
+  test('skip to content card desktop light en_US with three landmarks @visual', async ({ page, context }) => {
+    await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+    await page.emulateMedia({ colorScheme: 'light' });
+    await setFixtureLocale(context, 'en_US');
+    const widget = await gotoHome(page);
+    await page.evaluate(() => {
+      for (const tag of ['main', 'nav', 'footer']) {
+        if (document.querySelector(tag) === null) document.body.append(document.createElement(tag));
+      }
+    });
+    await openPanel(page, widget);
+    const card = widget.panel.locator('.ka11y-card:has(#ka11y-skip-select)');
+    await expect(card).toBeVisible();
+    await expect(widget.panel.locator('#ka11y-skip-select option')).toHaveCount(4);
+    await settle(page, widget);
+    await expect(card).toHaveScreenshot('skip-card-desktop-light-en_US.png');
+  });
+});
+
 test.describe('@visual launcher', () => {
   test.beforeEach(async ({ settings }) => {
     await settings.reset();

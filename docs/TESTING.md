@@ -7,8 +7,8 @@
 | `ci.yml` `js` | push to main, pull request | ESLint, typecheck, Jest, build, version check |
 | `ci.yml` `e2e` | push to main, pull request | wp-env in Docker, Chromium. Pull requests run `--grep @smoke` when tagged tests exist, otherwise the full suite. Main runs the full suite. |
 | `ci.yml` `plugin-check` | push to main, pull request | Builds the package like the release (build, `composer --no-dev`, rsync with `.distignore`) and runs WordPress Plugin Check on `dist/kotlinskidev-accessibility` |
-| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke`, and a Lighthouse job that runs `lhci` three times against wp-env (widget off through `visibility.mode=only_on` with `includePostIds=[999999]`, widget on with Recommended, widget on with saved state seeded by `bin/lh-seed-state.cjs`), settings switched by `bin/lh-widget.php`, then `bin/lh-compare.mjs` compares the medians: LCP and TBT may rise by 5 percent of the off value but never less than 100 ms (LCP) and 50 ms (TBT) as noise floors, CLS by 0.01, and no render-blocking plugin URL is allowed (`lighthouserc.cjs`) |
-| `codeql.yml` | push to main, pull request, weekly | CodeQL for JavaScript and TypeScript |
+| `nightly.yml` | 03:00 UTC, manual | Full Chromium suite on WordPress 6.4 and latest with PHP 8.1 and 8.4 (6.4 on 8.4 excluded), plus Firefox and WebKit `@smoke`, an `upgrade` job (`KA11Y_UPGRADE=1`), a `visual` job against committed Linux baselines, and a Lighthouse job that runs `lhci` three times against wp-env (widget off through `visibility.mode=only_on` with `includePostIds=[999999]`, widget on with Recommended, widget on with saved state seeded by `bin/lh-seed-state.cjs`), settings switched by `bin/lh-widget.php`, then `bin/lh-compare.mjs` compares the medians: LCP and TBT may rise by 5 percent of the off value but never less than 100 ms (LCP) and 50 ms (TBT) as noise floors, CLS by 0.01, and no render-blocking plugin URL is allowed (`lighthouserc.cjs`) |
+| `codeql.yml` | push to main, pull request, weekly | CodeQL for JavaScript, TypeScript and GitHub Actions (CodeQL has no PHP support) |
 | `release.yml` | tag `v*` | Builds and attaches `kotlinskidev-accessibility.zip` |
 
 Plugin Check runs without the `plugin_updater` and `plugin_readme` checks because the plugin ships from GitHub with its own updater, not from wordpress.org. Four codes are ignored: `wp_function_not_compatible_with_requires_wp` (`array_is_list()` is native on PHP 8.1+), `missing_composer_json_file`, `WordPress.DB.SlowDBQuery.slow_db_query_meta_query` and `WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound` (third-party WPML hooks).
@@ -36,7 +36,8 @@ The mu-plugin does nothing unless `WP_ENVIRONMENT_TYPE` is `local` (wp-env sets 
 | --- | --- |
 | `chromium` | Every spec on desktop Chrome |
 | `mobile-smoke` | `invariants.spec.ts` on Pixel 5, only tests tagged `@smoke` |
-| `visual` | `visual.spec.ts` only, tests tagged `@visual`. Never part of `chromium`, the default run or CI |
+| `visual` | `visual.spec.ts` only, tests tagged `@visual`, defined only when `KA11Y_VISUAL=1`. Never part of `chromium` or the default run. Compared in `nightly.yml` against committed Linux baselines |
+| `upgrade` | `upgrade.spec.ts` and `downgrade.spec.ts`, tests tagged `@upgrade`, defined only when `KA11Y_UPGRADE=1`. Never part of `chromium`. Runs in the nightly `upgrade` job |
 | `multisite` | `multisite.spec.ts` only, defined only when `KA11Y_MULTISITE=1`. Never part of `chromium` or the default run |
 
 Specs that loop over `FIXTURE_NAMES` wrap their tests in `test.describe('[stock]')` and `test.describe('[hostile]')`, each with `test.use({ fixture })`.
@@ -124,9 +125,9 @@ Flake note: the loader queue drops a `toggle` from the same source within 50 ms 
 
 A fifth mu-plugin, `tests/e2e/fixtures/mu-plugins/ka11y-fixture-locale.php`, does nothing unless `WP_ENVIRONMENT_TYPE` is `local`, `KOTLINSKIDEV_A11Y_E2E` is true and the cookie `ka11y_fixture_locale` holds a locale such as `en_US`, `pl_PL` or `he_IL`. It filters `kotlinskidev_a11y_current_locale` to that value, adds `en_US`, `pl_PL` and `he_IL` to `kotlinskidev_a11y_known_locales` (so the language select always lists three languages) and pins their labels through `kotlinskidev_a11y_locale_label`. Specs set it with `setFixtureLocale` from `tests/e2e/support/locale.ts`. A saved locale is applied when the panel chunk mounts, so a test that reloads must open the panel before asserting `lang` or `dir` on the host.
 
-`visual.spec.ts` takes `toHaveScreenshot` snapshots of the panel element (animations disabled, `maxDiffPixelRatio` 0.01): desktop 1280 by 800 and mobile 390 by 844, light and dark, `en_US` and `pl_PL`; `he_IL` light desktop and dark mobile; forced colors; one active-state panel; and the launcher in light, dark and forced colors. The skip select is masked because its options depend on page landmarks.
+`visual.spec.ts` takes `toHaveScreenshot` snapshots of the panel element (animations disabled, `maxDiffPixelRatio` 0.01): desktop 1280 by 800 and mobile 390 by 844, light and dark, `en_US` and `pl_PL`; `he_IL` light desktop and dark mobile; forced colors; one active-state panel; and the launcher in light, dark and forced colors. The skip select is masked because its options depend on page landmarks. A separate Skip card case adds the three landmarks to the page first and snapshots the card.
 
-Snapshots depend on the platform fonts and rasteriser, so the `visual` project writes them to `tests/e2e/__screenshots__/{platform}/visual.spec.ts/` (`darwin`, `linux`, `win32`) and CI never compares them.
+Snapshots depend on the platform fonts and rasteriser, so the `visual` project writes them to `tests/e2e/__screenshots__/{platform}/visual.spec.ts/` (`darwin`, `linux`, `win32`) and the nightly `visual` job compares only `linux` baselines, and only when they are committed. Generate them with the manual `visual-baselines.yml` workflow (`workflow_dispatch`), download the `visual-baselines-linux` artifact and commit it to `tests/e2e/__screenshots__/linux/`.
 
 ```bash
 npm run wp-env:start
@@ -135,3 +136,14 @@ KA11Y_VISUAL=1 npx playwright test --project=visual --update-snapshots # write o
 ```
 
 Review the changed PNGs before committing a new baseline. Generate the `linux` set inside the Playwright Docker image when it is needed.
+
+### Upgrade and downgrade
+
+`tests/fixtures/releases.json` lists the released versions. `upgrade.spec.ts` runs each one: reset the plugin options, copy the release zip (downloaded with `gh release download` into the git-ignored `tests/.releases/`) into the wp-env container as `wp-content/plugins/ka11y-release`, activate it, seed `tests/fixtures/settings/<version>.json`, load wp-admin, turn on `highlightLinks` and `biggerText` level 2, swap to the working-tree plugin (the mounted folder, so the repository is never overwritten), load wp-admin, then assert `wp ka11y settings get --format=json` equals `tests/fixtures/settings/<version>.expected.json`, the saved visitor cookie and the `ka11y-` state classes are unchanged, and the panel opens. `downgrade.spec.ts` seeds `full-v4.json` on the current build, saves two values through the CLI, swaps to v0.4.0 and checks the REST settings and the panel.
+
+```bash
+npm run wp-env:start
+KA11Y_UPGRADE=1 npx playwright test --project=upgrade
+```
+
+The expected files are the effective settings of the current build after the upgrade: the same values as the fixture, `schemaVersion` 5, defaults for fields added later, and `advanced.loadStrategy` dropped (now `performance.strategy`). Regenerate one only when a settings change is intended.

@@ -17,9 +17,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - WP-CLI: `wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`. Every path and value is validated against the schema and sanitizer, locked paths exit 1, `--dry-run` previews changes, `--format` selects table, json or yaml, and `doctor` exits 1 when a check is critical (`--fail-on=recommended` is stricter). Nothing prints the update token.
 
 - Multisite network defaults: a Network Admin page (Settings > Accessibility, `manage_network_options`) reuses the admin app to set defaults and a "Locked on all sites" list, `GET`/`POST /network/settings`, `/network/schema`, `/network/export`, `/network/import` and `/network/reset` serve it, and `wp ka11y settings ... --network` works on multisite. A multisite e2e project (`KA11Y_MULTISITE=1`, `.wp-env.multisite.json`, `npm run wp-env:multisite:start`) covers inheritance, overrides, locks and access.
+- Maintenance: `SECURITY.md`, `docs/DEPRECATION.md`, CodeQL for JavaScript, TypeScript and Actions, split Dependabot groups with a major-version hold on the update checker, `composer audit` and `npm audit` in CI, and every action pinned by SHA. A `@upgrade` Playwright project (`KA11Y_UPGRADE=1`) upgrades from each of the six releases and downgrades to v0.4.0 nightly, a `visual-baselines` workflow builds Linux baselines, and a Skip card visual case is added.
 
 ### Fixed
 
+- The panel data cache is now purged when the plugin version changes: `VersionWatcher` fired the `update` invalidation before `PanelDataStore` listened, so an update from v0.2.0 or later kept the panel data file of the old version and the panel failed to load.
 - Sparse storage no longer flips a site value that equals the plugin default but differs from a network default, saving keeps the stored value of locked paths, and `POST /import` of a version-less tree is no longer treated as v1. `/reset` rejects empty `paths` and oversized bodies, `dry_run` must be a boolean, and a real import with conflicting locked paths returns 409.
 - Language switcher returns the shipped translation for locales without an installed core language pack: `Strings::for_locale()` loads `languages/kotlinskidev-accessibility-{locale}.mo` when `switch_to_locale()` does nothing, then restores the previous text domain.
 

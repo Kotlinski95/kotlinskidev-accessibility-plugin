@@ -26,12 +26,12 @@ jobs:
           - wp: '6.4'
             php: '8.4'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: npm
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
           php-version: '8.2'
           tools: composer:v2
@@ -55,7 +55,7 @@ jobs:
         env:
           CI: 'true'
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: playwright-report-wp${{ matrix.wp }}-php${{ matrix.php }}
           path: |
@@ -74,12 +74,12 @@ jobs:
       matrix:
         browser: [firefox, webkit]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: npm
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
           php-version: '8.2'
           tools: composer:v2
@@ -94,7 +94,7 @@ jobs:
           CI: 'true'
           KA11Y_CROSS_BROWSER: '1'
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: playwright-report-${{ matrix.browser }}
           path: |
@@ -109,12 +109,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 22
           cache: npm
-      - uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
           php-version: '8.2'
           tools: composer:v2
@@ -139,10 +139,97 @@ jobs:
         run: LHCI_OUTPUT_DIR=lh-results/saved LHCI_PUPPETEER_SCRIPT=bin/lh-seed-state.cjs npx lhci autorun --config=lighthouserc.cjs
       - run: node bin/lh-compare.mjs lh-results/off lh-results/on lh-results/saved
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lighthouse-results
           path: lh-results/
           retention-days: 7
       - if: always()
+        run: npm run wp-env:stop
+
+  upgrade:
+    name: Upgrade from every release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-interaction --prefer-dist --no-dev -o
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run wp-env:start
+      - run: npx playwright test --project=upgrade
+        env:
+          CI: 'true'
+          KA11Y_UPGRADE: '1'
+          GH_TOKEN: ${{ github.token }}
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: playwright-report-upgrade
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+      - if: always()
+        run: npm run wp-env:stop
+
+  visual:
+    name: Visual regression on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - id: baselines
+        run: |
+          if [ -n "$(find tests/e2e/__screenshots__/linux -name '*.png' -print -quit 2>/dev/null)" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No committed Linux baselines, visual job skipped"
+          fi
+      - if: steps.baselines.outputs.present == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.baselines.outputs.present == 'true'
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          coverage: none
+      - if: steps.baselines.outputs.present == 'true'
+        run: composer install --no-interaction --prefer-dist --no-dev -o
+      - if: steps.baselines.outputs.present == 'true'
+        run: npm ci
+      - if: steps.baselines.outputs.present == 'true'
+        run: npm run build
+      - if: steps.baselines.outputs.present == 'true'
+        run: npx playwright install --with-deps chromium
+      - if: steps.baselines.outputs.present == 'true'
+        run: npm run wp-env:start
+      - if: steps.baselines.outputs.present == 'true'
+        run: npx playwright test --project=visual
+        env:
+          CI: 'true'
+          KA11Y_VISUAL: '1'
+      - if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: playwright-report-visual
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+      - if: always() && steps.baselines.outputs.present == 'true'
         run: npm run wp-env:stop

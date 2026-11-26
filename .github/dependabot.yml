@@ -5,7 +5,11 @@ updates:
     schedule:
       interval: weekly
     groups:
-      npm:
+      production:
+        dependency-type: production
+        patterns: ['*']
+      development:
+        dependency-type: development
         patterns: ['*']
   - package-ecosystem: composer
     directory: /
@@ -14,6 +18,9 @@ updates:
     groups:
       composer:
         patterns: ['*']
+    ignore:
+      - dependency-name: yahnis-elsts/plugin-update-checker
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:

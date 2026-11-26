@@ -19,6 +19,21 @@ const visualProjects: PlaywrightTestProject[] =
       ]
     : [];
 
+const upgradeSpecs = ['**/upgrade.spec.ts', '**/downgrade.spec.ts'];
+
+const upgradeProjects: PlaywrightTestProject[] =
+  process.env.KA11Y_UPGRADE === '1'
+    ? [
+        {
+          name: 'upgrade',
+          testMatch: upgradeSpecs,
+          grep: /@upgrade/,
+          timeout: 180_000,
+          use: { ...devices['Desktop Chrome'] },
+        },
+      ]
+    : [];
+
 const multisiteProjects: PlaywrightTestProject[] =
   process.env.KA11Y_MULTISITE === '1'
     ? [
@@ -47,8 +62,9 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
-    { name: 'chromium', testIgnore: ['**/visual.spec.ts', '**/multisite.spec.ts'], use: { ...devices['Desktop Chrome'] } },
+    { name: 'chromium', testIgnore: ['**/visual.spec.ts', '**/multisite.spec.ts', ...upgradeSpecs], use: { ...devices['Desktop Chrome'] } },
     ...visualProjects,
+    ...upgradeProjects,
     ...multisiteProjects,
     {
       name: 'mobile-smoke',
@@ -58,8 +74,8 @@ export default defineConfig({
     },
     ...(crossBrowser
       ? [
-          { name: 'firefox', grep: /@smoke/, testIgnore: ['**/multisite.spec.ts'], use: { ...devices['Desktop Firefox'] } },
-          { name: 'webkit', grep: /@smoke/, testIgnore: ['**/multisite.spec.ts'], use: { ...devices['Desktop Safari'] } },
+          { name: 'firefox', grep: /@smoke/, testIgnore: ['**/multisite.spec.ts', ...upgradeSpecs], use: { ...devices['Desktop Firefox'] } },
+          { name: 'webkit', grep: /@smoke/, testIgnore: ['**/multisite.spec.ts', ...upgradeSpecs], use: { ...devices['Desktop Safari'] } },
         ]
       : []),
   ],

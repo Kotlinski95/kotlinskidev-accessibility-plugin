@@ -10,3 +10,4 @@ vendor
 /test-results
 /.wp-env.override.json
 lh-results/
+/tests/.releases

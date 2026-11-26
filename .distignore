@@ -35,6 +35,7 @@
 /phpstan.neon.dist
 /phpstan-baseline.neon
 /CLAUDE.md
+/SECURITY.md
 /.claude
 .gitkeep
 /.wp-env.override.json

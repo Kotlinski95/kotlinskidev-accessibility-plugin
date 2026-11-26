@@ -223,6 +223,8 @@ Namespace `kotlinskidev-a11y/v1`.
 
 ## Deprecation policy
 
+The full policy for every surface, and the list of current deprecations, is in [DEPRECATION.md](DEPRECATION.md).
+
 - Additive changes (a new action, event, method or field) ship in any minor release and do not change `api`.
 - A breaking change to anything in this file changes `api` and ships in a minor release at the earliest.
 - The previous behaviour stays for one more minor release, with one `console.warn('[kotlinskidev-a11y] deprecated: ...')` per page view per item, a `Deprecated` entry in `CHANGELOG.md` and a note here. It is removed in the next minor.
