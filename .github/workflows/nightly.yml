@@ -33,7 +33,7 @@ jobs:
           cache: npm
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
-          php-version: '8.2'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-dev -o
@@ -81,7 +81,7 @@ jobs:
           cache: npm
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
-          php-version: '8.2'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-dev -o
@@ -116,7 +116,7 @@ jobs:
           cache: npm
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
-          php-version: '8.2'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-dev -o
@@ -159,7 +159,7 @@ jobs:
           cache: npm
       - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
-          php-version: '8.2'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
       - run: composer install --no-interaction --prefer-dist --no-dev -o
@@ -205,7 +205,7 @@ jobs:
       - if: steps.baselines.outputs.present == 'true'
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962
         with:
-          php-version: '8.2'
+          php-version: '8.5'
           tools: composer:v2
           coverage: none
       - if: steps.baselines.outputs.present == 'true'
