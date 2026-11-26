@@ -39,3 +39,6 @@
 /.claude
 .gitkeep
 /.wp-env.override.json
+/.wp-env.multisite.json
+/lighthouserc.cjs
+/lh-results
