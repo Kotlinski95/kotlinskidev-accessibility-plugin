@@ -14,6 +14,10 @@ if ( ! class_exists( 'WP_Error' ) ) {
 			return $this->message;
 		}
 
+		public function get_error_data(): mixed {
+			return $this->data;
+		}
+
 		public function add_data( mixed $data ): void {
 			$this->data = $data;
 		}

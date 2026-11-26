@@ -211,6 +211,23 @@ add_filter( 'kotlinskidev_a11y_update_token', static fn (): string => 'token-fro
 
 Source keys: `repository`, `slug`, `asset_pattern`, `branch`. The token is read only from the filter and is never stored by the plugin. `Update\Updater` is a thin class, so it can also be replaced entirely.
 
+## WP-CLI
+
+Every command validates against the same schema, sanitizer, locks and health checks as the admin screen and the REST API. Pick a site on multisite with the standard `--url`. Run `wp help ka11y settings set` (or any other subcommand) for the full synopsis.
+
+| Command | What it does |
+| --- | --- |
+| `wp ka11y settings get [<path>] [--layer=effective\|stored\|network\|defaults] [--format=json\|yaml\|var_export]` | Prints one setting, a group such as `widget.position`, or everything. |
+| `wp ka11y settings set <path> <value> [--as-json] [--dry-run] [--format=table\|json\|yaml]` | Saves one setting and prints the change. Booleans take `true\|false\|1\|0\|on\|off\|yes\|no`, integers must sit inside their range, enums must be listed, and lists and maps need `--as-json` (WP-CLI reserves `--json`). A value the sanitizer would change exits 1 and prints the cleaned value. |
+| `wp ka11y settings import <file> [--dry-run] [--yes]` | Imports a file made by `export`, or `-` for STDIN (at most 262144 B, local paths only). |
+| `wp ka11y settings export [--file=<file>] [--force]` | Prints the versioned envelope, or writes it to a file and refuses to overwrite without `--force`. |
+| `wp ka11y settings reset [<path>...] [--dry-run] [--yes]` | Resets the given paths, or everything. |
+| `wp ka11y doctor [--format=table\|json\|yaml] [--fail-on=critical\|recommended]` | Runs the Site Health checks without any network request. Exits 1 at or above the `--fail-on` level, `critical` by default. |
+| `wp ka11y access grant\|revoke <role>` | Adds or removes the customer capability on a role that exists. |
+| `wp ka11y access list [--format=table\|json\|yaml]` | Lists the roles that hold the customer capability and its name. |
+
+Locked paths exit 1 with `Locked by site configuration`. `import` and `reset` ask for confirmation unless you pass `--dry-run` or `--yes`. `--network` is accepted by the synopsis for the network defaults release and currently exits 1.
+
 ## Frontend hooks
 
 | Hook | Purpose |

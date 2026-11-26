@@ -5,6 +5,7 @@ parameters:
         - uninstall.php
     scanFiles:
         - kotlinskidev-accessibility.php
+        - tests/php/Cli/WpCliStub.php
     bootstrapFiles:
         - tests/phpstan-bootstrap.php
     treatPhpDocTypesAsCertain: false

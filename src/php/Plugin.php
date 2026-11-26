@@ -56,6 +56,12 @@ final class Plugin {
 		if ( self::should_check_updates() ) {
 			( new Update\Updater( KOTLINSKIDEV_A11Y_FILE ) )->register();
 		}
+
+		if ( defined( 'WP_CLI' ) && true === constant( 'WP_CLI' ) ) {
+			Cli\SettingsCommand::register();
+			Cli\DoctorCommand::register();
+			Cli\AccessCommand::register();
+		}
 	}
 
 	private static function register_update_tools(): void {

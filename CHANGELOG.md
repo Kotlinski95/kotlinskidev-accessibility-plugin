@@ -14,6 +14,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Update channels: a Maintenance tab Updates card (for `update_plugins` users) switches between stable and beta, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and the `kotlinskidev_a11y_update_channel` filter override it. `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` or the `kotlinskidev_a11y_enable_updater` filter turn the updater, rollback and update routes off.
 - Plugin zips are checked against their `.sha256` before unzipping, and the release workflow now writes the checksum, attests build provenance, pins every action by commit SHA, uses `CHANGELOG.md` as the release notes and marks `-beta` and `-rc` tags as pre-releases. `npm run release` takes `--pre beta|rc`.
 - Rollback to the 3 newest older releases (not below v0.4.0) from the Updates card, via `GET /releases`, `GET` and `POST /update-channel` and a confirmation page. It backs settings up to `kotlinskidev_a11y_settings_backup` and downloads the zip only after the checksum check.
+- WP-CLI: `wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`. Every path and value is validated against the schema and sanitizer, locked paths exit 1, `--dry-run` previews changes, `--format` selects table, json or yaml, and `doctor` exits 1 when a check is critical (`--fail-on=recommended` is stricter). Nothing prints the update token.
 
 ### Fixed
 
