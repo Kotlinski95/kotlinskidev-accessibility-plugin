@@ -21,6 +21,8 @@ updates:
     ignore:
       - dependency-name: yahnis-elsts/plugin-update-checker
         update-types: ['version-update:semver-major']
+      - dependency-name: phpunit/phpunit
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
