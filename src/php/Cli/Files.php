@@ -29,7 +29,7 @@ final class Files {
 		return is_string( $content ) ? $content : null;
 	}
 
-	public function write( string $path, string $content, bool $overwrite ): string|true {
+	public function write( string $path, string $content, bool $overwrite ): string|bool {
 		if ( ! $this->is_local( $path ) ) {
 			return __( 'Only local file paths are allowed.', 'kotlinskidev-accessibility' );
 		}

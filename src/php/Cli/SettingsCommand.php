@@ -302,7 +302,7 @@ final class SettingsCommand {
 
 		$written = $this->files->write( $file, $json . "\n", Output::flag( $assoc_args, 'force' ) );
 
-		if ( true !== $written ) {
+		if ( is_string( $written ) ) {
 			WP_CLI::error( $written );
 		}
 
