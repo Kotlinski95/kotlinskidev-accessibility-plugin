@@ -12,7 +12,7 @@
     "data.icons": 2048
   },
   "raw": {
-    "styles.launcher": 1530
+    "styles.launcher": 1710
   },
   "sum": {
     "everyPage": { "gzip": 5250, "of": ["inline.bootstrap", "scripts.loader"] }

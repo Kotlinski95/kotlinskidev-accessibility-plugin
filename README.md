@@ -396,7 +396,7 @@ Downgrade to v0.1.x is safe. v0.1 ignores the new keys, falls back to the `defer
 
 The plugin embeds Plugin Update Checker v5 pointed at the GitHub repository. WordPress checks in the admin and via cron (never on front-end requests). When a newer release exists, the standard update notice appears and installs the `kotlinskidev-accessibility.zip` release asset. "View details" shows the release notes taken from `CHANGELOG.md`.
 
-Every download of the plugin zip is checked against the release's `kotlinskidev-accessibility.zip.sha256` before WordPress unzips it. A mismatch aborts the update with a `kotlinskidev_a11y_checksum_mismatch` error. Releases made before the checksum existed have no `.sha256` file; updates from them still proceed.
+Every download of the plugin zip is checked against the release's `kotlinskidev-accessibility.zip.sha256` before WordPress unzips it. A mismatch aborts the update with a `kotlinskidev_a11y_checksum_mismatch` error. Releases made before the checksum existed have no `.sha256` file; updates from them still proceed. From 1.1.0 each release also carries a `kotlinskidev-accessibility.zip.sig` Ed25519 signature, which is checked against a public key built into the plugin; a missing or wrong signature aborts the update.
 
 ### Update channel
 

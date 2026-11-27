@@ -5,6 +5,16 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Public theme contract so a theme no longer touches `#ka11y-root`: the class `html.ka11y-floating-hidden` fades out the floating trigger (no motion with reduced motion or Stop animations), and the custom properties `--ka11y-offset-bottom` and `--ka11y-offset-inline-end` move it, defaulting to the configured offsets. Documented in `docs/API.md`.
+- `window.kotlinskidevA11y.api` (`1`) is now defined by the inline bootstrap at page load instead of only after the lazy loader runs, so theme scripts can detect the plugin before DOM ready.
+- Ed25519 release signatures: the release workflow signs the zip with the `RELEASE_SIGNING_KEY` secret (`bin/sign-release.mjs`) and uploads `kotlinskidev-accessibility.zip.sig`. The updater verifies it with libsodium against a pinned public key and a strictly validated GitHub package URL, and fails closed for releases from 1.1.0.
+
+### Changed
+
+- Launcher styles budget raised 1530 to 1710 B raw for the theme contract. Docs note that `performance.pageCss` `inline` adds the whole page stylesheet (about 6.9 KB) to every page; the default stays `lazy`.
+
 ## [1.0.3] - 2026-11-27
 
 ### Changed

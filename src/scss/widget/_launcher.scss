@@ -20,6 +20,9 @@
   color: tokens.$on-primary;
   box-shadow: tokens.$shadow;
   cursor: pointer;
+  opacity: var(--ka11y-floating-opacity, 1);
+  visibility: var(--ka11y-floating-visibility, visible);
+  transition: var(--ka11y-floating-transition, opacity 0.2s ease, visibility 0.2s);
 }
 
 .ka11y-launcher:focus-visible {

@@ -11,13 +11,20 @@ final class PackageVerifier {
 	public const MISSING_CODE    = 'kotlinskidev_a11y_checksum_missing';
 	public const UNVERIFIED_FLAG = 'kotlinskidev_a11y_unverified_package';
 
-	public const CHECKSUM_REQUIRED_FROM = '1.0.0-beta.1';
+	public const SIGNATURE_MISSING_CODE = 'kotlinskidev_a11y_signature_missing';
+	public const SIGNATURE_INVALID_CODE = 'kotlinskidev_a11y_signature_invalid';
+
+	public const CHECKSUM_REQUIRED_FROM  = '1.0.0-beta.1';
+	public const SIGNATURE_REQUIRED_FROM = '1.1.0';
+	public const SIGNING_PUBLIC_KEY      = 'VYTnLpqp3zx/95mQ4PTijnxTElnhd4VgiRjLToXqku4=';
+	public const PACKAGE_FILE            = 'kotlinskidev-accessibility.zip';
 
 	private static array $expected = array();
 
 	public function __construct(
 		private readonly Updater $updater,
-		private readonly string $plugin_basename
+		private readonly string $plugin_basename,
+		private readonly string $public_key = self::SIGNING_PUBLIC_KEY
 	) {}
 
 	public static function expect( string $package, string $sha256_url ): void {
@@ -75,9 +82,107 @@ final class PackageVerifier {
 			return new WP_Error( self::MISMATCH_CODE, __( 'The downloaded package does not match its SHA-256 checksum and was discarded.', 'kotlinskidev-accessibility' ) );
 		}
 
+		$failure = $this->check_signature( $package, $file, $rollback );
+
+		if ( null !== $failure ) {
+			wp_delete_file( $file );
+
+			return $failure;
+		}
+
 		delete_site_option( self::UNVERIFIED_FLAG );
 
 		return $file;
+	}
+
+	public function signature_url( string $package, bool $rollback = false ): ?string {
+		$parts = wp_parse_url( $package );
+
+		if ( ! is_array( $parts ) || 1 === preg_match( '/[?#\\\\]|\.\.|%2e|%5c|%00/i', $package ) ) {
+			return null;
+		}
+
+		$host = strtolower( (string) ( $parts['host'] ?? '' ) );
+		$path = (string) ( $parts['path'] ?? '' );
+
+		if ( 'https' !== ( $parts['scheme'] ?? '' ) || '' === $host || isset( $parts['user'] ) || isset( $parts['pass'] ) || isset( $parts['port'] ) || isset( $parts['query'] ) || isset( $parts['fragment'] ) ) {
+			return null;
+		}
+
+		if ( 'github.com' === $host ) {
+			$repository = $this->updater->github_repository();
+
+			if ( null === $repository ) {
+				return null;
+			}
+
+			$pattern = '#^/' . preg_quote( $repository, '#' ) . '/releases/download/v?\d+\.\d+\.\d+(-(beta|rc)\.\d+)?/' . preg_quote( self::PACKAGE_FILE, '#' ) . '\z#';
+
+			return 1 === preg_match( $pattern, $path ) ? $package . '.sig' : null;
+		}
+
+		return $rollback && str_ends_with( $path, '/' . self::PACKAGE_FILE ) ? $package . '.sig' : null;
+	}
+
+	public static function verify_detached( string $message, string $signature, string $public_key ): bool {
+		$key = base64_decode( $public_key, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+
+		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) || false === $key || SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES !== strlen( $key ) || SODIUM_CRYPTO_SIGN_BYTES !== strlen( $signature ) ) {
+			return false;
+		}
+
+		return sodium_crypto_sign_verify_detached( $signature, $message, $key );
+	}
+
+	public static function parse_signature( string $body ): ?string {
+		$raw = base64_decode( trim( $body ), true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+
+		return false !== $raw && defined( 'SODIUM_CRYPTO_SIGN_BYTES' ) && SODIUM_CRYPTO_SIGN_BYTES === strlen( $raw ) ? $raw : null;
+	}
+
+	private function check_signature( string $package, string $file, bool $rollback ): ?WP_Error {
+		$required = $this->signature_required( $package );
+		$url      = $this->signature_url( $package, $rollback );
+
+		if ( null === $url ) {
+			return $required ? new WP_Error( self::SIGNATURE_MISSING_CODE, __( 'The release is not served from a trusted HTTPS location, so its signature cannot be checked.', 'kotlinskidev-accessibility' ) ) : null;
+		}
+
+		$signature = $this->fetch_signature( $url );
+
+		if ( null === $signature ) {
+			return $required ? new WP_Error( self::SIGNATURE_MISSING_CODE, __( 'This release has no valid signature file, so it cannot be installed safely.', 'kotlinskidev-accessibility' ) ) : null;
+		}
+
+		$bytes = implode( '', (array) file( $file ) );
+
+		if ( ! self::verify_detached( $bytes, $signature, $this->public_key ) ) {
+			return new WP_Error( self::SIGNATURE_INVALID_CODE, __( 'The downloaded package does not match its release signature and was discarded.', 'kotlinskidev-accessibility' ) );
+		}
+
+		return null;
+	}
+
+	private function fetch_signature( string $url ): ?string {
+		$response = wp_safe_remote_get(
+			$url,
+			array(
+				'timeout'             => 10,
+				'limit_response_size' => 512,
+			)
+		);
+
+		if ( $response instanceof WP_Error || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) {
+			return null;
+		}
+
+		return self::parse_signature( (string) wp_remote_retrieve_body( $response ) );
+	}
+
+	private function signature_required( string $package ): bool {
+		$version = $this->target_version( $package );
+
+		return null === $version || version_compare( $version, self::SIGNATURE_REQUIRED_FROM, '>=' );
 	}
 
 	public static function same_https_host( string $first, string $second ): bool {

@@ -304,8 +304,8 @@ final class AssetsTest extends TestCase {
 		$this->assertStringContainsString( '--ka11y-primary:#0b57d0', $css );
 		$this->assertStringContainsString( '--ka11y-on-primary:#ffffff', $css );
 		$this->assertStringContainsString( '--ka11y-size:52px', $css );
-		$this->assertStringContainsString( '@media (min-width:1025px){#ka11y-root{right:calc(20px + env(safe-area-inset-right,0px));left:auto;bottom:calc(20px + env(safe-area-inset-bottom,0px));top:auto;}}', $css );
-		$this->assertStringContainsString( '@media (max-width:768px){#ka11y-root{left:calc(20px + env(safe-area-inset-left,0px));right:auto;top:calc(50% - var(--ka11y-size) / 2);bottom:auto;}}', $css );
+		$this->assertStringContainsString( '@media (min-width:1025px){#ka11y-root{right:calc(var(--ka11y-offset-inline-end,20px) + env(safe-area-inset-right,0px));left:auto;bottom:calc(var(--ka11y-offset-bottom,20px) + env(safe-area-inset-bottom,0px));top:auto;}}', $css );
+		$this->assertStringContainsString( '@media (max-width:768px){#ka11y-root{left:calc(var(--ka11y-offset-inline-end,20px) + env(safe-area-inset-left,0px));right:auto;top:calc(50% - var(--ka11y-size) / 2);bottom:auto;}}', $css );
 		$this->assertStringContainsString( '@media (min-width:769px) and (max-width:1024px){#ka11y-root{', $css );
 		$this->assertStringContainsString( 'display:none!important;', $css );
 		$this->assertStringContainsString( 'html[data-ka11y-hidden] #ka11y-root{display:none!important}', $css );
@@ -439,7 +439,7 @@ final class AssetsTest extends TestCase {
 		$this->assertStringNotContainsString( 'transform', $css );
 		$this->assertStringContainsString( 'top:calc(50% - var(--ka11y-size) / 2)', $css );
 		$this->assertStringContainsString( 'top:calc(20px + env(safe-area-inset-top,0px))', $css );
-		$this->assertStringContainsString( 'left:calc(20px + env(safe-area-inset-left,0px))', $css );
+		$this->assertStringContainsString( 'left:calc(var(--ka11y-offset-inline-end,20px) + env(safe-area-inset-left,0px))', $css );
 	}
 
 	public function test_tokens_css_cannot_break_out_of_style(): void {
@@ -494,6 +494,40 @@ final class AssetsTest extends TestCase {
 		$this->head();
 
 		$this->assertStringContainsString( '"t":":is(.menu-a11y \\u003E a,#x)"', $this->printed_scripts[0][0] );
+	}
+
+	public function test_theme_contract_hides_the_floating_trigger_and_honours_motion_preferences(): void {
+		$css = $this->assets()->tokens_css( Schema::defaults() );
+
+		$this->assertStringContainsString( 'html.ka11y-floating-hidden #ka11y-root{--ka11y-floating-opacity:0;--ka11y-floating-visibility:hidden}', $css );
+		$this->assertStringContainsString( 'html.ka11y-stop-animations #ka11y-root{--ka11y-floating-transition:none}', $css );
+		$this->assertStringContainsString( '@media (prefers-reduced-motion:reduce){#ka11y-root{--ka11y-floating-transition:none}}', $css );
+	}
+
+	public function test_theme_contract_offsets_default_to_the_configured_positions(): void {
+		$settings                                  = Schema::defaults();
+		$settings['widget']['offsetX']['desktop']  = 32;
+		$settings['widget']['offsetY']['desktop']  = 48;
+		$settings['widget']['position']['desktop'] = 'bottom-right';
+
+		$css = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( 'right:calc(var(--ka11y-offset-inline-end,32px) + env(safe-area-inset-right,0px))', $css );
+		$this->assertStringContainsString( 'bottom:calc(var(--ka11y-offset-bottom,48px) + env(safe-area-inset-bottom,0px))', $css );
+	}
+
+	public function test_top_placement_ignores_the_bottom_offset_variable(): void {
+		$settings                                  = Schema::defaults();
+		$settings['widget']['position']['desktop'] = 'top-right';
+
+		$this->assertStringNotContainsString( 'top:calc(var(--ka11y-offset-bottom', $this->assets()->tokens_css( $settings ) );
+	}
+
+	public function test_bootstrap_defines_the_api_probe_before_any_chunk_loads(): void {
+		$this->head();
+
+		$this->assertStringStartsWith( 'window.kotlinskidevA11y={', $this->printed_scripts[0][0] );
+		$this->assertStringContainsString( '"api":1', $this->printed_scripts[0][0] );
 	}
 
 	public function test_device_rules_hide_triggers_on_hidden_devices_only(): void {
