@@ -1,1 +1,1 @@
-window.kotlinskidevA11y={"storage":{"mode":"local","ttlDays":365,"key":"ka11y"},"css":"https://example.test/wp-content/plugins/kotlinskidev-accessibility/build/frontend.css?ver=ffffffffffff","hk":"ka11y-hidden"};(function(){window.__boot=1;}());<\/script><b>
+window.kotlinskidevA11y={"storage":{"mode":"local","ttlDays":365,"key":"ka11y"},"css":"https://example.test/wp-content/plugins/kotlinskidev-accessibility/build/frontend.css?ver=ffffffffffff","api":1,"hk":"ka11y-hidden"};(function(){window.__boot=1;}());<\/script><b>

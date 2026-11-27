@@ -34,4 +34,6 @@ There is no bug bounty.
 - CodeQL scans JavaScript, TypeScript and GitHub Actions workflows on every pull request and weekly.
 - CodeQL does not support PHP. PHP is covered by PHPStan (level 8), the WordPress Coding Standards security sniffs, WordPress Plugin Check and `composer audit`.
 - Dependabot opens weekly updates for npm, Composer and GitHub Actions; CI runs `npm audit --omit=dev --audit-level=high` and `composer audit`.
-- Release assets carry a `.sha256` checksum and a build provenance attestation.
+- Release assets carry a `.sha256` checksum, an Ed25519 detached signature (`.sig`) and a build provenance attestation.
+- The site verifies the signature with `sodium_crypto_sign_verify_detached()` against the public key built into `src/php/Update/PackageVerifier.php`, after the checksum. The package URL must match the pinned GitHub release path exactly (no query, fragment, `..`, userinfo or port). The check fails closed for releases from 1.1.0; older releases without a `.sig` install after the checksum check, and a present but wrong signature always blocks.
+- The private key lives only in the `RELEASE_SIGNING_KEY` repository secret (PEM). `bin/sign-release.mjs` refuses to run without it, with a non-Ed25519 key, or with a key whose public half differs from the pinned one, so a release job without the secret fails. Rotating the key means shipping a new pinned public key in a release signed with the old one.

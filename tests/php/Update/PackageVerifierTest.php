@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Kotlinskidev\A11y\Tests\Update;
 
 use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Kotlinskidev\A11y\Tests\TestCase;
 use Kotlinskidev\A11y\Update\Channel;
 use Kotlinskidev\A11y\Update\PackageVerifier;
@@ -16,10 +17,12 @@ final class PackageVerifierTest extends TestCase {
 
 	private const BASE = 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.0.0/';
 	private const ZIP  = self::BASE . 'kotlinskidev-accessibility.zip';
+	private const SIGNED_ZIP = 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip';
 
 	private string $file          = '';
 	private array $options        = array();
 	private mixed $checksum       = null;
+	private mixed $signature      = null;
 	private array $deleted        = array();
 	private array $requests       = array();
 	private mixed $update_plugins = false;
@@ -31,6 +34,7 @@ final class PackageVerifierTest extends TestCase {
 		$this->options        = array();
 		$this->deleted        = array();
 		$this->checksum       = null;
+		$this->signature      = null;
 		$this->requests       = array();
 		$this->update_plugins = false;
 
@@ -67,7 +71,7 @@ final class PackageVerifierTest extends TestCase {
 			function ( string $url, array $args = array() ): mixed {
 				$this->requests[] = array( $url, $args );
 
-				return $this->checksum;
+				return str_ends_with( $url, '.sig' ) ? $this->signature : $this->checksum;
 			}
 		);
 		Functions\when( 'wp_remote_retrieve_response_code' )->alias( static fn ( mixed $response ): int => is_array( $response ) ? $response['code'] : 0 );
@@ -82,6 +86,20 @@ final class PackageVerifierTest extends TestCase {
 		}
 
 		parent::tearDown();
+	}
+
+	private function signed_verifier( string $public_key ): PackageVerifier {
+		$lookup  = static fn (): mixed => null;
+		$updater = new Updater( '/p/plugin.php', 'Missing\\Factory', new Channel( $lookup ), $lookup );
+
+		return new PackageVerifier( $updater, 'kotlinskidev-accessibility/kotlinskidev-accessibility.php', $public_key );
+	}
+
+	private function sign( string $bytes, string $secret ): array {
+		return array(
+			'code' => 200,
+			'body' => base64_encode( sodium_crypto_sign_detached( $bytes, $secret ) ),
+		);
 	}
 
 	private function verifier(): PackageVerifier {
@@ -235,6 +253,128 @@ final class PackageVerifierTest extends TestCase {
 		PackageVerifier::expect( 'http://example.test/a.zip', 'http://example.test/a.zip.sha256' );
 
 		$this->assertInstanceOf( WP_Error::class, $this->verifier()->verify( false, 'http://example.test/a.zip', null, array() ) );
+	}
+
+	public function test_valid_signature_installs_a_signed_release(): void {
+		$pair           = sodium_crypto_sign_keypair();
+		$this->checksum = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->sign( 'zip-bytes', sodium_crypto_sign_secretkey( $pair ) );
+
+		$result = $this->signed_verifier( base64_encode( sodium_crypto_sign_publickey( $pair ) ) )->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertSame( $this->file, $result );
+		$this->assertSame( self::SIGNED_ZIP . '.sig', $this->requests[1][0] );
+	}
+
+	public function test_tampered_package_fails_signature_and_is_discarded(): void {
+		$pair            = sodium_crypto_sign_keypair();
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->sign( 'other-bytes', sodium_crypto_sign_secretkey( $pair ) );
+
+		$result = $this->signed_verifier( base64_encode( sodium_crypto_sign_publickey( $pair ) ) )->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'kotlinskidev_a11y_signature_invalid', $result->get_error_code() );
+		$this->assertSame( array( $this->file ), $this->deleted );
+	}
+
+	public function test_missing_signature_blocks_a_release_that_requires_one(): void {
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->checksum_response( '', 404 );
+
+		$result = $this->verifier()->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'kotlinskidev_a11y_signature_missing', $result->get_error_code() );
+		$this->assertSame( array( $this->file ), $this->deleted );
+	}
+
+	public function test_malformed_signature_counts_as_missing(): void {
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->checksum_response( 'not-a-signature' );
+
+		$result = $this->verifier()->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertSame( 'kotlinskidev_a11y_signature_missing', $result->get_error_code() );
+	}
+
+	public function test_signature_from_a_different_key_is_rejected(): void {
+		$signer          = sodium_crypto_sign_keypair();
+		$pinned          = sodium_crypto_sign_keypair();
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->sign( 'zip-bytes', sodium_crypto_sign_secretkey( $signer ) );
+
+		$result = $this->signed_verifier( base64_encode( sodium_crypto_sign_publickey( $pinned ) ) )->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertSame( 'kotlinskidev_a11y_signature_invalid', $result->get_error_code() );
+	}
+
+	public function test_signature_is_rejected_against_the_pinned_production_key_when_signed_elsewhere(): void {
+		$other           = sodium_crypto_sign_keypair();
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->sign( 'zip-bytes', sodium_crypto_sign_secretkey( $other ) );
+
+		$result = $this->verifier()->verify( false, self::SIGNED_ZIP, null, $this->update_extra() );
+
+		$this->assertSame( 'kotlinskidev_a11y_signature_invalid', $result->get_error_code() );
+	}
+
+	public function test_older_release_without_signature_still_installs(): void {
+		$this->checksum = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+
+		$this->assertSame( $this->file, $this->verifier()->verify( false, self::ZIP, null, $this->update_extra() ) );
+	}
+
+	public function test_a_present_but_wrong_signature_blocks_even_an_older_release(): void {
+		$other           = sodium_crypto_sign_keypair();
+		$this->checksum  = $this->checksum_response( hash( 'sha256', 'zip-bytes' ) );
+		$this->signature = $this->sign( 'zip-bytes', sodium_crypto_sign_secretkey( $other ) );
+
+		$this->assertInstanceOf( WP_Error::class, $this->verifier()->verify( false, self::ZIP, null, $this->update_extra() ) );
+	}
+
+	public function test_signature_url_accepts_only_the_pinned_release_path(): void {
+		$verifier = $this->verifier();
+
+		$this->assertSame( self::SIGNED_ZIP . '.sig', $verifier->signature_url( self::SIGNED_ZIP ) );
+		$this->assertSame( self::BASE . 'kotlinskidev-accessibility.zip.sig', $verifier->signature_url( self::ZIP ) );
+	}
+
+	public static function hostile_urls(): array {
+		$base = 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/';
+
+		return array(
+			'query'          => array( $base . 'kotlinskidev-accessibility.zip?x=1' ),
+			'fragment'       => array( $base . 'kotlinskidev-accessibility.zip#x' ),
+			'dot dot'        => array( 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/../v9.9.9/kotlinskidev-accessibility.zip' ),
+			'encoded dots'   => array( 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/%2e%2e/kotlinskidev-accessibility.zip' ),
+			'other repo'     => array( 'https://github.com/evil/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip' ),
+			'other asset'    => array( $base . 'evil.zip' ),
+			'http'           => array( 'http://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip' ),
+			'userinfo'       => array( 'https://user@github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip' ),
+			'port'           => array( 'https://github.com:444/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip' ),
+			'suffix'         => array( $base . 'kotlinskidev-accessibility.zip.evil' ),
+			'foreign host'   => array( 'https://example.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.1.0/kotlinskidev-accessibility.zip' ),
+			'bad version'    => array( 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/latest/kotlinskidev-accessibility.zip' ),
+		);
+	}
+
+	#[DataProvider( 'hostile_urls' )]
+	public function test_signature_url_rejects_hostile_urls( string $url ): void {
+		$this->assertNull( $this->verifier()->signature_url( $url ) );
+	}
+
+	public function test_signature_parser_and_detached_verifier(): void {
+		$pair      = sodium_crypto_sign_keypair();
+		$signature = sodium_crypto_sign_detached( 'm', sodium_crypto_sign_secretkey( $pair ) );
+		$public    = base64_encode( sodium_crypto_sign_publickey( $pair ) );
+
+		$this->assertSame( $signature, PackageVerifier::parse_signature( base64_encode( $signature ) . "\n" ) );
+		$this->assertNull( PackageVerifier::parse_signature( '%%%' ) );
+		$this->assertTrue( PackageVerifier::verify_detached( 'm', $signature, $public ) );
+		$this->assertFalse( PackageVerifier::verify_detached( 'x', $signature, $public ) );
+		$this->assertFalse( PackageVerifier::verify_detached( 'm', $signature, 'short' ) );
+		$this->assertSame( 32, strlen( (string) base64_decode( PackageVerifier::SIGNING_PUBLIC_KEY, true ) ) );
 	}
 
 	public function test_parse_checksum(): void {

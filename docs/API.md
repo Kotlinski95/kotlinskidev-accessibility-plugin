@@ -264,6 +264,27 @@ if ( function_exists( 'kotlinskidev_a11y_api_version' ) && kotlinskidev_a11y_api
 }
 ```
 
+**Theme contract.** A theme must not reach into `#ka11y-root` (it is a shadow host). Use these instead:
+
+| Item | Kind | Description |
+| --- | --- | --- |
+| `html.ka11y-floating-hidden` | class | Add it to `<html>` to hide the floating trigger. The trigger fades out with a 0.2 s opacity and visibility transition and is removed from the tab order. An open panel is not hidden. Triggers made with `data-ka11y`, the shortcode or the block are not affected. Remove the class to show it again. |
+| `--ka11y-offset-bottom` | custom property | Distance from the viewport bottom, read from `:root` (or any ancestor of `#ka11y-root`). Applies to `bottom-*` positions. Default: the configured vertical offset (20px). |
+| `--ka11y-offset-inline-end` | custom property | Distance from the horizontal edge the trigger sits on (right for `*-right`, left for `*-left`). Default: the configured horizontal offset (20px). |
+| `window.kotlinskidevA11y.api` | probe | `1`. See below. |
+
+The transition is switched off while `prefers-reduced-motion: reduce` matches and while `html.ka11y-stop-animations` is set. The safe-area inset is still added to both offsets.
+
+```css
+:root { --ka11y-offset-bottom: 5rem; }
+```
+
+```js
+document.documentElement.classList.toggle('ka11y-floating-hidden', nearFooter);
+```
+
+**Probe timing.** `window.kotlinskidevA11y.api === 1` is defined by the inline bootstrap script printed in `<head>`, so it is available to any theme script, before DOM ready and before any plugin chunk loads, under every loading strategy. Only `api` is guaranteed at that point. `open`, `toggle`, `getState` and the other methods appear when `ka11y:ready` fires (on interaction under the default strategy), so before that push to `window.kotlinskidevA11yQueue` instead of calling them.
+
 **Actions.** Put `data-ka11y="<action>"` on any element, see [Actions](#actions). No script of your own is needed.
 
 **JavaScript.** `window.kotlinskidevA11y` exposes `api`, `version`, `open`, `toggle` and the other members listed under [JavaScript API](#javascript-api). Before it is ready, push to `window.kotlinskidevA11yQueue`.
@@ -332,6 +353,8 @@ Namespace `kotlinskidev-a11y/v1`.
 - Custom selectors are used only in selector APIs, never printed into CSS or HTML. Selectors such as `html`, `body` and `*` are rejected.
 - A page script that stops propagation on a capture listener registered on `document` before the plugin can block triggers.
 - URL actions can only enable enabled features and are never saved by themselves.
+- Updates are verified twice. The `.sha256` asset guards against a damaged download. The `.sig` asset is an Ed25519 detached signature over the zip, checked with `sodium_crypto_sign_verify_detached()` against a public key built into the plugin, so a tampered release cannot pass by shipping its own checksum. The package URL must be the pinned `https://github.com/<owner>/<repo>/releases/download/v<version>/kotlinskidev-accessibility.zip` path: no query, fragment, `..`, userinfo or port. Releases from 1.1.0 on must carry a valid signature; a missing, malformed or wrong signature discards the download. Older releases without a `.sig` still install after the checksum check, but a signature that is present and wrong always blocks.
+- `performance.pageCss` defaults to `lazy`: the page stylesheet loads only when a feature needs it and adds nothing to the HTML. `inline` prints the whole page stylesheet in every page's `<head>` (about 6.9 KB raw, 1.6 KB gzip at the time of writing) and cannot be cached between pages, so use it only when a strict CSP or a no-extra-request rule demands it; `linked` is the cacheable alternative.
 
 ## Deprecation policy
 
@@ -350,3 +373,4 @@ The full policy for every surface, and the list of current deprecations, is in [
 | 0.4.0 | 1 | No API change. New filters `kotlinskidev_a11y_locale_label` and `kotlinskidev_a11y_icons`, additive `/panel-data` payload, non-modal panel. |
 | 1.0.0 | 1 | No change to the JavaScript API, events or actions. Added settings management: dry runs, locks, customer capability, network routes, update routes, WP-CLI, the constants `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and `KOTLINSKIDEV_A11Y_DISABLE_UPDATER`, and the filters `kotlinskidev_a11y_customer_capability`, `_customer_paths`, `_locked_settings`, `_known_locales`, `_default_locale`, `_update_channel`, `_enable_updater` and `_rollback_releases`. |
 | 1.0.1 | 1 | No change to the JavaScript API, events or actions. Added the presence probe `KOTLINSKIDEV_A11Y_API` and `kotlinskidev_a11y_api_version()`, the filter `kotlinskidev_a11y_default_selectors` and neutral default dark and light selectors. |
+| 1.1.0 | 1 | No change to the JavaScript API, events or actions. Added the theme contract: class `ka11y-floating-hidden`, custom properties `--ka11y-offset-bottom` and `--ka11y-offset-inline-end`, and `window.kotlinskidevA11y.api` defined at page load. |

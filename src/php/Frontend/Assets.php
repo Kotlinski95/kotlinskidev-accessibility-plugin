@@ -25,6 +25,7 @@ final class Assets {
 		'square'  => '8px',
 	);
 	private const HIDDEN_RULE   = 'html[data-ka11y-hidden] #ka11y-root{display:none!important}';
+	private const FLOATING_RULE = 'html.ka11y-floating-hidden #ka11y-root{--ka11y-floating-opacity:0;--ka11y-floating-visibility:hidden}html.ka11y-stop-animations #ka11y-root{--ka11y-floating-transition:none}@media (prefers-reduced-motion:reduce){#ka11y-root{--ka11y-floating-transition:none}}';
 	private const NOSCRIPT      = '<noscript><style>#ka11y-root,.ka11y-trigger{display:none!important}</style></noscript>';
 
 	private Visibility $visibility;
@@ -101,6 +102,7 @@ final class Assets {
 		$css  = $this->root_variables( $settings );
 		$css .= $this->device_rules( $settings );
 		$css .= self::HIDDEN_RULE;
+		$css .= self::FLOATING_RULE;
 		$css .= (string) ( $settings['customCss'] ?? '' );
 
 		if ( 'inline' === ( $settings['performance']['pageCss'] ?? 'lazy' ) ) {
@@ -135,6 +137,7 @@ final class Assets {
 		$boot    = array(
 			'storage' => $storage,
 			'css'     => $css,
+			'api'     => 1,
 			'hk'      => (string) ( $storage['key'] ?? 'ka11y' ) . '-hidden',
 		);
 		$custom  = InlineConfig::trigger_selectors( $settings );
@@ -301,14 +304,18 @@ final class Assets {
 		$parts      = explode( '-', $position );
 		$vertical   = $parts[0];
 		$horizontal = $parts[1] ?? 'right';
-		$inset      = 'calc(' . $offset_x . 'px + env(safe-area-inset-' . $horizontal . ',0px))';
+		$inset      = 'calc(var(--ka11y-offset-inline-end,' . $offset_x . 'px) + env(safe-area-inset-' . $horizontal . ',0px))';
 		$css        = $horizontal . ':' . $inset . ';' . ( 'left' === $horizontal ? 'right' : 'left' ) . ':auto;';
 
 		if ( 'middle' === $vertical ) {
 			return $css . 'top:calc(50% - var(--ka11y-size) / 2);bottom:auto;';
 		}
 
-		return $css . $vertical . ':calc(' . $offset_y . 'px + env(safe-area-inset-' . $vertical . ',0px));' . ( 'top' === $vertical ? 'bottom' : 'top' ) . ':auto;';
+		return $css . $vertical . ':calc(' . $this->vertical_offset( $vertical, $offset_y ) . ' + env(safe-area-inset-' . $vertical . ',0px));' . ( 'top' === $vertical ? 'bottom' : 'top' ) . ':auto;';
+	}
+
+	private function vertical_offset( string $vertical, int $offset_y ): string {
+		return 'bottom' === $vertical ? 'var(--ka11y-offset-bottom,' . $offset_y . 'px)' : $offset_y . 'px';
 	}
 
 	private function kebab( string $name ): string {
