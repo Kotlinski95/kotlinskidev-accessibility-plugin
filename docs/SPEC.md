@@ -38,7 +38,7 @@ Admin: shortcode `[kotlinskidev_a11y_statement]` (per-language content); missing
 - `features.*`: enabled true, default false. `profiles.*`: enabled true, preset lists.
 - `widget`: `position` per device (desktop/tablet/mobile; bottom-right, bottom-left, top-right, top-left, middle-right, middle-left), `offsetX`/`offsetY` per device 20, `size` md (sm 40, md 52, lg 64), `icon` universal or attachment ID, `iconBorder` false.
 - `visibility`: `devices` all true, `breakpoints {tablet:1024, mobile:768}`, `excludePostIds/PostTypes/Roles/UrlPatterns` [].
-- `theme`: `mode` auto, `darkSelector` `html.dark-mode, body.dark-mode`, `lightSelector` `html.light-mode, body.light-mode`, `followPrefersColorScheme` true.
+- `theme`: `mode` auto, `darkSelector` `html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode`, `lightSelector` `html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode`, `followPrefersColorScheme` true.
 - `tokens`: primary, onPrimary, surfaceLight, surfaceDark, textLight, textDark, radius, zIndex 2147483000, fontFamily. `customCss` ''.
 - `storage`: mode local|cookie|none, ttlDays 365, key `ka11y`. `statement {pageId:0,url:'',content:{locale:html}}`. `shortcut {enabled:true,combo:'Alt+Shift+A'}`. `hideToolbar {allow:true,days:[1,7,30]}`. `labels {locale:{stringKey:text}}`. `advanced {excludeSelectors:'#wpadminbar'}`, `performance {preset, strategy:'interaction'|'idle'|'defer'|'async'|'eager', position, fetchPriority, prefetch, pageCss, deviceSkip, optOut}`.
 

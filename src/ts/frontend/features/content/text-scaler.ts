@@ -11,6 +11,7 @@ export interface ScaleStrategy {
   key: string;
   property: 'font-size' | 'line-height';
   inheritsScale: boolean;
+  textScope?: 'own' | 'subtree';
   measure(computed: CSSStyleDeclaration): number | null;
   resolve(original: number, level: FeatureLevel): ScaleResult;
 }
@@ -31,6 +32,11 @@ const hasOwnText = (element: HTMLElement): boolean =>
   CONTROL_TAGS.has(element.tagName) ||
   Array.from(element.childNodes).some((child) => child.nodeType === Node.TEXT_NODE && (child.nodeValue ?? '').trim() !== '');
 
+const hasSubtreeText = (element: Element): boolean =>
+  Array.from(element.childNodes).some((child) =>
+    child.nodeType === Node.TEXT_NODE ? (child.nodeValue ?? '').trim() !== '' : child instanceof Element && !SKIPPED_TAGS.has(child.tagName) && hasSubtreeText(child)
+  );
+
 export const createTextScaler = (strategy: ScaleStrategy): FeatureModule => {
   const entries = new WeakMap<HTMLElement, Entry>();
   const written = new Set<HTMLElement>();
@@ -41,7 +47,10 @@ export const createTextScaler = (strategy: ScaleStrategy): FeatureModule => {
   let isExcluded = createExclusion();
 
   const isScalable = (element: Element): element is HTMLElement =>
-    element instanceof HTMLElement && !SKIPPED_TAGS.has(element.tagName) && !isExcluded(element) && hasOwnText(element);
+    element instanceof HTMLElement &&
+    !SKIPPED_TAGS.has(element.tagName) &&
+    !isExcluded(element) &&
+    (strategy.textScope === 'subtree' ? hasSubtreeText(element) : hasOwnText(element));
 
   const inheritedRatio = (element: HTMLElement): number => {
     let node = element.parentElement;

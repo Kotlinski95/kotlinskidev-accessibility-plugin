@@ -83,14 +83,61 @@ final class Schema {
 
 	private const POSITIONS = array( 'bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left' );
 
+	public const LEGACY_DARK_SELECTOR = 'html.dark-mode, body.dark-mode';
+
+	public const LEGACY_LIGHT_SELECTOR = 'html.light-mode, body.light-mode';
+
+	public const DEFAULT_DARK_SELECTOR = 'html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode';
+
+	public const DEFAULT_LIGHT_SELECTOR = 'html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode';
+
 	private static ?array $definitions = null;
 
+	private static ?array $base = null;
+
+	private static ?array $applied_selectors = null;
+
 	public static function definitions(): array {
-		if ( null === self::$definitions ) {
-			self::$definitions = self::build();
+		if ( null === self::$base ) {
+			self::$base = self::build();
+		}
+
+		$selectors = self::default_selectors();
+
+		if ( null === self::$definitions || $selectors !== self::$applied_selectors ) {
+			self::$definitions                                   = self::$base;
+			self::$definitions['theme.darkSelector']['default']  = $selectors['darkSelector'];
+			self::$definitions['theme.lightSelector']['default'] = $selectors['lightSelector'];
+			self::$applied_selectors                             = $selectors;
 		}
 
 		return self::$definitions;
+	}
+
+	public static function default_selectors(): array {
+		$filtered = apply_filters(
+			'kotlinskidev_a11y_default_selectors',
+			array(
+				'darkSelector'  => self::DEFAULT_DARK_SELECTOR,
+				'lightSelector' => self::DEFAULT_LIGHT_SELECTOR,
+			)
+		);
+		$filtered = is_array( $filtered ) ? $filtered : array();
+
+		return array(
+			'darkSelector'  => self::selector_or( $filtered['darkSelector'] ?? null, self::DEFAULT_DARK_SELECTOR ),
+			'lightSelector' => self::selector_or( $filtered['lightSelector'] ?? null, self::DEFAULT_LIGHT_SELECTOR ),
+		);
+	}
+
+	private static function selector_or( mixed $value, string $fallback ): string {
+		if ( ! is_string( $value ) ) {
+			return $fallback;
+		}
+
+		$clean = trim( (string) preg_replace( '/[<>{};]/', '', $value ) );
+
+		return '' === $clean ? $fallback : $clean;
 	}
 
 	public static function definition( string $path ): ?array {
@@ -329,8 +376,8 @@ final class Schema {
 		$defs['visibility.excludeTemplates']   = self::def( 'array', 'text_list', array() );
 
 		$defs['theme.mode']                     = self::def( 'string', 'enum', 'auto', array( 'enum' => array( 'auto', 'light', 'dark' ) ) );
-		$defs['theme.darkSelector']             = self::def( 'string', 'text', 'html.dark-mode, body.dark-mode' );
-		$defs['theme.lightSelector']            = self::def( 'string', 'text', 'html.light-mode, body.light-mode' );
+		$defs['theme.darkSelector']             = self::def( 'string', 'text', self::DEFAULT_DARK_SELECTOR );
+		$defs['theme.lightSelector']            = self::def( 'string', 'text', self::DEFAULT_LIGHT_SELECTOR );
 		$defs['theme.followPrefersColorScheme'] = self::def( 'boolean', 'bool', true );
 
 		$defs['tokens.primary']       = self::def( 'string', 'color', '#0b57d0' );

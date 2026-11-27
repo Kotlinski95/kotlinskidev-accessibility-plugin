@@ -30,6 +30,7 @@ export const lineHeight = createTextScaler({
   key: 'lineHeight',
   property: 'line-height',
   inheritsScale: false,
+  textScope: 'subtree',
   measure,
   resolve,
 });

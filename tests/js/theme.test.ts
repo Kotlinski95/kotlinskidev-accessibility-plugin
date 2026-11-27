@@ -3,8 +3,8 @@ import type { ThemeConfig } from '../../src/ts/shared/types';
 
 const baseConfig: ThemeConfig = {
   mode: 'auto',
-  darkSelector: 'html.dark-mode, body.dark-mode',
-  lightSelector: 'html.light-mode, body.light-mode',
+  darkSelector: 'html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode',
+  lightSelector: 'html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode',
   followPrefersColorScheme: true,
 };
 

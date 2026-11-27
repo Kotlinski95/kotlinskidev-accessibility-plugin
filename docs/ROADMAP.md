@@ -65,7 +65,7 @@ Layers:
 1. Unit: keep Jest and PHPUnit. Add PHPStan and WordPress Plugin Check.
 2. Page invariants (Playwright), run for every feature, every level and every profile: root computed styles unchanged except allowed ones, scroll works, a link and a form field work, no large element takes pointer events, Escape restores focus, reset restores the DOM, reload keeps the page usable, no console errors, no serious axe issues.
 3. Combinations: pairwise set of features, not the full product.
-4. Fixtures: stock theme, plus a hostile fixture theme (transformed wrapper, sticky header, `overflow: clip`, modal, cookie wall, carousel, iframe, 5000 nodes). The real kotlinskidev theme runs locally, not in CI.
+4. Fixtures: stock theme, plus a hostile fixture theme (transformed wrapper, sticky header, `overflow: clip`, modal, cookie wall, carousel, iframe, 5000 nodes). Real themes run locally, not in CI.
 5. Visual snapshots: panel, launcher, each profile; light and dark; desktop and mobile; EN, PL and one RTL locale.
 6. Compatibility: Asset CleanUp, Super Page Cache, delay-JS, Polylang, strict CSP.
 7. Matrix: minimum and latest WordPress, PHP 8.1 to latest; Chromium on PRs, WebKit and Firefox nightly.
@@ -130,26 +130,9 @@ One action vocabulary: `open`, `close`, `toggle`, `reset`, `feature:<key>[:<leve
 - The admin has a snippet generator with copy buttons and a preview.
 - The API is versioned and documented in `docs/API.md`. Deprecations last one minor release.
 
-The "+" menu is not part of this plugin. It is a block in the kotlinskidev theme repo, `kotlinskidev/speed-dial` (see Phase 4b), and uses this API. Contact links do not belong in an accessibility plugin.
+A "+" quick-actions menu is not part of this plugin. Themes build it on this API. Contact links do not belong in an accessibility plugin.
 
-## Phase 4b: speed-dial block (theme repo, own `feature/T{n}` branch)
-
-- Parent block `kotlinskidev/speed-dial` holds the "+" toggle. Inner blocks are the items, so the editor can add, reorder and remove as many as needed.
-- Child block `kotlinskidev/speed-dial-item`, with an action:
-  - `url`, `tel`, `mailto`
-  - `accessibility`: opens the panel through `#kotlinskidev-a11y` or `kotlinskidevA11y.open()`
-  - `trigger`: runs any Phase 4 action, for example `profile:adhdFriendly`
-  - `custom`: free HTML class and `data-` attributes
-- Icon per item: the theme's existing icon block (SVG from the Media Library, `currentColor`) or a built-in set. Label, tooltip, colours and `aria-label` per item.
-- The inner-block allowlist also accepts `core/html`, `core/shortcode` and a code block. Snippet plugins that render shortcodes, such as WPCode, work through a shortcode item.
-- Block settings: position per device (reuse `responsive-display`), open direction, label visibility, motion (reduced-motion safe), z-index below the accessibility launcher.
-- Placement: drop it in the footer template part, or in the site-wide pattern.
-- Accessibility: disclosure pattern (`aria-expanded`, `aria-controls`), arrow keys, Escape closes and returns focus, 44 px targets.
-- Frontend: vanilla TypeScript, loaded only on pages that contain the block, via the theme's existing per-block loading.
-- Without the accessibility plugin active, the accessibility item hides itself.
-- Rule: per block, Storybook story, Jest and PHPUnit tests, `docs/treeview.md` and `CHANGELOG.md` updated.
-
-Done when: items can be added and reordered in the editor, the accessibility item opens the panel, and keyboard and screen reader checks pass.
+Phase 4b (a quick-actions block in a theme repo) is outside this plugin and uses the public API in `docs/API.md`.
 
 Done when: an e2e page with one trigger of each kind passes keyboard and screen reader checks, with the launcher hidden and under every load strategy.
 

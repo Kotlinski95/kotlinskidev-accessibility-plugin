@@ -261,7 +261,7 @@ final class VisibilityTest extends TestCase {
 	}
 
 	public function test_only_on_block_template_slug(): void {
-		$GLOBALS['_wp_current_template_id'] = 'kotlinskidev//front-page';
+		$GLOBALS['_wp_current_template_id'] = 'example-theme//front-page';
 		$this->only_on( array( 'includeTemplates' => array( 'front-page' ) ) );
 
 		$this->assertTrue( ( new Visibility() )->should_render() );

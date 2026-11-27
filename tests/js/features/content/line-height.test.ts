@@ -53,4 +53,14 @@ describe('lineHeight', () => {
     expect(heightOf('d')).toBe('1.2');
     expect(heightOf('a')).toBe('1.5');
   });
+
+  it('reaches block containers whose text lives only in inline children', () => {
+    document.body.innerHTML =
+      '<ul><li id="li" style="line-height:1.2"><a id="la" href="#" style="line-height:1.2">Link</a></li></ul><div id="wrap" style="line-height:1.2"><div id="empty" style="line-height:1.2"></div></div>';
+    lineHeight.on(1);
+    frames.flush();
+    expect(heightOf('li')).toBe('1.5');
+    expect(heightOf('la')).toBe('1.5');
+    expect(heightOf('empty')).toBe('1.2');
+  });
 });

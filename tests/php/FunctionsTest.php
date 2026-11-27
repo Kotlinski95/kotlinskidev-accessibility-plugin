@@ -47,4 +47,9 @@ final class FunctionsTest extends TestCase {
 		$this->expectOutputString( '' );
 		kotlinskidev_a11y_button( array( 'action' => 'bad' ) );
 	}
+
+	public function test_api_version_probe_matches_constant(): void {
+		$this->assertSame( KOTLINSKIDEV_A11Y_API, kotlinskidev_a11y_api_version() );
+		$this->assertSame( 1, kotlinskidev_a11y_api_version() );
+	}
 }

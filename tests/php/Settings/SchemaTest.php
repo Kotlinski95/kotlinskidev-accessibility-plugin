@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Kotlinskidev\A11y\Tests\Settings;
 
+use Brain\Monkey\Filters;
 use Kotlinskidev\A11y\Frontend\Actions;
 use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Tests\TestCase;
@@ -59,6 +60,30 @@ final class SchemaTest extends TestCase {
 		$this->assertFalse( $widget['iconBorder'] );
 	}
 
+	public function test_default_selectors_are_a_superset_of_the_legacy_ones(): void {
+		$defaults = Schema::defaults();
+
+		foreach ( array( Schema::LEGACY_DARK_SELECTOR => 'darkSelector', Schema::LEGACY_LIGHT_SELECTOR => 'lightSelector' ) as $legacy => $key ) {
+			foreach ( array_map( 'trim', explode( ',', $legacy ) ) as $part ) {
+				$this->assertContains( $part, array_map( 'trim', explode( ',', $defaults['theme'][ $key ] ) ) );
+			}
+		}
+	}
+
+	public function test_default_selectors_filter_overrides_schema_defaults(): void {
+		Filters\expectApplied( 'kotlinskidev_a11y_default_selectors' )->andReturn(
+			array(
+				'darkSelector'  => 'html.theme-night',
+				'lightSelector' => '',
+			)
+		);
+
+		$defaults = Schema::defaults();
+
+		$this->assertSame( 'html.theme-night', $defaults['theme']['darkSelector'] );
+		$this->assertSame( Schema::DEFAULT_LIGHT_SELECTOR, $defaults['theme']['lightSelector'] );
+	}
+
 	public function test_visibility_theme_storage_and_misc_defaults(): void {
 		$defaults = Schema::defaults();
 
@@ -81,8 +106,8 @@ final class SchemaTest extends TestCase {
 			$this->assertSame( array(), $defaults['visibility'][ $key ] );
 		}
 		$this->assertSame( 'auto', $defaults['theme']['mode'] );
-		$this->assertSame( 'html.dark-mode, body.dark-mode', $defaults['theme']['darkSelector'] );
-		$this->assertSame( 'html.light-mode, body.light-mode', $defaults['theme']['lightSelector'] );
+		$this->assertSame( 'html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode', $defaults['theme']['darkSelector'] );
+		$this->assertSame( 'html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode', $defaults['theme']['lightSelector'] );
 		$this->assertTrue( $defaults['theme']['followPrefersColorScheme'] );
 		$this->assertSame( 2147483000, $defaults['tokens']['zIndex'] );
 		$this->assertSame( '', $defaults['customCss'] );

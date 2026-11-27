@@ -44,6 +44,22 @@ final class RepositoryTest extends TestCase {
 		$this->assertSame( $defaults['features'], $result['features'] );
 	}
 
+	public function test_stored_legacy_selectors_keep_their_value(): void {
+		Functions\when( 'get_option' )->justReturn(
+			array(
+				'theme' => array(
+					'darkSelector'  => Schema::LEGACY_DARK_SELECTOR,
+					'lightSelector' => Schema::LEGACY_LIGHT_SELECTOR,
+				),
+			)
+		);
+
+		$result = ( new Repository() )->get();
+
+		$this->assertSame( Schema::LEGACY_DARK_SELECTOR, $result['theme']['darkSelector'] );
+		$this->assertSame( Schema::LEGACY_LIGHT_SELECTOR, $result['theme']['lightSelector'] );
+	}
+
 	public function test_get_ignores_non_array_stored_value(): void {
 		Functions\when( 'get_option' )->justReturn( 'garbage' );
 

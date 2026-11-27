@@ -1,6 +1,7 @@
 import type { FeatureModule } from '../../apply';
 import { featureClassBase } from '../../feature-utils';
 import { freezeGifs } from './freeze-gifs';
+import { setMotionStopped } from './motion-state';
 import { addRootClass, removeRootClass } from './root-class';
 
 const CLASS_NAME = featureClassBase('stopAnimations');
@@ -26,12 +27,14 @@ const resumeVideos = (): void => {
 
 const on = (): void => {
   addRootClass(CLASS_NAME);
+  setMotionStopped(true);
   pauseAutoplayVideos();
   unfreeze ??= freezeGifs();
 };
 
 const off = (): void => {
   removeRootClass(CLASS_NAME);
+  setMotionStopped(false);
   resumeVideos();
   unfreeze?.();
   unfreeze = null;

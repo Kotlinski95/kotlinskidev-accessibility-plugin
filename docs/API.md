@@ -118,6 +118,35 @@ kotlinskidevA11y.on('ready', () => kotlinskidevA11y.set('darkContrast', true));
 
 Unknown or disabled keys resolve without effect and without an event.
 
+## Motion state
+
+While the Stop animations feature is on, pages can react to it from script. The first-party widget publishes three things:
+
+| Signal | Description |
+| --- | --- |
+| `html.ka11y-stop-animations` | Root class. CSS animations, transitions and smooth scrolling are already disabled for all page elements. |
+| `window.kotlinskidevA11yMotion` | `{ stopped: boolean }`. Absent until the feature has been switched on once, so treat absent as not stopped. |
+| `kotlinskidev-a11y:motion` | `CustomEvent` on `window`, `detail: { stopped: boolean }`, fired when the feature turns on and off. |
+
+While stopped, `window.matchMedia('(prefers-reduced-motion: reduce)')` and `(prefers-reduced-motion)` report `matches: true` and `(prefers-reduced-motion: no-preference)` reports `false`, for queries created while it is on. Code that already re-reads the query on use honors it with no change. A media query list created earlier does not fire `change`, so also listen for the event.
+
+```js
+const isStopped = () =>
+  document.documentElement.classList.contains('ka11y-stop-animations') ||
+  window.kotlinskidevA11yMotion?.stopped === true;
+
+window.addEventListener('kotlinskidev-a11y:motion', (event) => {
+  if (event.detail.stopped) cancelAnimationFrame(frame);
+  else frame = requestAnimationFrame(tick);
+});
+```
+
+For a `requestAnimationFrame` canvas, cancel the frame and draw the final static frame on stop, and resume on the opposite event. When `window.gsap` exists its global timeline is paused and resumed for you.
+
+## Read page options
+
+`window.kotlinskidevA11yReadPage = { voice?: string, rate?: number }`, set before the widget loads. `voice` is a name fragment or `voiceURI` (`auto` keeps the automatic choice) and `rate` is clamped to 0.5 to 2.
+
 ## Events
 
 All events are `CustomEvent`s on `document`, not cancelable, and do not bubble. Listener errors are isolated by the browser.
@@ -179,6 +208,7 @@ The keyboard shortcut is configurable and works in every mode when enabled. The 
 
 | Hook | Type | Purpose |
 | --- | --- | --- |
+| `kotlinskidev_a11y_default_selectors` | filter | `array{darkSelector: string, lightSelector: string}` in, array out. Default dark and light mode selectors of the schema. Applies only to sites that never saved a selector. Empty or invalid values fall back to the plugin defaults. |
 | `kotlinskidev_a11y_trigger_selectors` | filter | `array $selectors` in, array out. Add custom trigger selectors. Each goes through the same sanitizer as the setting. |
 | `kotlinskidev_a11y_url_actions` | filter | `array $names` in, array out. Narrow the URL allowlist. The result is intersected with `open`, `feature` and `profile` and with the setting, so it never widens it. |
 | `kotlinskidev_a11y_button_html` | filter | `string $html, array $args` in, string out. Change trigger markup. The result is filtered through `wp_kses` again. |
@@ -212,7 +242,53 @@ Set in `wp-config.php` before the plugin loads.
 | `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` | `'stable'` or `'beta'` | Fixes the update channel; the admin control is disabled. |
 | `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` | `true` | Turns off the update check, checksum verification, rollback and update routes. |
 
+| Constant | Value | Effect |
+| --- | --- | --- |
+| `KOTLINSKIDEV_A11Y_API` | `1` | Defined by the plugin, read-only. Presence probe: `defined( 'KOTLINSKIDEV_A11Y_API' )`. |
+
+`kotlinskidev_a11y_api_version(): int` returns the same value and is defined beside `kotlinskidev_a11y_get_button()`.
+
 The plugin also defines `KOTLINSKIDEV_A11Y_VERSION`, `KOTLINSKIDEV_A11Y_FILE`, `KOTLINSKIDEV_A11Y_DIR` and `KOTLINSKIDEV_A11Y_URL`, which are read-only and not part of the API.
+
+## Integrating a theme
+
+A theme or another plugin can work with the widget without a hard dependency.
+
+**Presence probe.** Check `defined( 'KOTLINSKIDEV_A11Y_API' )` or `function_exists( 'kotlinskidev_a11y_api_version' )`, then compare `kotlinskidev_a11y_api_version()` with the version you were written against. Both are PHP only and cost nothing on the front end. In the browser, feature-detect `window.kotlinskidevA11y?.api === 1`.
+
+```php
+if ( function_exists( 'kotlinskidev_a11y_api_version' ) && kotlinskidev_a11y_api_version() >= 1 ) {
+	kotlinskidev_a11y_button( array( 'action' => 'open', 'label' => 'Accessibility' ) );
+}
+```
+
+**Actions.** Put `data-ka11y="<action>"` on any element, see [Actions](#actions). No script of your own is needed.
+
+**JavaScript.** `window.kotlinskidevA11y` exposes `api`, `version`, `open`, `toggle` and the other members listed under [JavaScript API](#javascript-api). Before it is ready, push to `window.kotlinskidevA11yQueue`.
+
+**Events.** `ka11y:ready`, `ka11y:open`, `ka11y:close` and `ka11y:change` on `document`, see [Events](#events).
+
+**Motion.** Respect Stop animations through `html.ka11y-stop-animations`, the `kotlinskidev-a11y:motion` event on `window` (`detail.stopped`) and `window.kotlinskidevA11yMotion`, see [Motion state](#motion-state).
+
+**Dark and light mode.** The widget follows `theme.darkSelector` and `theme.lightSelector`, matched against `html` and `body`. The defaults match `html.dark`, `html.dark-mode`, `html[data-theme="dark"]`, `body.dark`, `body.dark-mode` and the `light` equivalents. A theme with another convention sets its own without touching saved settings:
+
+```php
+add_filter(
+	'kotlinskidev_a11y_default_selectors',
+	static fn ( array $selectors ): array => array(
+		'darkSelector'  => 'html.theme-night',
+		'lightSelector' => 'html.theme-day',
+	)
+);
+```
+
+A site that saved its own selectors keeps them. Sites that stored the former defaults (`html.dark-mode, body.dark-mode` and `html.light-mode, body.light-mode`) behave exactly as before.
+
+**Palette.** Color fields accept `var(--wp--preset--color--<slug>, #fallback)`. The admin reads the palette from `wp_get_global_settings( array( 'color', 'palette' ) )`, so a block theme only needs to define its palette in `theme.json`.
+
+**REST.** `GET kotlinskidev-a11y/v1/trigger-options` (capability `edit_posts`) returns `{ "features": string[], "profiles": string[] }` for editor controls that offer triggers.
+
+**PHP.** `kotlinskidev_a11y_button()`, `kotlinskidev_a11y_get_button()`, `kotlinskidev_a11y_api_version()`, the shortcode and the block, see [Shortcode, block and PHP functions](#shortcode-block-and-php-functions). Filters are listed under [PHP hooks](#php-hooks).
 
 ## WP-CLI
 
@@ -271,3 +347,4 @@ The full policy for every surface, and the list of current deprecations, is in [
 | 0.3.0 | 1 | Action vocabulary, trigger surfaces, JavaScript API, events, shortcode, block, PHP functions and the new filters. Removed the v0.2 `kotlinskidev_a11y_legacy_config` filter. |
 | 0.4.0 | 1 | No API change. New filters `kotlinskidev_a11y_locale_label` and `kotlinskidev_a11y_icons`, additive `/panel-data` payload, non-modal panel. |
 | 1.0.0 | 1 | No change to the JavaScript API, events or actions. Added settings management: dry runs, locks, customer capability, network routes, update routes, WP-CLI, the constants `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and `KOTLINSKIDEV_A11Y_DISABLE_UPDATER`, and the filters `kotlinskidev_a11y_customer_capability`, `_customer_paths`, `_locked_settings`, `_known_locales`, `_default_locale`, `_update_channel`, `_enable_updater` and `_rollback_releases`. |
+| 1.0.1 | 1 | No change to the JavaScript API, events or actions. Added the presence probe `KOTLINSKIDEV_A11Y_API` and `kotlinskidev_a11y_api_version()`, the filter `kotlinskidev_a11y_default_selectors` and neutral default dark and light selectors. |

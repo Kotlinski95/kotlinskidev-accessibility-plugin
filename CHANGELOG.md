@@ -5,6 +5,27 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-27
+
+### Added
+
+- Presence probe for themes: constant `KOTLINSKIDEV_A11Y_API` and `kotlinskidev_a11y_api_version()`, plus an Integrating a theme guide in `docs/API.md`.
+- Filter `kotlinskidev_a11y_default_selectors` to set the default dark and light mode selectors from a theme.
+- Motion state for scripts: `window.kotlinskidevA11yMotion`, the `kotlinskidev-a11y:motion` event, and `prefers-reduced-motion` queries that report reduce while Stop animations is on. Documented in `docs/API.md`.
+- Read page options `window.kotlinskidevA11yReadPage = { voice, rate }` and a visitor `ka11y-voice-pref` key.
+
+### Changed
+
+- Default dark and light selectors are now a neutral set (`html.dark`, `html.dark-mode`, `html[data-theme="dark"]`, `body.dark`, `body.dark-mode` and the `light` equivalents), a superset of the old defaults. Sites that stored the old values keep them.
+- Read page strictly prefers on-device voices over remote or Google voices, skips macOS novelty voices, no longer stores the automatic pick, queues long text in large chunks for local voices and sets rate, pitch and volume. It reads in the language of the clicked element.
+- Line height also raises block containers whose text sits only in inline children, such as list items with links.
+- Letter spacing, font weight, fonts and text alignment out-rank theme `!important` rules.
+- Size budget for the orientation chunk raised from 3840 to 4736 B gzip (Read page voice ranking and motion state). Loader, bootstrap and every-page total are unchanged.
+
+### Fixed
+
+- Dark and light contrast no longer make gradient text (`background-clip: text` with a transparent text fill) invisible.
+
 ## [1.0.0] - 2026-11-27
 
 First stable release. Adds full control over the panel and launcher look, theme colors and a reorderable feature list, on top of the settings management work from the beta.

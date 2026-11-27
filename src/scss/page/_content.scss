@@ -1,62 +1,28 @@
 $cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M8 4v34l9-8 6 14 7-3-6-14h12z' fill='%23000' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
 $cursor-hand: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Cpath d='M18 6a4 4 0 018 0v14l12 3a6 6 0 014 6l-2 14H18L8 28a4 4 0 016-5l4 4z' fill='%23000' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E");
 
-html.ka11y-letter-spacing {
-  body,
-  body * {
-    letter-spacing: 0.12em !important;
-    word-spacing: 0.16em !important;
-  }
+$scope: ':not(#ka11y-root):not(#ka11y-root *)';
 
-  #ka11y-root {
-    letter-spacing: normal !important;
-    word-spacing: normal !important;
-  }
+html.ka11y-letter-spacing body *#{$scope} {
+  letter-spacing: 0.12em !important;
+  word-spacing: 0.16em !important;
 }
 
-html.ka11y-font-weight {
-  body,
-  body * {
-    font-weight: 700 !important;
-  }
-
-  #ka11y-root {
-    font-weight: normal !important;
-  }
+html.ka11y-font-weight body *#{$scope} {
+  font-weight: 700 !important;
 }
 
-html.ka11y-readable-font {
-  body,
-  body *:not(i, [class*='icon' i], [class*='fa-' i], [class*='dashicons' i]) {
-    font-family: Arial, Helvetica, Verdana, sans-serif !important;
-  }
-
-  #ka11y-root {
-    font-family: var(--ka11y-font-family, sans-serif) !important;
-  }
+html.ka11y-readable-font body *:not(i, [class*='icon' i], [class*='fa-' i], [class*='dashicons' i])#{$scope} {
+  font-family: Arial, Helvetica, Verdana, sans-serif !important;
 }
 
-html.ka11y-dyslexic-font {
-  body,
-  body *:not(i, [class*='icon' i], [class*='fa-' i], [class*='dashicons' i]) {
-    font-family: 'KA11y OpenDyslexic', Arial, sans-serif !important;
-  }
-
-  #ka11y-root {
-    font-family: var(--ka11y-font-family, sans-serif) !important;
-  }
+html.ka11y-dyslexic-font body *:not(i, [class*='icon' i], [class*='fa-' i], [class*='dashicons' i])#{$scope} {
+  font-family: 'KA11y OpenDyslexic', Arial, sans-serif !important;
 }
 
 @each $alignment in left, center, right {
-  html.ka11y-align-#{$alignment} {
-    body,
-    body * {
-      text-align: $alignment !important;
-    }
-
-    #ka11y-root {
-      text-align: start !important;
-    }
+  html.ka11y-align-#{$alignment} body *#{$scope} {
+    text-align: $alignment !important;
   }
 }
 

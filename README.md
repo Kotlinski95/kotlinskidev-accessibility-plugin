@@ -11,6 +11,7 @@ Current version 1.0.0. License GPL-2.0-or-later. Text domain `kotlinskidev-acces
 - [Installation and updates](#installation-and-updates)
 - [Quick start](#quick-start)
 - [Settings reference](#settings-reference)
+- [Theme integration](#theme-integration)
 - [Colors and theme palette](#colors-and-theme-palette)
 - [Languages](#languages)
 - [Features and Read page](#features-and-read-page)
@@ -113,7 +114,7 @@ The 26 keys are: `biggerText`, `lineHeight`, `letterSpacing`, `fontWeight`, `rea
 | --- | --- | --- | --- |
 | `panel.preset` | enum | `classic` | `classic`, `brand`, `soft`, `contrast`, `custom`. Fills the color tokens. |
 | `theme.mode` | enum | `auto` | `auto`, `light` or `dark` widget theme. |
-| `theme.darkSelector`, `theme.lightSelector` | text | `html.dark-mode, body.dark-mode`, `html.light-mode, body.light-mode` | Selectors that tell the widget your site is in dark or light mode. |
+| `theme.darkSelector`, `theme.lightSelector` | text | `html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode`, and the `light` equivalents | Selectors that tell the widget your site is in dark or light mode. |
 | `theme.followPrefersColorScheme` | bool | `true` | In `auto` mode, follow the visitor's system color scheme when no selector matches. |
 | `tokens.primary`, `onPrimary` | color | `#0b57d0`, `#ffffff` | Primary color and text on it. |
 | `tokens.primaryDark`, `onPrimaryDark` | color | `#7aa7ff`, `#0b1a33` | Same pair in dark mode. |
@@ -183,6 +184,10 @@ The 26 keys are: `biggerText`, `lineHeight`, `letterSpacing`, `fontWeight`, `rea
 
 The Maintenance tab also holds the Updates card, the locks list on a network, and the reset tools. The Import and Export tab has no settings of its own. See [Settings screen](#settings-screen).
 
+## Theme integration
+
+Themes feature-detect the plugin with `defined( 'KOTLINSKIDEV_A11Y_API' )` or `kotlinskidev_a11y_api_version()` (both `1`) and `window.kotlinskidevA11y?.api === 1` in the browser. A theme can open the panel with `data-ka11y="open"`, react to `ka11y:*` events and to Stop animations through `html.ka11y-stop-animations`, and set the dark and light selectors with the `kotlinskidev_a11y_default_selectors` filter. Details are in `docs/API.md` under Integrating a theme.
+
 ## Colors and theme palette
 
 Every color field has a color picker, a text box and, when the active theme defines a palette, a "From theme" select. Picking a theme color stores `var(--wp--preset--color--<slug>, #fallback)` instead of a plain hex value. The widget then follows the theme when the palette changes, and the hex fallback is used where the theme does not define the color. The admin contrast badges use the fallback hex and say when a result is approximate.
@@ -215,7 +220,19 @@ Example, a champagne gold launcher that stays readable on a dark site:
 
 Each adjustment is a tile or stepper in the panel, grouped into Content, Color and Orientation. Features exclude each other where they would conflict, for example the contrast modes. Saved choices are restored before first paint.
 
-Read page (feature `readPage`) uses the browser speech synthesis. It picks the best installed voice for the page language (exact language first, then the same primary language, favoring enhanced and local voices), remembers the voice in `localStorage` under `ka11y-voice`, waits up to a second for the voice list after navigation, reads in sentence-sized chunks of about 180 characters, and cancels speech when you leave the page. Nothing is sent to a server.
+Read page (feature `readPage`) uses the browser speech synthesis. It reads in the language of the clicked element (nearest `lang` attribute, then the page language). It strictly prefers voices installed on the device (`localService`) in that language over remote or Google voices, then names that look enhanced, premium, natural or neural, then known natural system voices, and avoids macOS novelty voices such as Albert, Zarvox or Fred. Local voices read long text in large chunks, queued up front so there are no gaps; remote voices use short chunks with a pause and resume keep-alive for Chrome's 15 second limit. Rate, pitch and volume are set explicitly. Nothing is sent to a server and the automatically picked voice is not stored.
+
+Site owners can override the choice before the widget loads:
+
+```js
+window.kotlinskidevA11yReadPage = { voice: 'Zosia (Enhanced)', rate: 0.95 };
+```
+
+`voice` is a voice name fragment or `voiceURI` (`auto` or empty keeps the automatic choice). `rate` is clamped to 0.5 to 2. A visitor can pin a voice with `localStorage.setItem('ka11y-voice-pref', 'Zosia')`. On macOS, install the enhanced or premium voice for the language in System Settings, Accessibility, Spoken Content, System Voice, Manage Voices, then restart the browser. Siri voices are not exposed to web pages. Google voices are online and sound robotic, so the plugin skips them whenever a local voice exists.
+
+### Stop animations
+
+`stopAnimations` adds the root class `ka11y-stop-animations`, disables CSS animations, transitions and smooth scrolling, pauses videos, freezes GIFs and publishes the state to scripts: `window.kotlinskidevA11yMotion.stopped` and the `kotlinskidev-a11y:motion` event on `window`. While it is on, `matchMedia('(prefers-reduced-motion: reduce)')` also reports `matches: true` for queries created after it is switched on, and the GSAP global timeline (when `window.gsap` exists) is paused. JavaScript or canvas animations should check the state and listen for the event; see `docs/API.md`.
 
 Features can be switched on from code with `data-ka11y="feature:<key>[:<level>]"`, `#ka11y/feature:<key>` or `kotlinskidevA11y.set()`.
 
@@ -545,6 +562,7 @@ Choose `none` if your legal review requires no storage without consent. Page cac
 | `kotlinskidev_a11y_icons` | Replace icon path data by name. Path data only. |
 | `kotlinskidev_a11y_button_html` | Change the markup of a trigger button. The result is filtered again. |
 | `kotlinskidev_a11y_trigger_selectors` | Add custom trigger selectors from code. |
+| `kotlinskidev_a11y_default_selectors` | Set the default dark and light mode selectors from a theme. Saved selectors win. |
 | `kotlinskidev_a11y_url_actions` | Narrow the actions allowed from `?ka11y=` and `#ka11y/` URLs. |
 | `kotlinskidev_a11y_update_source` | Swap repository, slug, asset pattern or branch for updates. |
 | `kotlinskidev_a11y_update_token` | Supply an authentication token for private update sources. |
@@ -592,7 +610,7 @@ Namespace `kotlinskidev-a11y/v1`. Admin routes need the manage capability and th
 | `scripts.panel` | 9520 | 9500 |
 | `scripts.content` | 4096 | 3947 |
 | `scripts.color` | 1536 | 1401 |
-| `scripts.orientation` | 3840 | 3712 |
+| `scripts.orientation` | 4736 | 4631 |
 | `scripts.admin` (admin only) | 28541 | 25360 |
 | `styles.page` | 2048 | 1569 |
 | `data.icons` | 2048 | 1216 |
@@ -608,7 +626,7 @@ For a live comparison, the nightly workflow runs Lighthouse with the widget on a
 - The launcher is a real button with an accessible name, a visible 3 px focus ring and a target of at least 44 px.
 - The panel is a non-modal dialog: `role="dialog"`, no focus trap, Escape closes it from inside the panel or the launcher, and focus returns to the opener.
 - Triggers get `role="button"` and the right `aria-haspopup`, `aria-controls`, `aria-expanded` or `aria-pressed`.
-- Dark mode and forced colors (Windows high contrast) have their own styles. Animations stop for visitors who prefer reduced motion.
+- Dark mode and forced colors (Windows high contrast) have their own styles. The contrast modes also replace gradient text with a solid color so it stays visible. Animations stop for visitors who prefer reduced motion.
 - The admin shows contrast ratios for every color pair and warns, without blocking, when AA is not met.
 - Run an automated check (axe is part of the e2e suite) and test with a keyboard and a screen reader. A widget does not make a site compliant by itself.
 

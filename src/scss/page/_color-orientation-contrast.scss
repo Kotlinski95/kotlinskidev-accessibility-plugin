@@ -3,6 +3,9 @@
   html.ka11y-#{$name}-contrast body {
     background-color: var(--ka11y-pal-#{$name}-bg) !important;
     background-image: none !important;
+    background-clip: border-box !important;
+    -webkit-background-clip: border-box !important;
+    -webkit-text-fill-color: currentcolor !important;
     color: var(--ka11y-pal-#{$name}-fg) !important;
     border-color: var(--ka11y-pal-#{$name}-border) !important;
     box-shadow: none !important;

@@ -28,7 +28,7 @@ The owner must do:
 
 Other open work:
 
-- Phase 4b (theme repo, own `feature/T{n}` branch off master): block `kotlinskidev/speed-dial` and child `speed-dial-item` using the Phase 4 API.
+- Phase 4b (quick-actions block) lives in a theme repo and uses the Phase 4 API.
 - Parity follow-ups from `docs/PHASE5-PARITY.md`: stepper row balance (P1), Skip card baseline (P7).
 
 ## Known gap: visual baselines

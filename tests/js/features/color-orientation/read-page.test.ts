@@ -6,6 +6,7 @@ interface FakeUtterance {
   lang: string;
   voice: SpeechSynthesisVoice | null;
   onend: (() => void) | null;
+  rate?: number;
 }
 
 const makeVoice = (name: string, lang: string, localService: boolean, isDefault = false): SpeechSynthesisVoice =>
@@ -61,6 +62,9 @@ describe('readPage', () => {
         lang = '';
         voice: SpeechSynthesisVoice | null = null;
         onend: (() => void) | null = null;
+        rate = 1;
+        pitch = 1;
+        volume = 1;
         constructor(public text: string) {}
       },
     });
@@ -88,15 +92,46 @@ describe('readPage', () => {
 
   it('ranks enhanced, then local, then default, then first', () => {
     expect(pickVoice('pl-PL')).toBe(enhanced);
-    localStorage.clear();
     voiceList.current = [remote, local];
     expect(pickVoice('pl-PL')).toBe(local);
-    localStorage.clear();
     voiceList.current = [makeVoice('A', 'pl-PL', false), makeVoice('B', 'pl-PL', false, true)];
     expect(pickVoice('pl-PL')?.name).toBe('B');
-    localStorage.clear();
     voiceList.current = [makeVoice('A', 'pl-PL', false), makeVoice('C', 'pl-PL', false)];
     expect(pickVoice('pl-PL')?.name).toBe('A');
+  });
+
+  it('strictly prefers any local voice over a remote or Google voice', () => {
+    const google = makeVoice('Google polski', 'pl-PL', false, true);
+    const localOther = makeVoice('Zosia', 'pl', true);
+    voiceList.current = [google, localOther];
+    expect(pickVoice('pl-PL')).toBe(localOther);
+    const localRegional = makeVoice('Daniel', 'en-GB', true);
+    voiceList.current = [makeVoice('Google US English', 'en-US', false, true), localRegional];
+    expect(pickVoice('en-US')).toBe(localRegional);
+  });
+
+  it('avoids novelty and robotic macOS voices', () => {
+    voiceList.current = [makeVoice('Albert', 'en-US', true), makeVoice('Zarvox', 'en-US', true), makeVoice('Samantha', 'en-US', true)];
+    expect(pickVoice('en-US')?.name).toBe('Samantha');
+    voiceList.current = [makeVoice('Fred', 'en-US', true), makeVoice('Whisper', 'en-US', true)];
+    expect(pickVoice('en-US')?.name).toBe('Fred');
+  });
+
+  it('honours an explicit voice name from the page config', () => {
+    window.kotlinskidevA11yReadPage = { voice: 'ewa' };
+    voiceList.current = [enhanced, makeVoice('Ewa', 'pl-PL', true)];
+    expect(pickVoice('pl-PL')?.name).toBe('Ewa');
+    window.kotlinskidevA11yReadPage = { voice: 'auto' };
+    expect(pickVoice('pl-PL')).toBe(enhanced);
+    delete window.kotlinskidevA11yReadPage;
+  });
+
+  it('honours a visitor voice preference but ignores the old auto-pinned key', () => {
+    voiceList.current = [enhanced, local];
+    localStorage.setItem('ka11y-voice', local.voiceURI);
+    expect(pickVoice('pl-PL')).toBe(enhanced);
+    localStorage.setItem('ka11y-voice-pref', 'Local Polish');
+    expect(pickVoice('pl-PL')).toBe(local);
   });
 
   it('falls back to the primary subtag and returns null without a match', () => {
@@ -104,21 +139,9 @@ describe('readPage', () => {
     expect(pickVoice('de')).toBeNull();
   });
 
-  it('persists the voice and prefers it while available', () => {
+  it('never writes the auto-picked voice to storage', () => {
     pickVoice('pl-PL');
-    expect(localStorage.getItem('ka11y-voice')).toBe(enhanced.voiceURI);
-    localStorage.setItem('ka11y-voice', remote.voiceURI);
-    expect(pickVoice('pl-PL')).toBe(remote);
-    localStorage.setItem('ka11y-voice', 'gone');
-    expect(pickVoice('pl-PL')).toBe(enhanced);
-  });
-
-  it('survives storage failures', () => {
-    const spy = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
-      throw new Error('quota');
-    });
-    expect(pickVoice('pl-PL')).toBe(enhanced);
-    spy.mockRestore();
+    expect(localStorage.length).toBe(0);
   });
 
   it('waits for voiceschanged when no voices are loaded', async () => {
@@ -146,19 +169,56 @@ describe('readPage', () => {
     expect((speak.mock.calls[0]?.[0] as FakeUtterance).voice).toBeNull();
   });
 
-  it('chunks long text and chains utterances through onend', async () => {
+  it('queues every chunk up front with rate, pitch and volume set', async () => {
+    voiceList.current = [makeVoice('Daniel', 'pl-PL', false), makeVoice('Remote2', 'pl-PL', false)];
     const sentence = `${'word '.repeat(30).trim()}. `;
     document.body.innerHTML = `<p id="p">${sentence.repeat(4)}</p>`;
-    const chunks = chunkText(document.getElementById('p')?.textContent ?? '');
-    expect(chunks.length).toBeGreaterThan(1);
-    chunks.forEach((chunk) => expect(chunk.length).toBeLessThanOrEqual(180));
+    window.kotlinskidevA11yReadPage = { rate: 5 };
+    readPage.on(true);
+    document.getElementById('p')?.click();
+    await flush();
+    expect(speak.mock.calls.length).toBeGreaterThan(1);
+    const first = speak.mock.calls[0]?.[0] as FakeUtterance & { rate: number; pitch: number; volume: number };
+    expect(first.rate).toBe(2);
+    expect(first.pitch).toBe(1);
+    expect(first.volume).toBe(1);
+    (speak.mock.calls.map((call) => call[0] as FakeUtterance)).forEach((item) => expect(item.text.length).toBeLessThanOrEqual(180));
+    delete window.kotlinskidevA11yReadPage;
+  });
+
+  it('reads long text in a few big chunks with a local voice', async () => {
+    const sentence = `${'word '.repeat(30).trim()}. `;
+    document.body.innerHTML = `<p id="p">${sentence.repeat(4)}</p>`;
     readPage.on(true);
     document.getElementById('p')?.click();
     await flush();
     expect(speak).toHaveBeenCalledTimes(1);
-    (speak.mock.calls[0]?.[0] as FakeUtterance).onend?.();
-    expect(speak).toHaveBeenCalledTimes(2);
-    expect((speak.mock.calls[1]?.[0] as FakeUtterance).text).toBe(chunks[1]);
+  });
+
+  it('uses the lang of the nearest element before the document language', async () => {
+    document.body.innerHTML = '<p id="p" lang="en-US">Hello there</p>';
+    voiceList.current = [enhanced, english];
+    readPage.on(true);
+    document.getElementById('p')?.click();
+    await flush();
+    expect((speak.mock.calls[0]?.[0] as FakeUtterance).voice).toBe(english);
+  });
+
+  it('keeps a remote voice alive with pause and resume', async () => {
+    voiceList.current = [remote];
+    const pause = jest.fn();
+    const resume = jest.fn();
+    Object.assign(synth, { pause, resume });
+    synth.speaking = true;
+    readPage.on(true);
+    document.getElementById('p')?.click();
+    await flush();
+    jest.advanceTimersByTime(10000);
+    expect(pause).toHaveBeenCalledTimes(1);
+    expect(resume).toHaveBeenCalledTimes(1);
+    readPage.off();
+    jest.advanceTimersByTime(20000);
+    expect(pause).toHaveBeenCalledTimes(1);
   });
 
   it('splits a single oversized sentence on word boundaries', () => {

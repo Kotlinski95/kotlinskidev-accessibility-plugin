@@ -363,8 +363,8 @@ final class AssetsTest extends TestCase {
 		$css = $this->assets()->tokens_css( $settings );
 
 		$this->assertStringContainsString( '@media (prefers-color-scheme:dark){:root{--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff);--ka11y-launcher-fg:#101114}}', $css );
-		$this->assertStringContainsString( 'html.light-mode, body.light-mode{--ka11y-launcher-bg:#d4af37;--ka11y-launcher-fg:initial}', $css );
-		$this->assertStringContainsString( 'html.dark-mode, body.dark-mode{--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff);--ka11y-launcher-fg:#101114}', $css );
+		$this->assertStringContainsString( 'html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode{--ka11y-launcher-bg:#d4af37;--ka11y-launcher-fg:initial}', $css );
+		$this->assertStringContainsString( 'html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode{--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff);--ka11y-launcher-fg:#101114}', $css );
 		$this->assertGreaterThan( strpos( $css, 'prefers-color-scheme' ), strpos( $css, 'html.dark-mode' ) );
 	}
 

@@ -14,7 +14,7 @@ export const createConfig = (overrides: Partial<KotlinskidevA11yConfig> = {}): K
     icon: 'universal',
     iconBorder: false,
   },
-  theme: { mode: 'auto', darkSelector: 'html.dark-mode, body.dark-mode', lightSelector: 'html.light-mode, body.light-mode', followPrefersColorScheme: true },
+  theme: { mode: 'auto', darkSelector: 'html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode', lightSelector: 'html.light, html.light-mode, html[data-theme="light"], body.light, body.light-mode', followPrefersColorScheme: true },
   tokens: {
     primary: '#000',
     onPrimary: '#fff',

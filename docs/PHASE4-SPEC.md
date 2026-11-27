@@ -1,6 +1,6 @@
 # Phase 4 spec: triggers and public API, v0.3.0
 
-Status: draft for owner review. Source of truth for Phase 4 once approved. It replaces the Phase 4 section of `ROADMAP.md` where the two differ. Phase 4b (the theme's speed-dial block) is out of scope, but every contract it uses is defined here.
+Status: draft for owner review. Source of truth for Phase 4 once approved. It replaces the Phase 4 section of `ROADMAP.md` where the two differ. Phase 4b (a theme quick-actions block) is out of scope, but every contract it uses is defined here.
 
 Rules for every milestone: strict TypeScript (no `any`), no comments anywhere (code, docblocks, phpcs ignores), WPCS PHP, no jQuery, no React import (the block editor script uses the `wp.*` globals), all strings through i18n. The `pl_PL` translations are done in M4.9.
 
@@ -21,7 +21,7 @@ Goals:
 
 1. One action vocabulary for every trigger surface, parsed and validated in one place.
 2. Any element on the page can open, close or toggle the panel, or switch a feature or profile, with correct ARIA and keyboard behaviour, before and after the loader runs.
-3. A versioned JavaScript API and DOM events that the theme (Phase 4b speed dial) and third-party code can rely on.
+3. A versioned JavaScript API and DOM events that themes and third-party code can rely on.
 4. Launcher modes `floating`, `inline` and `hidden`, so the site can drop the floating button and use its own triggers.
 5. A shortcode, a block and a PHP function that print the same safe trigger markup.
 6. An admin snippet generator, so customers never hand-write a trigger.
@@ -30,7 +30,7 @@ Goals:
 Non-goals:
 
 - UI parity and modality change (Phase 5). The panel stays `aria-modal="true"` in v0.3.0.
-- The speed-dial block (Phase 4b, theme repo).
+- A theme quick-actions block (Phase 4b).
 - Server-side state, analytics or tracking of trigger use.
 - New features or profiles. The vocabulary covers the existing 26 feature keys and 5 profile keys.
 - A REST API for visitors. REST stays admin-only plus `/panel-data`.

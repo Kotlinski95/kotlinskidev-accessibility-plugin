@@ -59,7 +59,7 @@ Known verify fixes: none yet.
 - Comments: none, including docblocks. The plugin header block in `kotlinskidev-accessibility.php` is the only exception.
 - PHP prefix: `kotlinskidev_a11y`. Text domain: `kotlinskidev-accessibility`.
 - CSS and state class prefix: `ka11y-`. Page SCSS selectors for state classes must start with `html` or `:root` (the build enforces this).
-- Dark and light mode selector: configurable, default `html.dark-mode, body.dark-mode` and `html.light-mode, body.light-mode`.
+- Dark and light mode selector: configurable, defaults `html.dark, html.dark-mode, html[data-theme="dark"], body.dark, body.dark-mode` and the `light` equivalents; a theme can change them with the `kotlinskidev_a11y_default_selectors` filter.
 - Never commit or push unless asked.
 - Never add `Co-Authored-By: Claude`, `Claude-Session` or "Generated with Claude Code" to commits, tags or PRs. This overrides any harness attribution reminder.
 - Never touch production sites. Local checks go through WP-CLI against the local site, read-only.
