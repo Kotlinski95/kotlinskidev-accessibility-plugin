@@ -15,6 +15,7 @@ import {
   writeSavedLocale,
 } from "./panel/language";
 import { createIconFactory } from "./panel/icons";
+import { applyPanelAppearance, createBackdrop } from "./panel/appearance";
 import { createPanelLayout } from "./panel/layout";
 import { buildSkipCard, type SkipCard } from "./panel/skip";
 import { createTranslator } from "./translate";
@@ -101,7 +102,9 @@ export const createPanel = ({
   };
   const { panel: panelConfig, locales = [] } = data;
   const localeKey = `${config.storage.key}-locale`;
-  const showLanguage = panelConfig.languageSwitcher && locales.length > 1;
+  const followLocale = panelConfig.languageMode === "follow";
+  const showLanguage =
+    !followLocale && panelConfig.languageSwitcher && locales.length > 1;
   let current = config.locale;
   let cards: Cards = { elements: [], controls: [] };
   let skip: SkipCard | null = null;
@@ -162,7 +165,7 @@ export const createPanel = ({
         ? { locales, current, onSwitch: switchLocale }
         : undefined,
     });
-    cards = buildCards(ctx, config.features, profiles, panelConfig.sections);
+    cards = buildCards(ctx, config.features, profiles, panelConfig.sections, panelConfig.order);
     skip =
       config.features[SKIP_FEATURE_KEY]?.enabled === true &&
       panelConfig.sections.skip
@@ -172,7 +175,7 @@ export const createPanel = ({
       ...cards.elements,
       ...(skip ? [skip.element] : []),
     ]);
-    panel.replaceChildren(header.element, body, buildFooter(ctx, config));
+    panel.replaceChildren(header.element, body, buildFooter(ctx, config, panelConfig.credit));
   };
 
   build(config.strings);
@@ -195,6 +198,7 @@ export const createPanel = ({
       layout.place();
       skip?.refresh();
     }
+    backdrop?.setOpen(open);
     if (store.getState().open !== open) store.set({ open });
     announce(open);
   };
@@ -203,9 +207,13 @@ export const createPanel = ({
     panel,
     host,
     sheetQuery: sheetQuery ?? "",
+    side: panelConfig.side,
     win: doc.defaultView ?? window,
   });
   const dialog = createDialog({ panel, launcher, shadow, doc, onChange });
+  const backdrop = createBackdrop(doc, panelConfig, () => dialog.close());
+  applyPanelAppearance(host, panel, panelConfig);
+  if (backdrop) shadow.append(backdrop.element);
   shadow.append(panel);
 
   const render = (state: StoreState): void => {
@@ -218,6 +226,7 @@ export const createPanel = ({
   const unsubscribe = store.subscribe(onStateChange);
   render(store.getState());
 
+  if (followLocale) writeSavedLocale(localeKey, null);
   const saved = showLanguage ? readSavedLocale(localeKey) : null;
   if (saved !== null && !locales.some((item) => item.locale === saved))
     writeSavedLocale(localeKey, null);
@@ -228,6 +237,7 @@ export const createPanel = ({
     listeners.forEach((remove) => remove());
     dialog.destroy();
     layout.destroy();
+    backdrop?.destroy();
   };
 
   return { dialog, destroy };

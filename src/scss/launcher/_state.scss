@@ -18,7 +18,7 @@
 :host([data-state]) .ka11y-launcher::after {
   content: '';
   position: absolute;
-  border-radius: 50%;
+  border-radius: tokens.$radius;
 }
 
 :host([data-state='loading']) .ka11y-launcher::after {

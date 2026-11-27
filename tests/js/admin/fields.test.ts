@@ -13,14 +13,23 @@ import { createFormState } from '../../../src/ts/admin/state';
 import type { MediaFrame } from '../../../src/ts/admin/types';
 import { at, change, press, sampleConfig, sampleDefaults, sampleSchema } from './helpers';
 
-jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
+jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, {
+  virtual: true,
+});
 
-const context = () => ({ state: createFormState(sampleDefaults()), schema: sampleSchema(), config: sampleConfig() });
+const context = () => ({
+  state: createFormState(sampleDefaults()),
+  schema: sampleSchema(),
+  config: sampleConfig(),
+});
 
 describe('toggle field', () => {
   it('reads and writes', () => {
     const ctx = context();
-    const field = createToggleField(ctx, { path: 'widget.iconBorder', label: 'Border' });
+    const field = createToggleField(ctx, {
+      path: 'widget.iconBorder',
+      label: 'Border',
+    });
     const input = field.querySelector('input') as HTMLInputElement;
     expect(input.checked).toBe(false);
     expect(field.querySelector('label')?.getAttribute('for')).toBe(input.id);
@@ -30,7 +39,11 @@ describe('toggle field', () => {
   });
 
   it('bare mode returns a labelled input', () => {
-    const input = createToggleField(context(), { path: 'theme.followPrefersColorScheme', label: 'Follow', bare: true });
+    const input = createToggleField(context(), {
+      path: 'theme.followPrefersColorScheme',
+      label: 'Follow',
+      bare: true,
+    });
     expect(input.tagName).toBe('INPUT');
     expect(input.getAttribute('aria-label')).toBe('Follow');
     expect((input as HTMLInputElement).checked).toBe(true);
@@ -47,7 +60,11 @@ describe('select field', () => {
   it('reads the current choice and writes typed values', () => {
     const ctx = context();
     ctx.state.set('features.biggerText.default', 2);
-    const field = createSelectField(ctx, { path: 'features.biggerText.default', label: 'Default', choices });
+    const field = createSelectField(ctx, {
+      path: 'features.biggerText.default',
+      label: 'Default',
+      choices,
+    });
     const select = field.querySelector('select') as HTMLSelectElement;
     expect(select.selectedIndex).toBe(2);
     select.selectedIndex = 1;
@@ -62,7 +79,10 @@ describe('select field', () => {
 describe('number field', () => {
   it('applies definition bounds and writes integers', () => {
     const ctx = context();
-    const field = createNumberField(ctx, { path: 'storage.ttlDays', label: 'TTL' });
+    const field = createNumberField(ctx, {
+      path: 'storage.ttlDays',
+      label: 'TTL',
+    });
     const input = field.querySelector('input') as HTMLInputElement;
     expect(input.min).toBe('1');
     expect(input.max).toBe('3650');
@@ -79,29 +99,48 @@ describe('number field', () => {
 describe('text and textarea fields', () => {
   it('write strings', () => {
     const ctx = context();
-    const text = createTextField(ctx, { path: 'storage.key', label: 'Key' }).querySelector('input') as HTMLInputElement;
+    const text = createTextField(ctx, {
+      path: 'storage.key',
+      label: 'Key',
+    }).querySelector('input') as HTMLInputElement;
     expect(text.value).toBe('ka11y');
     text.value = 'mykey';
     change(text);
     expect(ctx.state.get('storage.key')).toBe('mykey');
 
-    const area = createTextareaField(ctx, { path: 'customCss', label: 'CSS', code: true }).querySelector('textarea') as HTMLTextAreaElement;
+    const area = createTextareaField(ctx, {
+      path: 'customCss',
+      label: 'CSS',
+      code: true,
+    }).querySelector('textarea') as HTMLTextAreaElement;
     area.value = 'a{color:red}';
     change(area);
     expect(ctx.state.get('customCss')).toBe('a{color:red}');
   });
 
   it('links help text with aria-describedby', () => {
-    const field = createTextField(context(), { path: 'storage.key', label: 'Key', help: 'Help me' });
+    const field = createTextField(context(), {
+      path: 'storage.key',
+      label: 'Key',
+      help: 'Help me',
+    });
     const input = field.querySelector('input') as HTMLInputElement;
-    expect(document.createElement('div').appendChild(field).querySelector(`[id="${input.getAttribute('aria-describedby')}"]`)?.textContent).toBe('Help me');
+    expect(
+      document
+        .createElement('div')
+        .appendChild(field)
+        .querySelector(`[id="${input.getAttribute('aria-describedby')}"]`)?.textContent
+    ).toBe('Help me');
   });
 });
 
 describe('color field', () => {
   it('syncs picker and text, rejects invalid values', () => {
     const ctx = context();
-    const field = createColorField(ctx, { path: 'tokens.primary', label: 'Primary' });
+    const field = createColorField(ctx, {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
     const picker = field.querySelector('input[type="color"]') as HTMLInputElement;
     const text = field.querySelector('input[type="text"]') as HTMLInputElement;
     expect(text.value).toBe('#0b57d0');
@@ -120,6 +159,27 @@ describe('color field', () => {
     expect(ctx.state.get('tokens.primary')).toBe('#00ff00');
   });
 
+  it('clears the value when empty is allowed and rejects it otherwise', () => {
+    const ctx = context();
+    const allowed = createColorField(ctx, {
+      path: 'tokens.primary',
+      label: 'Primary',
+      allowEmpty: true,
+    });
+    const text = allowed.querySelector('input[type="text"]') as HTMLInputElement;
+    text.value = '';
+    change(text);
+    expect(ctx.state.get('tokens.primary')).toBe('');
+    const strict = createColorField(context(), {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
+    const strictText = strict.querySelector('input[type="text"]') as HTMLInputElement;
+    strictText.value = '';
+    change(strictText);
+    expect(strictText.getAttribute('aria-invalid')).toBe('true');
+  });
+
   it('validates colors', () => {
     expect(isColor('#fff')).toBe(true);
     expect(isColor('#ffffff80')).toBe(true);
@@ -130,7 +190,11 @@ describe('color field', () => {
 describe('text list field', () => {
   it('adds and removes numeric items', () => {
     const ctx = context();
-    const field = createTextListField(ctx, { path: 'visibility.excludePostIds', label: 'IDs', numeric: true });
+    const field = createTextListField(ctx, {
+      path: 'visibility.excludePostIds',
+      label: 'IDs',
+      numeric: true,
+    });
     document.body.replaceChildren(field);
     const input = field.querySelector('input') as HTMLInputElement;
     const add = [...field.querySelectorAll('button')].find((item) => item.textContent === 'Add') as HTMLButtonElement;
@@ -151,7 +215,10 @@ describe('text list field', () => {
 
   it('handles text items', () => {
     const ctx = context();
-    const field = createTextListField(ctx, { path: 'visibility.excludeRoles', label: 'Roles' });
+    const field = createTextListField(ctx, {
+      path: 'visibility.excludeRoles',
+      label: 'Roles',
+    });
     const input = field.querySelector('input') as HTMLInputElement;
     input.value = '  editor ';
     press(input, 'Enter');
@@ -168,7 +235,11 @@ describe('checklist field', () => {
       { value: 'c', label: 'C' },
     ];
     ctx.state.set('profiles.visionImpaired.features', ['c']);
-    const field = createChecklistField(ctx, { path: 'profiles.visionImpaired.features', label: 'List', choices });
+    const field = createChecklistField(ctx, {
+      path: 'profiles.visionImpaired.features',
+      label: 'List',
+      choices,
+    });
     const boxes = [...field.querySelectorAll('input')] as HTMLInputElement[];
     expect(boxes.map((box) => box.checked)).toEqual([false, false, true]);
     at(boxes, 0).checked = true;
@@ -189,7 +260,15 @@ describe('device matrix field', () => {
       devices: ['desktop', 'tablet', 'mobile'],
       deviceLabel: (device) => device,
       columns: [
-        { basePath: 'widget.position', label: 'Position', kind: 'select', choices: [{ value: 'bottom-right', label: 'BR' }, { value: 'top-left', label: 'TL' }] },
+        {
+          basePath: 'widget.position',
+          label: 'Position',
+          kind: 'select',
+          choices: [
+            { value: 'bottom-right', label: 'BR' },
+            { value: 'top-left', label: 'TL' },
+          ],
+        },
         { basePath: 'widget.offsetX', label: 'X', kind: 'number' },
         { basePath: 'visibility.devices', label: 'Visible', kind: 'toggle' },
       ],
@@ -227,7 +306,13 @@ describe('media field', () => {
         return frame;
       }),
       open: jest.fn(),
-      state: () => ({ get: () => ({ first: () => ({ toJSON: () => ({ id: 42, url: 'https://example.test/i.png' }) }) }) }),
+      state: () => ({
+        get: () => ({
+          first: () => ({
+            toJSON: () => ({ id: 42, url: 'https://example.test/i.png' }),
+          }),
+        }),
+      }),
     };
     window.wp = { media: jest.fn(() => frame) };
     const field = createMediaField(ctx, { path: 'widget.icon', label: 'Icon' });
@@ -251,14 +336,25 @@ describe('media field', () => {
 
 describe('combo field', () => {
   it('builds combos from key events', () => {
-    expect(comboFromEvent(new KeyboardEvent('keydown', { key: 'a', altKey: true, shiftKey: true }))).toBe('Alt+Shift+A');
+    expect(
+      comboFromEvent(
+        new KeyboardEvent('keydown', {
+          key: 'a',
+          altKey: true,
+          shiftKey: true,
+        })
+      )
+    ).toBe('Alt+Shift+A');
     expect(comboFromEvent(new KeyboardEvent('keydown', { key: 'Shift', shiftKey: true }))).toBeNull();
     expect(comboFromEvent(new KeyboardEvent('keydown', { key: 'a' }))).toBeNull();
   });
 
   it('records a new shortcut and cancels on Escape', () => {
     const ctx = context();
-    const field = createComboField(ctx, { path: 'shortcut.combo', label: 'Combo' });
+    const field = createComboField(ctx, {
+      path: 'shortcut.combo',
+      label: 'Combo',
+    });
     document.body.replaceChildren(field);
     const display = field.querySelector('input') as HTMLInputElement;
     const record = field.querySelector('button') as HTMLButtonElement;
@@ -273,5 +369,81 @@ describe('combo field', () => {
     press(display, 'Escape');
     expect(ctx.state.get('shortcut.combo')).toBe('Ctrl+K');
     expect(record.getAttribute('aria-pressed')).toBe('false');
+  });
+});
+
+describe('color field theme palette', () => {
+  const palette = [
+    {
+      slug: 'primary',
+      name: 'Primary',
+      color: '#0078c2',
+      var: '--wp--preset--color--primary',
+    },
+    {
+      slug: 'accent',
+      name: 'Accent',
+      color: '#00f6ff',
+      var: '--wp--preset--color--accent',
+    },
+  ];
+  const themed = () => {
+    const ctx = context();
+    ctx.config = { ...ctx.config, themePalette: palette };
+    return ctx;
+  };
+
+  it('hides the theme select when the palette is empty', () => {
+    const field = createColorField(context(), {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
+    expect(field.querySelector('select')).toBeNull();
+  });
+
+  it('stores a var reference with a fallback and marks the field linked', () => {
+    const ctx = themed();
+    const field = createColorField(ctx, {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
+    const select = field.querySelector('select') as HTMLSelectElement;
+    const text = field.querySelector('input[type="text"]') as HTMLInputElement;
+    expect(select.getAttribute('aria-label')).toBe('Primary: from theme');
+    select.value = 'accent';
+    change(select, 'change');
+    expect(ctx.state.get('tokens.primary')).toBe('var(--wp--preset--color--accent, #00f6ff)');
+    expect(text.value).toBe('#00f6ff');
+    const linked = field.querySelector('.ka11y-color__linked') as HTMLElement;
+    expect(linked.hidden).toBe(false);
+    expect(linked.textContent).toContain('Accent');
+  });
+
+  it('clears the reference when a custom hex is entered', () => {
+    const ctx = themed();
+    const field = createColorField(ctx, {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
+    const select = field.querySelector('select') as HTMLSelectElement;
+    const text = field.querySelector('input[type="text"]') as HTMLInputElement;
+    select.value = 'primary';
+    change(select, 'change');
+    text.value = '#112233';
+    change(text);
+    expect(ctx.state.get('tokens.primary')).toBe('#112233');
+    expect(select.value).toBe('');
+    expect((field.querySelector('.ka11y-color__linked') as HTMLElement).hidden).toBe(true);
+  });
+
+  it('shows a stored reference as linked using its fallback', () => {
+    const ctx = themed();
+    ctx.state.set('tokens.primary', 'var(--wp--preset--color--primary, #0078c2)');
+    const field = createColorField(ctx, {
+      path: 'tokens.primary',
+      label: 'Primary',
+    });
+    expect((field.querySelector('select') as HTMLSelectElement).value).toBe('primary');
+    expect((field.querySelector('input[type="text"]') as HTMLInputElement).value).toBe('#0078c2');
   });
 });

@@ -268,17 +268,17 @@ final class AccessTest extends TestCase {
 
 	public static function forbidden_bodies(): array {
 		return array(
-			'performance'  => array( array( 'performance' => array( 'strategy' => 'eager' ) ), 'performance.strategy' ),
-			'custom css'   => array( array( 'customCss' => '.x{color:red}' ), 'customCss' ),
-			'selector'     => array( array( 'theme' => array( 'darkSelector' => 'body.night' ) ), 'theme.darkSelector' ),
-			'mixed'        => array(
+			'performance' => array( array( 'performance' => array( 'strategy' => 'eager' ) ), 'performance.strategy' ),
+			'custom css'  => array( array( 'customCss' => '.x{color:red}' ), 'customCss' ),
+			'selector'    => array( array( 'theme' => array( 'darkSelector' => 'body.night' ) ), 'theme.darkSelector' ),
+			'mixed'       => array(
 				array(
 					'tokens'  => array( 'primary' => '#112233' ),
 					'storage' => array( 'key' => 'other' ),
 				),
 				'storage.key',
 			),
-			'maintenance'  => array( array( 'maintenance' => array( 'keepDataOnUninstall' => true ) ), 'maintenance.keepDataOnUninstall' ),
+			'maintenance' => array( array( 'maintenance' => array( 'keepDataOnUninstall' => true ) ), 'maintenance.keepDataOnUninstall' ),
 		);
 	}
 

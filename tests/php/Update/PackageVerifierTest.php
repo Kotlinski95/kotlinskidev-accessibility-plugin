@@ -17,21 +17,21 @@ final class PackageVerifierTest extends TestCase {
 	private const BASE = 'https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/download/v1.0.0/';
 	private const ZIP  = self::BASE . 'kotlinskidev-accessibility.zip';
 
-	private string $file    = '';
-	private array $options  = array();
-	private mixed $checksum = null;
-	private array $deleted  = array();
-	private array $requests = array();
+	private string $file          = '';
+	private array $options        = array();
+	private mixed $checksum       = null;
+	private array $deleted        = array();
+	private array $requests       = array();
 	private mixed $update_plugins = false;
 
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->file     = (string) tempnam( sys_get_temp_dir(), 'ka11y' );
-		$this->options  = array();
-		$this->deleted  = array();
-		$this->checksum = null;
-		$this->requests = array();
+		$this->file           = (string) tempnam( sys_get_temp_dir(), 'ka11y' );
+		$this->options        = array();
+		$this->deleted        = array();
+		$this->checksum       = null;
+		$this->requests       = array();
 		$this->update_plugins = false;
 
 		file_put_contents( $this->file, 'zip-bytes' );

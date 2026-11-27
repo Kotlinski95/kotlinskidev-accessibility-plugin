@@ -1,13 +1,14 @@
 import { __ } from '@wordpress/i18n';
 import type { FormContext } from '../context';
-import { fieldset, h } from '../dom';
+import { button, fieldset, h } from '../dom';
 import { createColorField } from '../fields/color';
 import { createNumberField } from '../fields/number';
 import { createSelectField, enumChoices } from '../fields/select';
 import { createTextField } from '../fields/text';
 import { createTextareaField } from '../fields/textarea';
 import { createToggleField } from '../fields/toggle';
-import { panelPresetLabel, panelSectionLabel, themeModeLabel, tokenLabel } from '../labels';
+import { animationLabel, languageModeLabel, panelPresetLabel, panelSideLabel, panelSectionLabel, themeModeLabel, tokenLabel } from '../labels';
+import { formatThemeReference, matchThemePalette, themePaletteOf } from '../theme-color';
 import { CUSTOM_PRESET, PRESET_TOKEN_KEYS, isManagedPreset, matchesPreset, presetTokens } from '../presets';
 
 const PRESET_PATH = 'panel.preset';
@@ -61,7 +62,26 @@ const watchPreset = (ctx: FormContext): void => {
   });
 };
 
-const colorField = (ctx: FormContext, token: string): HTMLElement => createColorField(ctx, { path: tokenPath(token), token, label: tokenLabel(token) });
+const colorField = (ctx: FormContext, token: string): HTMLElement =>
+  createColorField(ctx, {
+    path: tokenPath(token),
+    token,
+    label: tokenLabel(token),
+  });
+
+const matchThemeButton = (ctx: FormContext): HTMLElement => {
+  return button(__('Match theme', 'kotlinskidev-accessibility'), 'button', () => {
+    const match = matchThemePalette(themePaletteOf(ctx.config));
+    if (match === null) {
+      ctx.notices.warning(__('The active theme does not define a color palette.', 'kotlinskidev-accessibility'));
+      return;
+    }
+    ctx.state.set(tokenPath('primary'), formatThemeReference(match.primary.slug, match.primary.color));
+    if (match.primaryDark !== null) ctx.state.set(tokenPath('primaryDark'), formatThemeReference(match.primaryDark.slug, match.primaryDark.color));
+    ctx.reload();
+    ctx.notices.success(__('Theme colors applied. Check the contrast ratios below.', 'kotlinskidev-accessibility'));
+  });
+};
 
 export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
   watchPreset(ctx);
@@ -72,7 +92,11 @@ export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
     fieldset(
       __('Theme', 'kotlinskidev-accessibility'),
       'ka11y-theme',
-      createSelectField(ctx, { path: 'theme.mode', label: __('Widget theme', 'kotlinskidev-accessibility'), choices: enumChoices(ctx, 'theme.mode', themeModeLabel) }),
+      createSelectField(ctx, {
+        path: 'theme.mode',
+        label: __('Widget theme', 'kotlinskidev-accessibility'),
+        choices: enumChoices(ctx, 'theme.mode', themeModeLabel),
+      }),
       createTextField(ctx, {
         path: 'theme.darkSelector',
         label: __('Dark mode selector', 'kotlinskidev-accessibility'),
@@ -83,7 +107,10 @@ export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
         label: __('Light mode selector', 'kotlinskidev-accessibility'),
         help: __('CSS selector that matches your site when it is in light mode.', 'kotlinskidev-accessibility'),
       }),
-      createToggleField(ctx, { path: 'theme.followPrefersColorScheme', label: __('Follow the visitor color scheme preference', 'kotlinskidev-accessibility') })
+      createToggleField(ctx, {
+        path: 'theme.followPrefersColorScheme',
+        label: __('Follow the visitor color scheme preference', 'kotlinskidev-accessibility'),
+      })
     ),
     fieldset(
       __('Panel layout', 'kotlinskidev-accessibility'),
@@ -94,12 +121,79 @@ export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
         help: __('Columns on desktop and tablet. Narrow panels use fewer columns automatically.', 'kotlinskidev-accessibility'),
         choices: COLUMN_CHOICES,
       }),
-      ...SECTIONS.map((section) => createToggleField(ctx, { path: `panel.sections.${section}`, label: panelSectionLabel(section) })),
+      ...SECTIONS.map((section) =>
+        createToggleField(ctx, {
+          path: `panel.sections.${section}`,
+          label: panelSectionLabel(section),
+        })
+      ),
       h('p', { class: 'description' }, __('Hidden cards stay usable through triggers and the JavaScript API.', 'kotlinskidev-accessibility')),
       createToggleField(ctx, {
         path: 'panel.languageSwitcher',
         label: __('Show the language switcher', 'kotlinskidev-accessibility'),
         help: __('Shown only when the site has two or more languages.', 'kotlinskidev-accessibility'),
+      }),
+      createSelectField(ctx, {
+        path: 'panel.languageMode',
+        label: __('Panel language', 'kotlinskidev-accessibility'),
+        help: __('Follow the page language ignores and clears any language a visitor picked in the panel.', 'kotlinskidev-accessibility'),
+        choices: enumChoices(ctx, 'panel.languageMode', languageModeLabel),
+      }),
+      createToggleField(ctx, {
+        path: 'panel.credit',
+        label: __('Show the author credit in the panel footer', 'kotlinskidev-accessibility'),
+      })
+    ),
+    fieldset(
+      __('Panel size and motion', 'kotlinskidev-accessibility'),
+      'ka11y-panel-motion',
+      createNumberField(ctx, {
+        path: 'panel.width',
+        label: __('Panel width (px)', 'kotlinskidev-accessibility'),
+      }),
+      createSelectField(ctx, {
+        path: 'panel.side',
+        label: __('Panel side', 'kotlinskidev-accessibility'),
+        help: __('Small screens always use the bottom sheet.', 'kotlinskidev-accessibility'),
+        choices: enumChoices(ctx, 'panel.side', panelSideLabel),
+      }),
+      createNumberField(ctx, {
+        path: 'panel.offset',
+        label: __('Distance from the screen edge (px)', 'kotlinskidev-accessibility'),
+      }),
+      createSelectField(ctx, {
+        path: 'panel.animation',
+        label: __('Open animation', 'kotlinskidev-accessibility'),
+        choices: enumChoices(ctx, 'panel.animation', animationLabel),
+      }),
+      createNumberField(ctx, {
+        path: 'panel.animationMs',
+        label: __('Animation duration (ms)', 'kotlinskidev-accessibility'),
+        help: __('Closing is proportionally faster. Visitors who prefer reduced motion never see animation.', 'kotlinskidev-accessibility'),
+      })
+    ),
+    fieldset(
+      __('Backdrop', 'kotlinskidev-accessibility'),
+      'ka11y-backdrop',
+      createToggleField(ctx, {
+        path: 'panel.backdrop',
+        label: __('Dim the page behind the open panel', 'kotlinskidev-accessibility'),
+      }),
+      createColorField(ctx, {
+        path: 'panel.backdropColor',
+        label: __('Backdrop color', 'kotlinskidev-accessibility'),
+      }),
+      createNumberField(ctx, {
+        path: 'panel.backdropOpacity',
+        label: __('Backdrop opacity (%)', 'kotlinskidev-accessibility'),
+      }),
+      createNumberField(ctx, {
+        path: 'panel.backdropBlur',
+        label: __('Backdrop blur (px)', 'kotlinskidev-accessibility'),
+      }),
+      createToggleField(ctx, {
+        path: 'panel.closeOnBackdrop',
+        label: __('Close the panel when the backdrop is clicked', 'kotlinskidev-accessibility'),
       })
     ),
     fieldset(
@@ -111,6 +205,7 @@ export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
         help: __('A preset fills in the colors below. Changing any color switches to Custom.', 'kotlinskidev-accessibility'),
         choices: (ctx.schema.definitions[PRESET_PATH]?.enum ?? []).map((value) => ({ value, label: panelPresetLabel(value) })),
       }),
+      matchThemeButton(ctx),
       h('p', { class: 'description' }, __('Each color shows its contrast ratio. Text needs at least 4.5:1 and controls at least 3:1.', 'kotlinskidev-accessibility')),
       ...PRESET_TOKEN_KEYS.map((token) => colorField(ctx, token))
     ),
@@ -122,7 +217,10 @@ export const buildAppearancePanel = (ctx: FormContext): HTMLElement => {
         label: __('Corner radius', 'kotlinskidev-accessibility'),
         help: __('Any CSS length, for example 12px or 0.75rem.', 'kotlinskidev-accessibility'),
       }),
-      createNumberField(ctx, { path: 'tokens.zIndex', label: __('Stacking order (z-index)', 'kotlinskidev-accessibility') }),
+      createNumberField(ctx, {
+        path: 'tokens.zIndex',
+        label: __('Stacking order (z-index)', 'kotlinskidev-accessibility'),
+      }),
       createTextField(ctx, {
         path: 'tokens.fontFamily',
         label: __('Font family', 'kotlinskidev-accessibility'),

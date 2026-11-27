@@ -15,9 +15,9 @@ final class PolicyTextTest extends TestCase {
 
 		Functions\stubs(
 			array(
-				'__'          => static fn ( $text ) => $text,
-				'esc_html__'  => static fn ( $text ) => $text,
-				'esc_html'    => static fn ( $text ) => $text,
+				'__'         => static fn ( $text ) => $text,
+				'esc_html__' => static fn ( $text ) => $text,
+				'esc_html'   => static fn ( $text ) => $text,
 			)
 		);
 	}

@@ -1,7 +1,8 @@
 @use 'sass:string';
 
-$primary: string.unquote('var(--ka11y-primary,#0b5fff)');
-$on-primary: string.unquote('var(--ka11y-on-primary,#fff)');
+$primary: string.unquote('var(--ka11y-launcher-bg,var(--ka11y-primary,#0b5fff))');
+$on-primary: string.unquote('var(--ka11y-launcher-fg,var(--ka11y-on-primary,#fff))');
+$radius: string.unquote('var(--ka11y-launcher-radius,50%)');
 $shadow: string.unquote('0 .5rem 2rem #0005');
 $size: string.unquote('var(--ka11y-size,52px)');
 $target: 2.75rem;

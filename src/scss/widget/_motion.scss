@@ -1,7 +1,7 @@
 .ka11y-panel {
   transition:
-    opacity 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity var(--ka11y-open-ms, 220ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform var(--ka11y-open-ms, 220ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     visibility 0s;
 
   &[inert] {
@@ -10,9 +10,18 @@
     pointer-events: none;
     transform: translate(var(--ka11y-x, 100%), var(--ka11y-y, 0));
     transition:
-      opacity 160ms ease-in,
-      transform 160ms ease-in,
-      visibility 0s 160ms;
+      opacity var(--ka11y-close-ms, 160ms) ease-in,
+      transform var(--ka11y-close-ms, 160ms) ease-in,
+      visibility 0s var(--ka11y-close-ms, 160ms);
+  }
+
+  &[data-animation='fade'][inert] {
+    transform: none;
+  }
+
+  &[data-animation='none'],
+  &[data-animation='none'][inert] {
+    transition: none;
   }
 }
 

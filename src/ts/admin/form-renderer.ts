@@ -26,17 +26,86 @@ export interface PanelSpec {
 }
 
 export const panelSpecs = (): PanelSpec[] => [
-  { id: 'general', label: __('General', 'kotlinskidev-accessibility'), build: buildGeneralPanel, resetPaths: ['widget.position', 'widget.offsetX', 'widget.offsetY', 'widget.size', 'widget.icon', 'widget.iconBorder'] },
-  { id: 'features', label: __('Features', 'kotlinskidev-accessibility'), build: buildFeaturesPanel, resetPaths: ['features'] },
-  { id: 'profiles', label: __('Profiles', 'kotlinskidev-accessibility'), build: buildProfilesPanel, resetPaths: ['profiles'] },
-  { id: 'visibility', label: __('Visibility', 'kotlinskidev-accessibility'), build: buildVisibilityPanel, resetPaths: ['visibility'] },
-  { id: 'appearance', label: __('Appearance', 'kotlinskidev-accessibility'), build: buildAppearancePanel, resetPaths: ['theme', 'tokens', 'panel', 'customCss'], customer: true },
-  { id: 'languages', label: __('Languages', 'kotlinskidev-accessibility'), build: buildLanguagesPanel, resetPaths: ['labels', 'statement'], customer: true },
-  { id: 'behavior', label: __('Behavior', 'kotlinskidev-accessibility'), build: buildBehaviorPanel, resetPaths: ['storage', 'shortcut', 'hideToolbar', 'advanced'] },
-  { id: 'triggers', label: __('Triggers', 'kotlinskidev-accessibility'), build: buildTriggersPanel, resetPaths: ['triggers', 'widget.launcher', 'widget.mount'] },
-  { id: 'performance', label: __('Performance', 'kotlinskidev-accessibility'), build: buildPerformancePanel, resetPaths: ['performance'] },
-  { id: 'maintenance', label: __('Maintenance', 'kotlinskidev-accessibility'), build: buildMaintenancePanel, resetPaths: ['maintenance'] },
-  { id: 'import-export', label: __('Import / Export', 'kotlinskidev-accessibility'), build: buildImportExportPanel },
+  {
+    id: 'general',
+    label: __('General', 'kotlinskidev-accessibility'),
+    build: buildGeneralPanel,
+    resetPaths: [
+      'widget.position',
+      'widget.offsetX',
+      'widget.offsetY',
+      'widget.size',
+      'widget.sizes',
+      'widget.shape',
+      'widget.bg',
+      'widget.fg',
+      'widget.bgDark',
+      'widget.fgDark',
+      'widget.icon',
+      'widget.iconBorder',
+    ],
+  },
+  {
+    id: 'features',
+    label: __('Features', 'kotlinskidev-accessibility'),
+    build: buildFeaturesPanel,
+    resetPaths: ['features', 'panel.order'],
+  },
+  {
+    id: 'profiles',
+    label: __('Profiles', 'kotlinskidev-accessibility'),
+    build: buildProfilesPanel,
+    resetPaths: ['profiles'],
+  },
+  {
+    id: 'visibility',
+    label: __('Visibility', 'kotlinskidev-accessibility'),
+    build: buildVisibilityPanel,
+    resetPaths: ['visibility'],
+  },
+  {
+    id: 'appearance',
+    label: __('Appearance', 'kotlinskidev-accessibility'),
+    build: buildAppearancePanel,
+    resetPaths: ['theme', 'tokens', 'panel', 'customCss'],
+    customer: true,
+  },
+  {
+    id: 'languages',
+    label: __('Languages', 'kotlinskidev-accessibility'),
+    build: buildLanguagesPanel,
+    resetPaths: ['labels', 'statement'],
+    customer: true,
+  },
+  {
+    id: 'behavior',
+    label: __('Behavior', 'kotlinskidev-accessibility'),
+    build: buildBehaviorPanel,
+    resetPaths: ['storage', 'shortcut', 'hideToolbar', 'advanced'],
+  },
+  {
+    id: 'triggers',
+    label: __('Triggers', 'kotlinskidev-accessibility'),
+    build: buildTriggersPanel,
+    resetPaths: ['triggers', 'widget.launcher', 'widget.mount'],
+  },
+  {
+    id: 'performance',
+    label: __('Performance', 'kotlinskidev-accessibility'),
+    build: buildPerformancePanel,
+    resetPaths: ['performance'],
+  },
+  {
+    id: 'maintenance',
+    label: __('Maintenance', 'kotlinskidev-accessibility'),
+    build: buildMaintenancePanel,
+    resetPaths: ['maintenance'],
+  },
+  {
+    id: 'import-export',
+    label: __('Import / Export', 'kotlinskidev-accessibility'),
+    build: buildImportExportPanel,
+  },
 ];
 
 export interface RenderOptions {

@@ -165,8 +165,32 @@ final class SchemaTest extends TestCase {
 			$defaults['panel']['sections']
 		);
 		$this->assertTrue( $defaults['panel']['languageSwitcher'] );
+		$this->assertTrue( $defaults['panel']['credit'] );
 		$this->assertSame( 'classic', $defaults['panel']['preset'] );
 		$this->assertSame( array( 'classic', 'brand', 'soft', 'contrast', 'custom' ), Schema::definition( 'panel.preset' )['enum'] );
+	}
+
+	public function test_panel_and_launcher_appearance_defaults_keep_current_behaviour(): void {
+		$defaults = Schema::defaults();
+
+		$this->assertSame( 'choose', $defaults['panel']['languageMode'] );
+		$this->assertFalse( $defaults['panel']['backdrop'] );
+		$this->assertTrue( $defaults['panel']['closeOnBackdrop'] );
+		$this->assertSame( 'slide', $defaults['panel']['animation'] );
+		$this->assertSame( 220, $defaults['panel']['animationMs'] );
+		$this->assertSame( 448, $defaults['panel']['width'] );
+		$this->assertSame( 'auto', $defaults['panel']['side'] );
+		$this->assertSame( 0, $defaults['panel']['offset'] );
+		$this->assertSame( 'circle', $defaults['widget']['shape'] );
+		$this->assertSame( '', $defaults['widget']['bg'] );
+		$this->assertSame( '', $defaults['widget']['fg'] );
+		$this->assertSame( '', $defaults['widget']['bgDark'] );
+		$this->assertSame( '', $defaults['widget']['fgDark'] );
+		$this->assertSame( 'inherit', $defaults['widget']['sizes']['mobile'] );
+		$this->assertSame( array( 280, 640 ), array( Schema::definition( 'panel.width' )['min'], Schema::definition( 'panel.width' )['max'] ) );
+		$this->assertSame( 20, Schema::definition( 'panel.backdropBlur' )['max'] );
+		$this->assertSame( 1000, Schema::definition( 'panel.animationMs' )['max'] );
+		$this->assertSame( 200, Schema::definition( 'panel.offset' )['max'] );
 	}
 
 	public function test_performance_and_visibility_additions_have_defaults_and_enums(): void {

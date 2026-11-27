@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Kotlinskidev Accessibility 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kotlinskidev-"
 "accessibility\n"
-"POT-Creation-Date: 2026-11-26T07:33:55+00:00\n"
+"POT-Creation-Date: 2026-11-27T07:36:53+00:00\n"
 "PO-Revision-Date: 2026-11-26 12:00+0000\n"
 "Last-Translator: Adrian Kotlinski\n"
 "Language-Team: Polish\n"
@@ -34,6 +34,11 @@ msgstr ""
 #: kotlinskidev-accessibility.php
 msgid "Adrian Kotlinski"
 msgstr "Adrian Kotlinski"
+
+#. Author URI of the plugin
+#: kotlinskidev-accessibility.php
+msgid "https://kotlinskidev.com"
+msgstr ""
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:35
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/AltTextPage.php:36
@@ -95,8 +100,8 @@ msgstr "Stronicowanie"
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:63
 #: src/php/Admin/DashboardWidget.php:34
 #: src/php/Admin/NetworkSettingsPage.php:26
-#: src/php/Admin/NetworkSettingsPage.php:27 src/php/Admin/SettingsPage.php:45
-#: src/php/Admin/SettingsPage.php:46 src/php/Admin/SettingsPage.php:68
+#: src/php/Admin/NetworkSettingsPage.php:27 src/php/Admin/SettingsPage.php:46
+#: src/php/Admin/SettingsPage.php:47 src/php/Admin/SettingsPage.php:69
 #: src/php/Health/SiteHealth.php:48 src/php/I18n/Strings.php:151
 #: src/php/I18n/Strings.php:153 build/admin.js:2
 msgid "Accessibility"
@@ -128,12 +133,12 @@ msgid "Plugin version"
 msgstr "Wersja wtyczki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:50
-#: src/php/Admin/SettingsPage.php:57
+#: src/php/Admin/SettingsPage.php:58
 msgid "Settings"
 msgstr "Ustawienia"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/Admin/SettingsPage.php:65
-#: src/php/Admin/SettingsPage.php:76
+#: src/php/Admin/SettingsPage.php:77
 msgid "This settings page needs JavaScript."
 msgstr "Ta strona ustawień wymaga włączonej obsługi JavaScript."
 
@@ -535,60 +540,60 @@ msgid "Sidebar"
 msgstr "Panel boczny"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:138
-#: src/php/I18n/Strings.php:183 build/admin.js:1
+#: src/php/I18n/Strings.php:185 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Off"
 msgstr "Wyłączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:139
-#: src/php/I18n/Strings.php:184 build/admin.js:1
+#: src/php/I18n/Strings.php:186 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "On"
 msgstr "Włączone"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:140
-#: src/php/I18n/Strings.php:185 build/admin.js:1
+#: src/php/I18n/Strings.php:187 build/admin.js:1
 msgid "Low"
 msgstr "Niski"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:141
-#: src/php/I18n/Strings.php:186 build/admin.js:1
+#: src/php/I18n/Strings.php:188 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Medium"
 msgstr "Średni"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:142
-#: src/php/I18n/Strings.php:187 build/admin.js:1
+#: src/php/I18n/Strings.php:189 build/admin.js:1
 msgid "High"
 msgstr "Wysoki"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:143
-#: src/php/I18n/Strings.php:188
+#: src/php/I18n/Strings.php:190 build/admin.js:1
 msgid "Left"
 msgstr "Do lewej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:144
-#: src/php/I18n/Strings.php:189
+#: src/php/I18n/Strings.php:191
 msgid "Center"
 msgstr "Do środka"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:145
-#: src/php/I18n/Strings.php:190
+#: src/php/I18n/Strings.php:192 build/admin.js:1
 msgid "Right"
 msgstr "Do prawej"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:146
-#: src/php/I18n/Strings.php:191
+#: src/php/I18n/Strings.php:193
 msgid "The accessibility statement has not been published yet."
 msgstr "Deklaracja dostępności nie została jeszcze opublikowana."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:147
-#: src/php/I18n/Strings.php:192
+#: src/php/I18n/Strings.php:194
 msgid "Our commitment to accessibility"
 msgstr "Nasze zobowiązanie do zapewnienia dostępności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:148
-#: src/php/I18n/Strings.php:193
+#: src/php/I18n/Strings.php:195
 msgid ""
 "We want this website to be usable by everyone, including people with "
 "disabilities."
@@ -597,22 +602,22 @@ msgstr ""
 "niepełnosprawnościami."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:149
-#: src/php/I18n/Strings.php:194
+#: src/php/I18n/Strings.php:196
 msgid "Conformance status"
 msgstr "Status zgodności"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:150
-#: src/php/I18n/Strings.php:195
+#: src/php/I18n/Strings.php:197
 msgid "We are working towards conformance with WCAG 2.2 level AA."
 msgstr "Dążymy do zgodności ze standardem WCAG 2.2 na poziomie AA."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:151
-#: src/php/I18n/Strings.php:196
+#: src/php/I18n/Strings.php:198
 msgid "Feedback and contact"
 msgstr "Opinie i kontakt"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:152
-#: src/php/I18n/Strings.php:197
+#: src/php/I18n/Strings.php:199
 msgid ""
 "If you run into an accessibility barrier on this website, please contact the "
 "site owner and describe the problem."
@@ -621,12 +626,12 @@ msgstr ""
 "właścicielem witryny i opisz problem."
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:153
-#: src/php/I18n/Strings.php:198
+#: src/php/I18n/Strings.php:200
 msgid "Date of this statement"
 msgstr "Data sporządzenia deklaracji"
 
 #: dist/stage/kotlinskidev-accessibility/src/php/I18n/Strings.php:154
-#: src/php/I18n/Strings.php:199
+#: src/php/I18n/Strings.php:201
 msgid ""
 "This statement is reviewed regularly; the date of the last review is added "
 "by the site owner."
@@ -1272,7 +1277,13 @@ msgstr "Wybierz…"
 msgid "All adjustments were reset."
 msgstr "Wszystkie ustawienia zostały zresetowane."
 
-#: src/php/I18n/Strings.php:182 build/admin.js:1
+#. translators: %s: name of the plugin author.
+#: src/php/I18n/Strings.php:183
+#, php-format
+msgid "Developed by %s"
+msgstr "Stworzone przez %s"
+
+#: src/php/I18n/Strings.php:184 build/admin.js:1
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Reset settings"
 msgstr "Zresetuj ustawienia"
@@ -1606,6 +1617,10 @@ msgstr "Mały"
 msgid "Large"
 msgstr "Duży"
 
+#: build/admin.js:1
+msgid "Same as launcher size"
+msgstr "Taki sam jak rozmiar przycisku"
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Automatic"
 msgstr "Automatyczny"
@@ -1877,6 +1892,42 @@ msgid "Show the skip to content card"
 msgstr "Pokaż kartę przejścia do treści"
 
 #: build/admin.js:1
+msgid "Circle"
+msgstr "Koło"
+
+#: build/admin.js:1
+msgid "Rounded square"
+msgstr "Zaokrąglony kwadrat"
+
+#: build/admin.js:1
+msgid "Square"
+msgstr "Kwadrat"
+
+#: build/admin.js:1
+msgid "Follow the page language"
+msgstr "Zgodnie z językiem strony"
+
+#: build/admin.js:1
+msgid "Let visitors choose"
+msgstr "Pozwól odwiedzającym wybierać"
+
+#: build/admin.js:1
+msgid "Slide"
+msgstr "Wsuwanie"
+
+#: build/admin.js:1
+msgid "Fade"
+msgstr "Zanikanie"
+
+#: build/admin.js:1
+msgid "None"
+msgstr "Brak"
+
+#: build/admin.js:1
+msgid "Next to the launcher"
+msgstr "Obok przycisku"
+
+#: build/admin.js:1
 msgid "passes"
 msgstr "spełnia"
 
@@ -1891,6 +1942,34 @@ msgstr "%s: wpisz poprawny kolor, aby sprawdzić kontrast."
 #: build/admin.js:1
 msgid "%1$s:1 against %2$s, %3$s the %4$s:1 minimum"
 msgstr "%1$s:1 względem: %2$s, %3$s minimum %4$s:1"
+
+#: build/admin.js:1
+msgid "(approximate: uses the fallback color of a theme color)"
+msgstr "(w przybliżeniu: użyto koloru zastępczego koloru motywu)"
+
+#: build/admin.js:1
+msgid "Linked to theme color: %s"
+msgstr "Powiązany z kolorem motywu: %s"
+
+#: build/admin.js:1
+msgid "Custom color"
+msgstr "Własny kolor"
+
+#: build/admin.js:1
+msgid "%s: from theme"
+msgstr "%s: z motywu"
+
+#: build/admin.js:1
+msgid "Match theme"
+msgstr "Dopasuj do motywu"
+
+#: build/admin.js:1
+msgid "The active theme does not define a color palette."
+msgstr "Aktywny motyw nie definiuje palety kolorów."
+
+#: build/admin.js:1
+msgid "Theme colors applied. Check the contrast ratios below."
+msgstr "Zastosowano kolory motywu. Sprawdź poniższe współczynniki kontrastu."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Theme"
@@ -1946,6 +2025,82 @@ msgstr "Pokaż przełącznik języka"
 #: build/admin.js:1
 msgid "Shown only when the site has two or more languages."
 msgstr "Widoczny tylko wtedy, gdy witryna ma co najmniej dwa języki."
+
+#: build/admin.js:1
+msgid "Panel language"
+msgstr "Język panelu"
+
+#: build/admin.js:1
+msgid ""
+"Follow the page language ignores and clears any language a visitor picked in "
+"the panel."
+msgstr ""
+"Opcja „Zgodnie z językiem strony” ignoruje i usuwa język wybrany przez "
+"odwiedzającego w panelu."
+
+#: build/admin.js:1
+msgid "Show the author credit in the panel footer"
+msgstr "Pokaż podpis autora w stopce panelu"
+
+#: build/admin.js:1
+msgid "Panel size and motion"
+msgstr "Rozmiar i animacja panelu"
+
+#: build/admin.js:1
+msgid "Panel width (px)"
+msgstr "Szerokość panelu (px)"
+
+#: build/admin.js:1
+msgid "Panel side"
+msgstr "Strona panelu"
+
+#: build/admin.js:1
+msgid "Small screens always use the bottom sheet."
+msgstr "Małe ekrany zawsze używają dolnego arkusza."
+
+#: build/admin.js:1
+msgid "Distance from the screen edge (px)"
+msgstr "Odstęp od krawędzi ekranu (px)"
+
+#: build/admin.js:1
+msgid "Open animation"
+msgstr "Animacja otwierania"
+
+#: build/admin.js:1
+msgid "Animation duration (ms)"
+msgstr "Czas animacji (ms)"
+
+#: build/admin.js:1
+msgid ""
+"Closing is proportionally faster. Visitors who prefer reduced motion never "
+"see animation."
+msgstr ""
+"Zamykanie jest proporcjonalnie szybsze. Odwiedzający preferujący ograniczony "
+"ruch nigdy nie widzą animacji."
+
+#: build/admin.js:1
+msgid "Backdrop"
+msgstr "Tło za panelem"
+
+#: build/admin.js:1
+msgid "Dim the page behind the open panel"
+msgstr "Przyciemnij stronę za otwartym panelem"
+
+#: build/admin.js:1
+msgid "Backdrop color"
+msgstr "Kolor tła"
+
+#: build/admin.js:1
+msgid "Backdrop opacity (%)"
+msgstr "Krycie tła (%)"
+
+#: build/admin.js:1
+msgid "Backdrop blur (px)"
+msgstr "Rozmycie tła (px)"
+
+#: build/admin.js:1
+msgid "Close the panel when the backdrop is clicked"
+msgstr "Zamknij panel po kliknięciu tła"
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Colors"
@@ -2082,6 +2237,14 @@ msgstr ""
 msgid "Level %1$d: %2$s"
 msgstr "Poziom %1$d: %2$s"
 
+#: build/admin.js:1
+msgid "Move up"
+msgstr "Przenieś w górę"
+
+#: build/admin.js:1
+msgid "Move down"
+msgstr "Przenieś w dół"
+
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Enable %s"
 msgstr "Włącz: %s"
@@ -2090,11 +2253,9 @@ msgstr "Włącz: %s"
 msgid "Default state of %s"
 msgstr "Stan domyślny: %s"
 
-#: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
-msgid "Choose which adjustments visitors can use and which ones start active."
-msgstr ""
-"Wybierz, z których dostosowań mogą korzystać odwiedzający i które mają być "
-"domyślnie aktywne."
+#: build/admin.js:1
+msgid "%1$s moved to position %2$d of %3$d."
+msgstr "%1$s przeniesiono na pozycję %2$d z %3$d."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Feature"
@@ -2103,6 +2264,16 @@ msgstr "Funkcja"
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Enabled"
 msgstr "Włączona"
+
+#: build/admin.js:1
+msgid "Order"
+msgstr "Kolejność"
+
+#: build/admin.js:1
+msgid ""
+"Choose which adjustments visitors can use, which ones start active, and the "
+"order they appear in within each section."
+msgstr ""
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Attachment #%d"
@@ -2152,6 +2323,43 @@ msgstr "Odsunięcie w pionie (px)"
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Launcher size"
 msgstr "Rozmiar przycisku"
+
+#: build/admin.js:1
+msgid "Launcher shape"
+msgstr "Kształt przycisku"
+
+#: build/admin.js:1
+msgid "Launcher background"
+msgstr "Tło przycisku"
+
+#: build/admin.js:1
+msgid "Leave empty to use the primary color from Appearance."
+msgstr "Zostaw puste, aby użyć koloru głównego z zakładki Wygląd."
+
+#: build/admin.js:1
+msgid "Launcher icon color"
+msgstr "Kolor ikony przycisku"
+
+#: build/admin.js:1
+msgid "Leave empty to use the text on primary color from Appearance."
+msgstr ""
+"Zostaw puste, aby użyć koloru tekstu na kolorze głównym z zakładki Wygląd."
+
+#: build/admin.js:1
+msgid "Launcher background (dark mode)"
+msgstr "Tło przycisku (tryb ciemny)"
+
+#: build/admin.js:1
+msgid "Leave empty to keep the light-mode background in dark mode."
+msgstr "Zostaw puste, aby w trybie ciemnym zachować tło z trybu jasnego."
+
+#: build/admin.js:1
+msgid "Launcher icon color (dark mode)"
+msgstr "Kolor ikony przycisku (tryb ciemny)"
+
+#: build/admin.js:1
+msgid "Leave empty to keep the light-mode icon color in dark mode."
+msgstr "Zostaw puste, aby w trybie ciemnym zachować kolor ikony z trybu jasnego."
 
 #: build/admin.js:1 dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Launcher icon"
@@ -2895,6 +3103,12 @@ msgstr "Zapisano tekst alternatywny dla: %s."
 #: dist/stage/kotlinskidev-accessibility/build/alt-text.js:1
 msgid "Alt text could not be saved."
 msgstr "Nie udało się zapisać tekstu alternatywnego."
+
+#: dist/stage/kotlinskidev-accessibility/build/admin.js:1
+msgid "Choose which adjustments visitors can use and which ones start active."
+msgstr ""
+"Wybierz, z których dostosowań mogą korzystać odwiedzający i które mają być "
+"domyślnie aktywne."
 
 #: dist/stage/kotlinskidev-accessibility/build/admin.js:1
 msgid "Upload a settings file. It replaces the saved settings immediately."

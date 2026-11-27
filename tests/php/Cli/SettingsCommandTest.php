@@ -13,7 +13,7 @@ use WP_CLI;
 
 final class SettingsCommandTest extends CliTestCase {
 
-	private string $directory = '';
+	private string $directory   = '';
 	private array $site_options = array();
 
 	protected function setUp(): void {
@@ -85,7 +85,13 @@ final class SettingsCommandTest extends CliTestCase {
 	public function test_get_prints_a_leaf_value(): void {
 		$this->command()->get( array( 'widget.size' ), array( 'format' => 'json' ) );
 
-		$this->assertSame( array( 'value' => 'md', 'format' => 'json' ), WP_CLI::$printed[0] );
+		$this->assertSame(
+			array(
+				'value'  => 'md',
+				'format' => 'json',
+			),
+			WP_CLI::$printed[0]
+		);
 	}
 
 	public function test_get_prints_a_prefix_subtree(): void {
@@ -133,7 +139,18 @@ final class SettingsCommandTest extends CliTestCase {
 		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->set( array( 'widget.size', 'lg' ), array( 'network' => true ) ) ) );
 		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->import( array( 'x.json' ), array( 'network' => true ) ) ) );
 		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->export( array(), array( 'network' => true ) ) ) );
-		$this->assertStringContainsString( 'multisite', $this->failure_of( fn () => $this->command()->reset( array(), array( 'network' => true, 'yes' => true ) ) ) );
+		$this->assertStringContainsString(
+			'multisite',
+			$this->failure_of(
+				fn () => $this->command()->reset(
+					array(),
+					array(
+						'network' => true,
+						'yes'     => true,
+					)
+				)
+			)
+		);
 		$this->assertSame( array(), $this->site_options );
 	}
 
@@ -144,7 +161,13 @@ final class SettingsCommandTest extends CliTestCase {
 	public function test_network_set_writes_the_network_option_and_leaves_the_site_option(): void {
 		$this->multisite();
 
-		$this->command()->set( array( 'storage.mode', 'none' ), array( 'network' => true, 'format' => 'json' ) );
+		$this->command()->set(
+			array( 'storage.mode', 'none' ),
+			array(
+				'network' => true,
+				'format'  => 'json',
+			)
+		);
 
 		$this->assertSame( array( 'storage' => array( 'mode' => 'none' ) ), $this->site_options[ Repository::NETWORK_OPTION ]['settings'] );
 		$this->assertSame( array(), $this->stored );
@@ -154,7 +177,13 @@ final class SettingsCommandTest extends CliTestCase {
 	public function test_network_set_dry_run_saves_nothing(): void {
 		$this->multisite();
 
-		$this->command()->set( array( 'storage.mode', 'none' ), array( 'network' => true, 'dry-run' => true ) );
+		$this->command()->set(
+			array( 'storage.mode', 'none' ),
+			array(
+				'network' => true,
+				'dry-run' => true,
+			)
+		);
 
 		$this->assertSame( array(), $this->site_options );
 		$this->assertSame( array(), $this->stored );
@@ -172,11 +201,34 @@ final class SettingsCommandTest extends CliTestCase {
 		$this->site_options[ Repository::NETWORK_OPTION ] = array( 'settings' => array( 'widget' => array( 'size' => 'lg' ) ) );
 
 		$this->command()->get( array( 'widget.size' ), array( 'network' => true ) );
-		$this->command()->get( array( 'widget.size' ), array( 'network' => true, 'layer' => 'defaults' ) );
-		$this->command()->get( array( 'widget.size' ), array( 'network' => true, 'layer' => 'stored' ) );
+		$this->command()->get(
+			array( 'widget.size' ),
+			array(
+				'network' => true,
+				'layer'   => 'defaults',
+			)
+		);
+		$this->command()->get(
+			array( 'widget.size' ),
+			array(
+				'network' => true,
+				'layer'   => 'stored',
+			)
+		);
 
 		$this->assertSame( array( 'lg', 'md', 'lg' ), array_column( WP_CLI::$printed, 'value' ) );
-		$this->assertStringContainsString( 'no value', $this->failure_of( fn () => $this->command()->get( array( 'widget.launcher' ), array( 'network' => true, 'layer' => 'stored' ) ) ) );
+		$this->assertStringContainsString(
+			'no value',
+			$this->failure_of(
+				fn () => $this->command()->get(
+					array( 'widget.launcher' ),
+					array(
+						'network' => true,
+						'layer'   => 'stored',
+					)
+				)
+			)
+		);
 	}
 
 	public function test_network_export_has_network_scope_and_import_requires_it(): void {
@@ -187,7 +239,13 @@ final class SettingsCommandTest extends CliTestCase {
 		);
 		$file = $this->directory . '/network.json';
 
-		$this->command()->export( array(), array( 'network' => true, 'file' => $file ) );
+		$this->command()->export(
+			array(),
+			array(
+				'network' => true,
+				'file'    => $file,
+			)
+		);
 
 		$envelope = (array) json_decode( (string) file_get_contents( $file ), true );
 
@@ -196,11 +254,28 @@ final class SettingsCommandTest extends CliTestCase {
 
 		$site = $this->write( 'site.json', (string) json_encode( array_merge( $envelope, array( 'scope' => 'site' ) ) ) );
 
-		$this->assertStringContainsString( 'different settings scope', $this->failure_of( fn () => $this->command()->import( array( $site ), array( 'network' => true, 'yes' => true ) ) ) );
+		$this->assertStringContainsString(
+			'different settings scope',
+			$this->failure_of(
+				fn () => $this->command()->import(
+					array( $site ),
+					array(
+						'network' => true,
+						'yes'     => true,
+					)
+				)
+			)
+		);
 
 		unset( $this->site_options[ Repository::NETWORK_OPTION ] );
 		Repository::flush();
-		$this->command()->import( array( $file ), array( 'network' => true, 'yes' => true ) );
+		$this->command()->import(
+			array( $file ),
+			array(
+				'network' => true,
+				'yes'     => true,
+			)
+		);
 
 		$this->assertSame( 'lg', $this->site_options[ Repository::NETWORK_OPTION ]['settings']['widget']['size'] );
 		$this->assertSame( array( 'widget.size' ), $this->site_options[ Repository::NETWORK_OPTION ]['locked'] );
@@ -210,7 +285,13 @@ final class SettingsCommandTest extends CliTestCase {
 		$this->multisite();
 		$this->site_options[ Repository::NETWORK_OPTION ] = array( 'settings' => array( 'widget' => array( 'size' => 'lg' ) ) );
 
-		$this->command()->reset( array(), array( 'network' => true, 'yes' => true ) );
+		$this->command()->reset(
+			array(),
+			array(
+				'network' => true,
+				'yes'     => true,
+			)
+		);
 
 		$this->assertArrayNotHasKey( Repository::NETWORK_OPTION, $this->site_options );
 	}
@@ -246,14 +327,30 @@ final class SettingsCommandTest extends CliTestCase {
 
 		$this->assertSame( 'lg', $this->stored_tree()['widget']['size'] );
 		$this->assertSame( 'json', WP_CLI::$tables[0]['format'] );
-		$this->assertSame( array( array( 'path' => 'widget.size', 'before' => 'md', 'after' => 'lg' ) ), WP_CLI::$tables[0]['items'] );
+		$this->assertSame(
+			array(
+				array(
+					'path'   => 'widget.size',
+					'before' => 'md',
+					'after'  => 'lg',
+				),
+			),
+			WP_CLI::$tables[0]['items']
+		);
 		$this->assertSame( array( 'Settings saved.' ), WP_CLI::$successes );
 	}
 
 	public function test_set_table_format_prints_text_values(): void {
 		$this->command()->set( array( 'features.biggerText.enabled', 'off' ), array() );
 
-		$this->assertSame( array( 'path' => 'features.biggerText.enabled', 'before' => 'true', 'after' => 'false' ), WP_CLI::$tables[0]['items'][0] );
+		$this->assertSame(
+			array(
+				'path'   => 'features.biggerText.enabled',
+				'before' => 'true',
+				'after'  => 'false',
+			),
+			WP_CLI::$tables[0]['items'][0]
+		);
 	}
 
 	public function test_set_dry_run_saves_nothing(): void {
@@ -321,7 +418,7 @@ final class SettingsCommandTest extends CliTestCase {
 	public function test_set_json_value_is_validated_and_saved(): void {
 		$this->command()->set( array( 'profiles.visionImpaired.features', '["biggerText"]' ), array( 'as-json' => true ) );
 
-		$this->assertSame( array( 'biggerText' ), $this->stored_tree()["profiles"]["visionImpaired"]['features'] );
+		$this->assertSame( array( 'biggerText' ), $this->stored_tree()['profiles']['visionImpaired']['features'] );
 	}
 
 	public function test_set_json_rejects_garbage_and_depth_and_size(): void {
@@ -382,7 +479,13 @@ final class SettingsCommandTest extends CliTestCase {
 		$this->assertSame( 'kotlinskidev-accessibility-settings', json_decode( (string) file_get_contents( $path ), true )['format'] );
 		$this->assertStringContainsString( '--force', $this->failure_of( fn () => $this->command()->export( array(), array( 'file' => $path ) ) ) );
 
-		$this->command()->export( array(), array( 'file' => $path, 'force' => true ) );
+		$this->command()->export(
+			array(),
+			array(
+				'file'  => $path,
+				'force' => true,
+			)
+		);
 
 		$this->assertCount( 2, WP_CLI::$successes );
 	}
@@ -420,7 +523,7 @@ final class SettingsCommandTest extends CliTestCase {
 	}
 
 	public function test_import_asks_for_confirmation_and_stops_when_declined(): void {
-		$file              = $this->write( 'in.json', (string) json_encode( array( 'widget' => array( 'size' => 'lg' ) ) ) );
+		$file            = $this->write( 'in.json', (string) json_encode( array( 'widget' => array( 'size' => 'lg' ) ) ) );
 		WP_CLI::$decline = true;
 
 		$this->failure_of( fn () => $this->command()->import( array( $file ), array() ) );
@@ -430,7 +533,15 @@ final class SettingsCommandTest extends CliTestCase {
 	}
 
 	public function test_import_warns_about_unknown_settings(): void {
-		$file = $this->write( 'in.json', (string) json_encode( array( 'widget' => array( 'size' => 'lg' ), 'bogus' => 1 ) ) );
+		$file = $this->write(
+			'in.json',
+			(string) json_encode(
+				array(
+					'widget' => array( 'size' => 'lg' ),
+					'bogus'  => 1,
+				)
+			)
+		);
 
 		$this->command()->import( array( $file ), array( 'dry-run' => true ) );
 
@@ -494,7 +605,7 @@ final class SettingsCommandTest extends CliTestCase {
 			'schemaVersion' => Schema::VERSION,
 			'widget'        => array( 'size' => 'lg' ),
 		);
-		$before                            = $this->stored;
+		$before                             = $this->stored;
 
 		$this->command()->reset( array( 'widget' ), array( 'dry-run' => true ) );
 
@@ -509,8 +620,8 @@ final class SettingsCommandTest extends CliTestCase {
 			'schemaVersion' => Schema::VERSION,
 			'widget'        => array( 'size' => 'lg' ),
 		);
-		$before                            = $this->stored;
-		WP_CLI::$decline                 = true;
+		$before                             = $this->stored;
+		WP_CLI::$decline                    = true;
 
 		$this->failure_of( fn () => $this->command()->reset( array(), array() ) );
 

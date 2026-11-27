@@ -1,3 +1,5 @@
+import { resolveColor } from './theme-color';
+
 export const TEXT_MINIMUM = 4.5;
 export const UI_MINIMUM = 3;
 
@@ -28,7 +30,8 @@ type Rgb = readonly [number, number, number];
 
 const HEX_PATTERN = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
-export const parseColor = (value: unknown): Rgb | null => {
+export const parseColor = (input: unknown): Rgb | null => {
+  const value = resolveColor(input);
   if (typeof value !== 'string' || !HEX_PATTERN.test(value)) return null;
   const digits = value.slice(1);
   const expanded = digits.length <= 4 ? [...digits].map((digit) => digit + digit).join('') : digits;

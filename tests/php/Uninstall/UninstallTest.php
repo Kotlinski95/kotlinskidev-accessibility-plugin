@@ -17,27 +17,27 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 final class UninstallTest extends TestCase {
 
-	private array $bases    = array();
-	private array $deleted  = array();
-	private array $switched = array();
-	private int $restored   = 0;
-	private bool $multisite = false;
-	private string $method  = 'ftpext';
-	private array $kept     = array();
-	private array $network  = array();
+	private array $bases      = array();
+	private array $deleted    = array();
+	private array $switched   = array();
+	private int $restored     = 0;
+	private bool $multisite   = false;
+	private string $method    = 'ftpext';
+	private array $kept       = array();
+	private array $network    = array();
 	private array $transients = array();
 	private array $user_meta  = array();
 
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->bases     = array();
-		$this->deleted   = array();
-		$this->switched  = array();
-		$this->restored  = 0;
-		$this->multisite = false;
-		$this->method    = 'ftpext';
-		$this->current   = 0;
+		$this->bases        = array();
+		$this->deleted      = array();
+		$this->switched     = array();
+		$this->restored     = 0;
+		$this->multisite    = false;
+		$this->method       = 'ftpext';
+		$this->current      = 0;
 		$this->removed_caps = array();
 		$this->kept         = array();
 		$this->network      = array();
@@ -140,7 +140,7 @@ final class UninstallTest extends TestCase {
 		);
 	}
 
-	private int $current = 0;
+	private int $current        = 0;
 	private array $removed_caps = array();
 
 	public function record_cap_removal( string $entry ): void {
@@ -248,8 +248,8 @@ final class UninstallTest extends TestCase {
 	}
 
 	public function test_keep_data_on_single_site_keeps_everything(): void {
-		$base         = $this->folder( 0 );
-		$this->kept   = array( 0 );
+		$base       = $this->folder( 0 );
+		$this->kept = array( 0 );
 
 		$this->run_uninstall();
 

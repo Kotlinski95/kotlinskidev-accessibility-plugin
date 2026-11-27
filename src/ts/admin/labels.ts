@@ -33,6 +33,7 @@ export const sizeLabel = (size: string): string =>
       sm: __('Small', 'kotlinskidev-accessibility'),
       md: __('Medium', 'kotlinskidev-accessibility'),
       lg: __('Large', 'kotlinskidev-accessibility'),
+      inherit: __('Same as launcher size', 'kotlinskidev-accessibility'),
     },
     size
   );
@@ -228,4 +229,43 @@ export const panelSectionLabel = (section: string): string =>
       skip: __('Show the skip to content card', 'kotlinskidev-accessibility'),
     },
     section
+  );
+
+export const shapeLabel = (shape: string): string =>
+  lookup(
+    {
+      circle: __('Circle', 'kotlinskidev-accessibility'),
+      rounded: __('Rounded square', 'kotlinskidev-accessibility'),
+      square: __('Square', 'kotlinskidev-accessibility'),
+    },
+    shape
+  );
+
+export const languageModeLabel = (mode: string): string =>
+  lookup(
+    {
+      follow: __('Follow the page language', 'kotlinskidev-accessibility'),
+      choose: __('Let visitors choose', 'kotlinskidev-accessibility'),
+    },
+    mode
+  );
+
+export const animationLabel = (animation: string): string =>
+  lookup(
+    {
+      slide: __('Slide', 'kotlinskidev-accessibility'),
+      fade: __('Fade', 'kotlinskidev-accessibility'),
+      none: __('None', 'kotlinskidev-accessibility'),
+    },
+    animation
+  );
+
+export const panelSideLabel = (side: string): string =>
+  lookup(
+    {
+      auto: __('Next to the launcher', 'kotlinskidev-accessibility'),
+      left: __('Left', 'kotlinskidev-accessibility'),
+      right: __('Right', 'kotlinskidev-accessibility'),
+    },
+    side
   );

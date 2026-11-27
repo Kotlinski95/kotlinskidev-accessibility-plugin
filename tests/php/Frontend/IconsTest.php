@@ -25,7 +25,15 @@ final class IconsTest extends TestCase {
 	}
 
 	private function write( array $icons ): void {
-		file_put_contents( $this->file, json_encode( array( 'v' => 1, 'icons' => $icons ) ) );
+		file_put_contents(
+			$this->file,
+			json_encode(
+				array(
+					'v'     => 1,
+					'icons' => $icons,
+				)
+			)
+		);
 	}
 
 	public function test_missing_file_gives_an_empty_map(): void {
@@ -41,8 +49,8 @@ final class IconsTest extends TestCase {
 	public function test_known_names_with_valid_path_data_are_kept(): void {
 		$this->write(
 			array(
-				'close'       => 'M5 5l14 14M19 5 5 19',
-				'biggerText'  => 'M3 19 9 5l6 14',
+				'close'          => 'M5 5l14 14M19 5 5 19',
+				'biggerText'     => 'M3 19 9 5l6 14',
 				'visionImpaired' => 'M2 12s4-7 10-7',
 			)
 		);
@@ -60,13 +68,13 @@ final class IconsTest extends TestCase {
 	public function test_unknown_names_and_invalid_data_are_dropped(): void {
 		$this->write(
 			array(
-				'close'    => 'M5 5l14 14',
-				'unknown'  => 'M0 0h1',
-				'plus'     => '<script>alert(1)</script>',
-				'minus'    => 'M0 0" onload="x',
-				'check'    => '',
-				'chevron'  => 42,
-				'access'   => 'M' . str_repeat( '1', 1500 ),
+				'close'   => 'M5 5l14 14',
+				'unknown' => 'M0 0h1',
+				'plus'    => '<script>alert(1)</script>',
+				'minus'   => 'M0 0" onload="x',
+				'check'   => '',
+				'chevron' => 42,
+				'access'  => 'M' . str_repeat( '1', 1500 ),
 			)
 		);
 

@@ -5,6 +5,7 @@ export interface PanelLayoutOptions {
   panel: HTMLElement;
   host: HTMLElement;
   sheetQuery: string;
+  side?: 'auto' | PanelSide;
   win?: Window;
 }
 
@@ -18,6 +19,7 @@ export const createPanelLayout = ({
   panel,
   host,
   sheetQuery,
+  side: preferredSide = 'auto',
   win = window,
 }: PanelLayoutOptions): PanelLayoutController => {
   const query =
@@ -37,7 +39,11 @@ export const createPanelLayout = ({
   const place = (): PanelSide => {
     const rect = host.getBoundingClientRect();
     const side: PanelSide =
-      rect.left + rect.width / 2 < win.innerWidth / 2 ? "left" : "right";
+      preferredSide !== 'auto'
+        ? preferredSide
+        : rect.left + rect.width / 2 < win.innerWidth / 2
+          ? "left"
+          : "right";
     panel.dataset.side = side;
     return side;
   };

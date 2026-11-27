@@ -29,6 +29,12 @@ final class PayloadGoldenTest extends TestCase {
 		$this->printed         = array();
 
 		Functions\when( 'restore_previous_locale' )->justReturn( 'en_US' );
+		Functions\when( 'get_file_data' )->justReturn(
+			array(
+				'name' => 'Adrian Kotlinski',
+				'url'  => 'https://kotlinskidev.com',
+			)
+		);
 		Functions\when( 'pll_current_language' )->justReturn( false );
 		Functions\when( 'pll_languages_list' )->justReturn( array() );
 		Functions\when( 'get_available_languages' )->justReturn( array() );

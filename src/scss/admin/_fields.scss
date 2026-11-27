@@ -51,6 +51,19 @@
   inline-size: 8rem;
 }
 
+.ka11y-color {
+  flex-wrap: wrap;
+}
+
+.ka11y-color__theme {
+  max-inline-size: 14rem;
+}
+
+.ka11y-color__linked {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 .ka11y-list__add,
 .ka11y-combo,
 .ka11y-media {

@@ -13,7 +13,7 @@ Standalone GPL plugin re-creating all features of "Accessibility Widget by OneTa
 - Per-language label overrides in plugin option (`labels[locale]`), not Polylang string translation.
 - Device visibility via CSS media queries with breakpoints from settings, no UA sniffing (cache safe).
 - Updates: Plugin Update Checker v5 via Composer, `enableReleaseAssets('/kotlinskidev-accessibility\.zip/')`, GitHub Releases. Repo public for now; `Updater.php` stays a thin swappable class (a private Cloudflare Worker update server may replace it later).
-- Widget follows page language only (no own picker). Default shortcut `Alt+Shift+A`. Ship `pl_PL` beyond English.
+- Widget has a panel language picker (`panel.languageSwitcher`, shown with two or more languages); `panel.languageMode=follow` pins it to the page locale and clears any saved visitor choice. Default shortcut `Alt+Shift+A`. Ship `pl_PL` beyond English.
 
 ## Features (settings `features.<key>.enabled` bool, `features.<key>.default` bool or level index)
 Content: `biggerText` (+10/+25/+50%), `lineHeight` (1.5/1.75/2), `letterSpacing`, `fontWeight`, `readableFont`, `dyslexicFont` (OpenDyslexic OFL woff2, lazy @font-face), `textAlign` (left/center/right cycle), `highlightLinks`, `bigCursor` (data-URI SVG), `textMagnifier`, `cognitiveReading` (TreeWalker bolds first half of words, reversible).

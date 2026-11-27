@@ -46,14 +46,20 @@ const isEnabled = (
   key: string,
 ): boolean => features[key]?.enabled === true;
 
-const byStepperFirst = (a: string, b: string): number =>
-  Number(STEPPER_FEATURES.has(b)) - Number(STEPPER_FEATURES.has(a));
+export const orderFeatures = (
+  defaults: readonly string[],
+  order: readonly string[] = [],
+): string[] => [
+  ...order.filter((key) => defaults.includes(key)),
+  ...defaults.filter((key) => !order.includes(key)),
+];
 
 export const buildCards = (
   ctx: PanelContext,
   features: Record<string, FeatureConfig>,
   profiles: Profiles,
   sections: Record<PanelSectionName, boolean>,
+  order: readonly string[] = [],
 ): Cards => {
   const elements: HTMLElement[] = [];
   const controls: Control[] = [];
@@ -71,9 +77,9 @@ export const buildCards = (
   }
   FEATURE_GROUPS.forEach((group) => {
     if (!sections[group.id]) return;
-    const keys = group.features
-      .filter((key) => key !== SKIP_FEATURE_KEY && isEnabled(features, key))
-      .sort(byStepperFirst);
+    const keys = orderFeatures(group.features, order).filter(
+      (key) => key !== SKIP_FEATURE_KEY && isEnabled(features, key),
+    );
     add(
       group.id,
       ctx.t(group.titleKey),

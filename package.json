@@ -1,7 +1,8 @@
 {
   "name": "kotlinskidev-accessibility",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "private": true,
+  "author": "Adrian Kotlinski",
   "license": "GPL-2.0-or-later",
   "engines": {
     "node": ">=20"
@@ -17,6 +18,7 @@
     "check-scss-scope": "node bin/check-scss-scope.mjs",
     "check-version": "node bin/check-version.mjs",
     "release": "node bin/release.mjs",
+    "package": "node bin/package-zip.mjs",
     "wp-env:start": "wp-env start",
     "wp-env:stop": "wp-env stop",
     "wp-env:multisite:start": "node bin/multisite-env.mjs start",

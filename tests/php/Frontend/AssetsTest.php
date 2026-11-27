@@ -312,6 +312,83 @@ final class AssetsTest extends TestCase {
 		$this->assertStringEndsWith( 'body{outline:0}', $css );
 	}
 
+	public function test_launcher_options_are_silent_by_default_and_emit_variables_when_set(): void {
+		$default = $this->assets()->tokens_css( Schema::defaults() );
+
+		$this->assertStringNotContainsString( '--ka11y-launcher-', $default );
+		$this->assertStringNotContainsString( '--ka11y-size:40px', $default );
+
+		$settings                    = Schema::defaults();
+		$settings['widget']['shape'] = 'rounded';
+		$settings['widget']['bg']    = '#d4af37';
+		$settings['widget']['fg']    = '#101114';
+		$settings['widget']['sizes'] = array(
+			'desktop' => 'lg',
+			'tablet'  => 'inherit',
+			'mobile'  => 'sm',
+		);
+		$css                         = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( '--ka11y-launcher-radius:28%', $css );
+		$this->assertStringContainsString( '--ka11y-launcher-bg:#d4af37', $css );
+		$this->assertStringContainsString( '--ka11y-launcher-fg:#101114', $css );
+		$this->assertStringContainsString( '--ka11y-size:64px;', $css );
+		$this->assertStringContainsString( '--ka11y-size:40px;', $css );
+	}
+
+	public function test_theme_color_references_are_emitted_with_their_fallback(): void {
+		$settings                      = Schema::defaults();
+		$settings['tokens']['primary'] = 'var(--wp--preset--color--primary, #0078c2)';
+		$settings['widget']['bg']      = 'var(--wp--preset--color--accent, #00f6ff)';
+
+		$css = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( '--ka11y-primary:var(--wp--preset--color--primary, #0078c2)', $css );
+		$this->assertStringContainsString( '--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff)', $css );
+	}
+
+	public function test_dark_launcher_colors_are_silent_by_default(): void {
+		$css = $this->assets()->tokens_css( Schema::defaults() );
+
+		$this->assertStringNotContainsString( 'prefers-color-scheme', $css );
+		$this->assertStringNotContainsString( 'dark-mode', $css );
+	}
+
+	public function test_dark_launcher_colors_follow_the_dark_selector_and_system_preference(): void {
+		$settings                       = Schema::defaults();
+		$settings['widget']['bg']       = '#d4af37';
+		$settings['widget']['bgDark']   = 'var(--wp--preset--color--accent, #00f6ff)';
+		$settings['widget']['fgDark']   = '#101114';
+
+		$css = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( '@media (prefers-color-scheme:dark){:root{--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff);--ka11y-launcher-fg:#101114}}', $css );
+		$this->assertStringContainsString( 'html.light-mode, body.light-mode{--ka11y-launcher-bg:#d4af37;--ka11y-launcher-fg:initial}', $css );
+		$this->assertStringContainsString( 'html.dark-mode, body.dark-mode{--ka11y-launcher-bg:var(--wp--preset--color--accent, #00f6ff);--ka11y-launcher-fg:#101114}', $css );
+		$this->assertGreaterThan( strpos( $css, 'prefers-color-scheme' ), strpos( $css, 'html.dark-mode' ) );
+	}
+
+	public function test_dark_launcher_colors_respect_theme_mode_and_system_toggle(): void {
+		$settings                     = Schema::defaults();
+		$settings['widget']['bgDark'] = '#222222';
+
+		$settings['theme']['followPrefersColorScheme'] = false;
+		$this->assertStringNotContainsString( 'prefers-color-scheme', $this->assets()->tokens_css( $settings ) );
+
+		$settings['theme']['mode'] = 'dark';
+		$this->assertStringContainsString( ':root{--ka11y-launcher-bg:#222222}', $this->assets()->tokens_css( $settings ) );
+
+		$settings['theme']['mode'] = 'light';
+		$this->assertStringNotContainsString( '#222222', $this->assets()->tokens_css( $settings ) );
+	}
+
+	public function test_square_shape_uses_a_small_fixed_radius(): void {
+		$settings                    = Schema::defaults();
+		$settings['widget']['shape'] = 'square';
+
+		$this->assertStringContainsString( '--ka11y-launcher-radius:8px', $this->assets()->tokens_css( $settings ) );
+	}
+
 	public function test_root_variables_exclude_panel_tokens(): void {
 		$css  = $this->assets()->tokens_css( Schema::defaults() );
 		$root = substr( $css, 0, (int) strpos( $css, '}' ) );
@@ -324,9 +401,9 @@ final class AssetsTest extends TestCase {
 	}
 
 	public function test_middle_placement_has_no_transform_and_offsets_use_safe_area(): void {
-		$settings                                    = Schema::defaults();
-		$settings['widget']['position']['desktop']   = 'middle-right';
-		$settings['widget']['position']['tablet']    = 'top-left';
+		$settings                                  = Schema::defaults();
+		$settings['widget']['position']['desktop'] = 'middle-right';
+		$settings['widget']['position']['tablet']  = 'top-left';
 
 		$css = $this->assets()->tokens_css( $settings );
 

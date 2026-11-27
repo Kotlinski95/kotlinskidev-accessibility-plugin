@@ -7,6 +7,7 @@ use Kotlinskidev\A11y\I18n\LanguageResolver;
 use Kotlinskidev\A11y\I18n\Strings;
 use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Schema;
+use Kotlinskidev\A11y\Support\Credit;
 use Kotlinskidev\A11y\Support\Json;
 
 final class PanelData {
@@ -59,21 +60,56 @@ final class PanelData {
 			$sections[ $section ] = false !== ( $panel['sections'][ $section ] ?? true );
 		}
 
-		return array(
+		$result = array(
 			'columns'          => (int) ( $panel['columns'] ?? 3 ),
 			'sections'         => $sections,
 			'languageSwitcher' => false !== ( $panel['languageSwitcher'] ?? true ),
+			'order'            => $this->order( $panel ),
+			'languageMode'     => 'follow' === ( $panel['languageMode'] ?? 'choose' ) ? 'follow' : 'choose',
+			'backdrop'         => true === ( $panel['backdrop'] ?? false ),
+			'backdropColor'    => (string) ( $panel['backdropColor'] ?? '#000000' ),
+			'backdropOpacity'  => (int) ( $panel['backdropOpacity'] ?? 40 ),
+			'backdropBlur'     => (int) ( $panel['backdropBlur'] ?? 0 ),
+			'closeOnBackdrop'  => false !== ( $panel['closeOnBackdrop'] ?? true ),
+			'animation'        => (string) ( $panel['animation'] ?? 'slide' ),
+			'animationMs'      => (int) ( $panel['animationMs'] ?? 220 ),
+			'width'            => (int) ( $panel['width'] ?? 448 ),
+			'side'             => (string) ( $panel['side'] ?? 'auto' ),
+			'offset'           => (int) ( $panel['offset'] ?? 0 ),
 		);
+
+		$credit = false !== ( $panel['credit'] ?? true ) ? ( new Credit() )->resolve() : null;
+
+		if ( null !== $credit ) {
+			$result['credit'] = $credit;
+		}
+
+		return $result;
+	}
+
+	private function order( array $panel ): array {
+		$saved = is_array( $panel['order'] ?? null ) ? $panel['order'] : Schema::feature_keys();
+
+		return array_values( array_unique( array_intersect( $saved, Schema::feature_keys() ) ) );
 	}
 
 	private function locales( string $locale ): array {
 		$known = array_values( array_unique( array_merge( array( $locale ), $this->resolver->known_locales() ) ) );
 		$list  = array();
+		$seen  = array();
 
 		foreach ( $known as $code ) {
-			$list[] = array(
+			$label = $this->resolver->locale_label( $code );
+			$key   = function_exists( 'mb_strtolower' ) ? mb_strtolower( $label ) : strtolower( $label );
+
+			if ( isset( $seen[ $key ] ) ) {
+				continue;
+			}
+
+			$seen[ $key ] = true;
+			$list[]       = array(
 				'locale' => $code,
-				'label'  => $this->resolver->locale_label( $code ),
+				'label'  => $label,
 				'rtl'    => $this->resolver->is_rtl_locale( $code ),
 			);
 		}

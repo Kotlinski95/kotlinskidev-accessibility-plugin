@@ -38,8 +38,24 @@ export const PROFILES = ['visionImpaired', 'seizureSafe'];
 export const OPTIMIZERS = ['cloudflare', 'wp-rocket', 'litespeed', 'jetpack-boost', 'asset-cleanup'];
 
 export const samplePresets = (): SchemaPayload['presets'] => ({
-  recommended: { strategy: 'interaction', position: 'footer', fetchPriority: 'low', prefetch: 'hover', pageCss: 'lazy', deviceSkip: true, optOut: [] },
-  compatibility: { strategy: 'eager', position: 'footer', fetchPriority: 'auto', prefetch: 'none', pageCss: 'linked', deviceSkip: false, optOut: OPTIMIZERS },
+  recommended: {
+    strategy: 'interaction',
+    position: 'footer',
+    fetchPriority: 'low',
+    prefetch: 'hover',
+    pageCss: 'lazy',
+    deviceSkip: true,
+    optOut: [],
+  },
+  compatibility: {
+    strategy: 'eager',
+    position: 'footer',
+    fetchPriority: 'auto',
+    prefetch: 'none',
+    pageCss: 'linked',
+    deviceSkip: false,
+    optOut: OPTIMIZERS,
+  },
 });
 
 const POSITIONS = ['bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left'];
@@ -67,7 +83,10 @@ export const sampleDefinitions = (): DefinitionMap => {
   const defs: DefinitionMap = {};
   for (const key of FEATURES) {
     defs[`features.${key}.enabled`] = definition('boolean', 'bool', true);
-    defs[`features.${key}.default`] = definition('integer', 'level', false, { min: 0, max: 10 });
+    defs[`features.${key}.default`] = definition('integer', 'level', false, {
+      min: 0,
+      max: 10,
+    });
   }
   for (const key of PROFILES) {
     defs[`profiles.${key}.enabled`] = definition('boolean', 'bool', true);
@@ -75,27 +94,56 @@ export const sampleDefinitions = (): DefinitionMap => {
   }
   for (const device of DEVICES) {
     defs[`widget.position.${device}`] = definition('string', 'enum', 'bottom-right', { enum: POSITIONS });
-    defs[`widget.offsetX.${device}`] = definition('integer', 'int', 20, { min: 0, max: 500 });
-    defs[`widget.offsetY.${device}`] = definition('integer', 'int', 20, { min: 0, max: 500 });
+    defs[`widget.offsetX.${device}`] = definition('integer', 'int', 20, {
+      min: 0,
+      max: 500,
+    });
+    defs[`widget.offsetY.${device}`] = definition('integer', 'int', 20, {
+      min: 0,
+      max: 500,
+    });
     defs[`visibility.devices.${device}`] = definition('boolean', 'bool', true);
   }
-  defs['widget.size'] = definition('string', 'enum', 'md', { enum: ['sm', 'md', 'lg'] });
+  defs['widget.size'] = definition('string', 'enum', 'md', {
+    enum: ['sm', 'md', 'lg'],
+  });
+  for (const device of ['desktop', 'tablet', 'mobile'])
+    defs[`widget.sizes.${device}`] = definition('string', 'enum', 'inherit', {
+      enum: ['inherit', 'sm', 'md', 'lg'],
+    });
+  defs['widget.shape'] = definition('string', 'enum', 'circle', {
+    enum: ['circle', 'rounded', 'square'],
+  });
+  defs['widget.bg'] = definition('string', 'color', '');
+  defs['widget.fg'] = definition('string', 'color', '');
+  defs['widget.bgDark'] = definition('string', 'color', '');
+  defs['widget.fgDark'] = definition('string', 'color', '');
   defs['widget.icon'] = definition('string', 'icon', 'universal');
   defs['widget.iconBorder'] = definition('boolean', 'bool', false);
-  defs['visibility.breakpoints.tablet'] = definition('integer', 'int', 1024, { min: 320, max: 4096 });
-  defs['visibility.breakpoints.mobile'] = definition('integer', 'int', 768, { min: 320, max: 4096 });
+  defs['visibility.breakpoints.tablet'] = definition('integer', 'int', 1024, {
+    min: 320,
+    max: 4096,
+  });
+  defs['visibility.breakpoints.mobile'] = definition('integer', 'int', 768, {
+    min: 320,
+    max: 4096,
+  });
   defs['visibility.excludePostIds'] = definition('array', 'int_list', []);
   defs['visibility.excludePostTypes'] = definition('array', 'text_list', []);
   defs['visibility.excludeRoles'] = definition('array', 'text_list', []);
   defs['visibility.excludeUrlPatterns'] = definition('array', 'text_list', []);
   defs['visibility.excludeTemplates'] = definition('array', 'text_list', []);
-  defs['visibility.mode'] = definition('string', 'enum', 'everywhere', { enum: ['everywhere', 'only_on', 'except_on'] });
+  defs['visibility.mode'] = definition('string', 'enum', 'everywhere', {
+    enum: ['everywhere', 'only_on', 'except_on'],
+  });
   defs['visibility.includePostIds'] = definition('array', 'int_list', []);
   defs['visibility.includePostTypes'] = definition('array', 'text_list', []);
   defs['visibility.includeTemplates'] = definition('array', 'text_list', []);
   defs['visibility.includeRoles'] = definition('array', 'text_list', []);
   defs['visibility.includeUrlPatterns'] = definition('array', 'text_list', []);
-  defs['theme.mode'] = definition('string', 'enum', 'auto', { enum: ['auto', 'light', 'dark'] });
+  defs['theme.mode'] = definition('string', 'enum', 'auto', {
+    enum: ['auto', 'light', 'dark'],
+  });
   defs['theme.darkSelector'] = definition('string', 'text', 'html.dark-mode');
   defs['theme.lightSelector'] = definition('string', 'text', 'html.light-mode');
   defs['theme.followPrefersColorScheme'] = definition('boolean', 'bool', true);
@@ -117,15 +165,61 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['panel.columns'] = definition('integer', 'int', 3, { min: 2, max: 3 });
   for (const section of ['profiles', 'content', 'color', 'orientation', 'skip']) defs[`panel.sections.${section}`] = definition('boolean', 'bool', true);
   defs['panel.languageSwitcher'] = definition('boolean', 'bool', true);
-  defs['panel.preset'] = definition('string', 'enum', 'classic', { enum: ['classic', 'brand', 'soft', 'contrast', 'custom'] });
+  defs['panel.credit'] = definition('boolean', 'bool', true);
+  defs['panel.order'] = definition('array', 'enum_list', FEATURES, {
+    enum: FEATURES,
+  });
+  defs['panel.languageMode'] = definition('string', 'enum', 'choose', {
+    enum: ['follow', 'choose'],
+  });
+  defs['panel.backdrop'] = definition('boolean', 'bool', false);
+  defs['panel.backdropColor'] = definition('string', 'color', '#000000');
+  defs['panel.backdropOpacity'] = definition('integer', 'int', 40, {
+    min: 0,
+    max: 100,
+  });
+  defs['panel.backdropBlur'] = definition('integer', 'int', 0, {
+    min: 0,
+    max: 20,
+  });
+  defs['panel.closeOnBackdrop'] = definition('boolean', 'bool', true);
+  defs['panel.animation'] = definition('string', 'enum', 'slide', {
+    enum: ['slide', 'fade', 'none'],
+  });
+  defs['panel.animationMs'] = definition('integer', 'int', 220, {
+    min: 0,
+    max: 1000,
+  });
+  defs['panel.width'] = definition('integer', 'int', 448, {
+    min: 280,
+    max: 640,
+  });
+  defs['panel.side'] = definition('string', 'enum', 'auto', {
+    enum: ['auto', 'left', 'right'],
+  });
+  defs['panel.offset'] = definition('integer', 'int', 0, { min: 0, max: 200 });
+  defs['panel.preset'] = definition('string', 'enum', 'classic', {
+    enum: ['classic', 'brand', 'soft', 'contrast', 'custom'],
+  });
   defs['tokens.radius'] = definition('string', 'length', '12px');
-  defs['tokens.zIndex'] = definition('integer', 'int', 2147483000, { min: 0, max: 2147483647 });
+  defs['tokens.zIndex'] = definition('integer', 'int', 2147483000, {
+    min: 0,
+    max: 2147483647,
+  });
   defs['tokens.fontFamily'] = definition('string', 'text', 'inherit');
   defs.customCss = definition('string', 'css', '');
-  defs['storage.mode'] = definition('string', 'enum', 'local', { enum: ['local', 'cookie', 'none'] });
-  defs['storage.ttlDays'] = definition('integer', 'int', 365, { min: 1, max: 3650 });
+  defs['storage.mode'] = definition('string', 'enum', 'local', {
+    enum: ['local', 'cookie', 'none'],
+  });
+  defs['storage.ttlDays'] = definition('integer', 'int', 365, {
+    min: 1,
+    max: 3650,
+  });
   defs['storage.key'] = definition('string', 'key', 'ka11y');
-  defs['statement.pageId'] = definition('integer', 'int', 0, { min: 0, max: 9999999 });
+  defs['statement.pageId'] = definition('integer', 'int', 0, {
+    min: 0,
+    max: 9999999,
+  });
   defs['statement.url'] = definition('string', 'url', '');
   defs['statement.content'] = definition('object', 'html_map', {});
   defs['shortcut.enabled'] = definition('boolean', 'bool', true);
@@ -134,21 +228,37 @@ export const sampleDefinitions = (): DefinitionMap => {
   defs['hideToolbar.days'] = definition('array', 'int_list', [1, 7, 30]);
   defs.labels = definition('object', 'label_map', {});
   defs['advanced.excludeSelectors'] = definition('string', 'text', '#wpadminbar');
-  defs['widget.launcher'] = definition('string', 'enum', 'floating', { enum: ['floating', 'inline', 'hidden'] });
+  defs['widget.launcher'] = definition('string', 'enum', 'floating', {
+    enum: ['floating', 'inline', 'hidden'],
+  });
   defs['widget.mount'] = definition('string', 'selector', '');
-  defs['triggers.selectors'] = definition('array', 'selector_list', [], { max: 10 });
+  defs['triggers.selectors'] = definition('array', 'selector_list', [], {
+    max: 10,
+  });
   defs['triggers.urlActions'] = definition('array', 'enum_list', ['open', 'feature', 'profile'], { enum: ['open', 'feature', 'profile'] });
-  defs['performance.preset'] = definition('string', 'enum', 'recommended', { enum: ['recommended', 'compatibility', 'custom'] });
+  defs['performance.preset'] = definition('string', 'enum', 'recommended', {
+    enum: ['recommended', 'compatibility', 'custom'],
+  });
   defs['performance.strategy'] = definition('string', 'enum', 'interaction', {
     enum: ['interaction', 'idle', 'defer', 'async', 'eager'],
   });
-  defs['performance.position'] = definition('string', 'enum', 'footer', { enum: ['head', 'footer'] });
-  defs['performance.fetchPriority'] = definition('string', 'enum', 'low', { enum: ['low', 'auto', 'high'] });
-  defs['performance.prefetch'] = definition('string', 'enum', 'hover', { enum: ['none', 'hover', 'idle'] });
-  defs['performance.pageCss'] = definition('string', 'enum', 'lazy', { enum: ['lazy', 'linked', 'inline'] });
+  defs['performance.position'] = definition('string', 'enum', 'footer', {
+    enum: ['head', 'footer'],
+  });
+  defs['performance.fetchPriority'] = definition('string', 'enum', 'low', {
+    enum: ['low', 'auto', 'high'],
+  });
+  defs['performance.prefetch'] = definition('string', 'enum', 'hover', {
+    enum: ['none', 'hover', 'idle'],
+  });
+  defs['performance.pageCss'] = definition('string', 'enum', 'lazy', {
+    enum: ['lazy', 'linked', 'inline'],
+  });
   defs['performance.deviceSkip'] = definition('boolean', 'bool', true);
   defs['maintenance.keepDataOnUninstall'] = definition('boolean', 'bool', false);
-  defs['performance.optOut'] = definition('array', 'enum_list', [], { enum: OPTIMIZERS });
+  defs['performance.optOut'] = definition('array', 'enum_list', [], {
+    enum: OPTIMIZERS,
+  });
   return defs;
 };
 
@@ -181,7 +291,9 @@ export const sampleCost = (): AdminConfig['cost'] => ({
       page: { file: 'frontend.css', ver: '1', raw: 6000, gzip: 1500 },
       launcher: { file: 'launcher.css', ver: '1', raw: 1200, gzip: 400 },
     },
-    inline: { bootstrap: { file: 'bootstrap.js', ver: '1', raw: 600, gzip: 300 } },
+    inline: {
+      bootstrap: { file: 'bootstrap.js', ver: '1', raw: 600, gzip: 300 },
+    },
   },
   panelData: 2500,
   config: 800,
@@ -246,7 +358,12 @@ export const change = (element: HTMLElement, type: 'input' | 'change' = 'input')
 };
 
 export const press = (element: HTMLElement, key: string, init: KeyboardEventInit = {}): KeyboardEvent => {
-  const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true, ...init });
+  const event = new KeyboardEvent('keydown', {
+    key,
+    bubbles: true,
+    cancelable: true,
+    ...init,
+  });
   element.dispatchEvent(event);
   return event;
 };

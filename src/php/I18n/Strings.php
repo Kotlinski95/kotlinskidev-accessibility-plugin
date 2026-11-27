@@ -179,6 +179,8 @@ final class Strings {
 			'language'                                => __( 'Language', 'kotlinskidev-accessibility' ),
 			'skipChoose'                              => __( 'Choose…', 'kotlinskidev-accessibility' ),
 			'resetDone'                               => __( 'All adjustments were reset.', 'kotlinskidev-accessibility' ),
+			/* translators: %s: name of the plugin author. */
+			'credit'                                  => __( 'Developed by %s', 'kotlinskidev-accessibility' ),
 			'resetSettings'                           => __( 'Reset settings', 'kotlinskidev-accessibility' ),
 			'levelOff'                                => __( 'Off', 'kotlinskidev-accessibility' ),
 			'levelOn'                                 => __( 'On', 'kotlinskidev-accessibility' ),

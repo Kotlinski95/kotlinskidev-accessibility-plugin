@@ -49,3 +49,15 @@
   font-size: 0.8125rem;
   text-align: center;
 }
+
+.ka11y-credit {
+  margin: 0;
+  color: var(--ka11y-w-muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.ka11y-credit__link {
+  color: inherit;
+  text-decoration: underline;
+}

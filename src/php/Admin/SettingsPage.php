@@ -11,6 +11,7 @@ use Kotlinskidev\A11y\Rest\SettingsController;
 use Kotlinskidev\A11y\Settings\Repository;
 use Kotlinskidev\A11y\Settings\Schema;
 use Kotlinskidev\A11y\Support\Json;
+use Kotlinskidev\A11y\Support\ThemePalette;
 
 final class SettingsPage {
 
@@ -107,16 +108,17 @@ final class SettingsPage {
 
 	public function config(): array {
 		return array(
-			'restRoot' => esc_url_raw( rest_url( SettingsController::REST_NAMESPACE . '/' ) ),
-			'nonce'    => wp_create_nonce( 'wp_rest' ),
-			'strings'  => $this->strings->defaults(),
-			'locales'  => $this->locales(),
-			'profiles' => Schema::profile_keys(),
-			'features' => Schema::feature_keys(),
-			'version'  => KOTLINSKIDEV_A11Y_VERSION,
-			'homeUrl'  => esc_url_raw( home_url( '/' ) ),
-			'cost'     => $this->cost(),
-			'scope'    => 'site',
+			'restRoot'     => esc_url_raw( rest_url( SettingsController::REST_NAMESPACE . '/' ) ),
+			'nonce'        => wp_create_nonce( 'wp_rest' ),
+			'strings'      => $this->strings->defaults(),
+			'locales'      => $this->locales(),
+			'profiles'     => Schema::profile_keys(),
+			'features'     => Schema::feature_keys(),
+			'version'      => KOTLINSKIDEV_A11Y_VERSION,
+			'homeUrl'      => esc_url_raw( home_url( '/' ) ),
+			'cost'         => $this->cost(),
+			'scope'        => 'site',
+			'themePalette' => ( new ThemePalette() )->colors(),
 		);
 	}
 

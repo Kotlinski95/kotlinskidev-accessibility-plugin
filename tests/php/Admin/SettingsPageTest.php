@@ -35,6 +35,7 @@ final class SettingsPageTest extends TestCase {
 				'current_user_can' => true,
 			)
 		);
+		Functions\when( 'wp_get_global_settings' )->justReturn( array() );
 		$this->frontend_environment();
 		Manifest::flush();
 		Functions\when( 'wp_enqueue_media' )->justReturn();
@@ -128,6 +129,32 @@ final class SettingsPageTest extends TestCase {
 				),
 			),
 			$config['locales']
+		);
+	}
+
+	public function test_config_carries_the_theme_palette(): void {
+		$this->assertSame( array(), ( new SettingsPage() )->config()['themePalette'] );
+
+		Functions\when( 'wp_get_global_settings' )->justReturn(
+			array(
+				array(
+					'slug'  => 'primary',
+					'name'  => 'Primary',
+					'color' => '#0078c2',
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				array(
+					'slug'  => 'primary',
+					'name'  => 'Primary',
+					'color' => '#0078c2',
+					'var'   => '--wp--preset--color--primary',
+				),
+			),
+			( new SettingsPage() )->config()['themePalette']
 		);
 	}
 

@@ -1,3 +1,5 @@
+import type { ThemePaletteColor } from './theme-color';
+
 export type SettingsTree = Record<string, unknown>;
 
 export interface FieldDefinition {
@@ -80,6 +82,7 @@ export interface AdminConfig {
   homeUrl: string;
   cost: CostData;
   scope?: 'site' | 'network';
+  themePalette?: ThemePaletteColor[];
 }
 
 export interface MediaSelection {

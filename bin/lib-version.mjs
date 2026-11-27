@@ -6,6 +6,7 @@ const PARTS = /^(\d+)\.(\d+)\.(\d+)(?:-(beta|rc)\.(\d+))?$/;
 const PRE_ORDER = { beta: 0, rc: 1 };
 const HEADER_PATTERN = /^(\s*\*\s*Version:\s*)(\S+)/m;
 const CONSTANT_PATTERN = /(define\(\s*'KOTLINSKIDEV_A11Y_VERSION',\s*')([^']+)(')/;
+const AUTHOR_PATTERN = /^\s*\*\s*Author:\s*(.+?)\s*$/m;
 const CHANGELOG_HEADING = /^## \[(\d+\.\d+\.\d+(?:-(?:beta|rc)\.\d+)?)\]/m;
 
 export const files = (root) => ({
@@ -32,6 +33,27 @@ export const readVersions = (root, tag = '') => {
     versions['git tag'] = tag.slice(1);
   }
   return versions;
+};
+
+export const readAuthors = (root) => {
+  const paths = files(root);
+  const plugin = readFileSync(paths.plugin, 'utf8');
+  return {
+    'plugin header': plugin.match(AUTHOR_PATTERN)?.[1],
+    'package.json': JSON.parse(readFileSync(paths.pkg, 'utf8')).author
+  };
+};
+
+export const findAuthorMismatch = (authors) => {
+  const entries = Object.entries(authors);
+  const missing = entries.filter(([, value]) => typeof value !== 'string' || value.trim() === '');
+  if (missing.length > 0) {
+    return `Missing author in: ${missing.map(([name]) => name).join(', ')}`;
+  }
+  if (new Set(entries.map(([, value]) => value)).size > 1) {
+    return `Author mismatch: ${entries.map(([name, value]) => `${name}=${value}`).join(', ')}`;
+  }
+  return null;
 };
 
 export const findMismatch = (versions) => {

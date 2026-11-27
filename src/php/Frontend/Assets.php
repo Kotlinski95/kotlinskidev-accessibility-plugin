@@ -20,6 +20,10 @@ final class Assets {
 		'lg' => 64,
 	);
 	private const DEVICES       = array( 'desktop', 'tablet', 'mobile' );
+	private const SHAPES        = array(
+		'rounded' => '28%',
+		'square'  => '8px',
+	);
 	private const HIDDEN_RULE   = 'html[data-ka11y-hidden] #ka11y-root{display:none!important}';
 	private const NOSCRIPT      = '<noscript><style>#ka11y-root,.ka11y-trigger{display:none!important}</style></noscript>';
 
@@ -175,7 +179,74 @@ final class Assets {
 
 		$rules[] = '--ka11y-size:' . ( self::SIZES[ $size ] ?? self::SIZES['md'] ) . 'px';
 
-		return ':root{' . implode( ';', $rules ) . '}';
+		$shape = (string) ( $settings['widget']['shape'] ?? 'circle' );
+
+		if ( isset( self::SHAPES[ $shape ] ) ) {
+			$rules[] = '--ka11y-launcher-radius:' . self::SHAPES[ $shape ];
+		}
+
+		foreach ( array( 'bg', 'fg' ) as $key ) {
+			$color = $this->css_value( (string) ( $settings['widget'][ $key ] ?? '' ) );
+
+			if ( '' !== $color ) {
+				$rules[] = '--ka11y-launcher-' . $key . ':' . $color;
+			}
+		}
+
+		return ':root{' . implode( ';', $rules ) . '}' . $this->dark_launcher_rules( $settings );
+	}
+
+	private function dark_launcher_rules( array $settings ): string {
+		$mode = (string) ( $settings['theme']['mode'] ?? 'auto' );
+
+		if ( 'light' === $mode ) {
+			return '';
+		}
+
+		$light = array();
+		$dark  = array();
+
+		foreach ( array( 'bg', 'fg' ) as $key ) {
+			$dark_color = $this->css_value( (string) ( $settings['widget'][ $key . 'Dark' ] ?? '' ) );
+
+			if ( '' === $dark_color ) {
+				continue;
+			}
+
+			$light_color = $this->css_value( (string) ( $settings['widget'][ $key ] ?? '' ) );
+			$name        = '--ka11y-launcher-' . $key . ':';
+			$dark[]      = $name . $dark_color;
+			$light[]     = $name . ( '' === $light_color ? 'initial' : $light_color );
+		}
+
+		if ( array() === $dark ) {
+			return '';
+		}
+
+		$dark_block = '{' . implode( ';', $dark ) . '}';
+
+		if ( 'dark' === $mode ) {
+			return ':root' . $dark_block;
+		}
+
+		$css = '';
+
+		if ( ! empty( $settings['theme']['followPrefersColorScheme'] ) ) {
+			$css .= '@media (prefers-color-scheme:dark){:root' . $dark_block . '}';
+		}
+
+		$light_selector = $this->css_value( (string) ( $settings['theme']['lightSelector'] ?? '' ) );
+		$dark_selector  = $this->css_value( (string) ( $settings['theme']['darkSelector'] ?? '' ) );
+
+		if ( '' !== $light_selector ) {
+			$css .= $light_selector . '{' . implode( ';', $light ) . '}';
+		}
+
+		if ( '' !== $dark_selector ) {
+			$css .= $dark_selector . $dark_block;
+		}
+
+		return $css;
 	}
 
 	private function device_rules( array $settings ): string {
@@ -191,6 +262,11 @@ final class Assets {
 			);
 
 			$triggers = '';
+			$sized    = (string) ( $widget['sizes'][ $device ] ?? 'inherit' );
+
+			if ( isset( self::SIZES[ $sized ] ) ) {
+				$declarations .= '--ka11y-size:' . self::SIZES[ $sized ] . 'px;';
+			}
 
 			if ( false === ( $settings['visibility']['devices'][ $device ] ?? true ) ) {
 				$declarations .= 'display:none!important;';

@@ -64,6 +64,91 @@ final class PanelDataTest extends TestCase {
 		$this->assertEquals( new \stdClass(), $payload['icons'] );
 	}
 
+	public function test_payload_carries_panel_appearance_defaults_matching_current_behaviour(): void {
+		$panel = ( new PanelData() )->payload( 'en_US' )['panel'];
+
+		$this->assertSame( 'choose', $panel['languageMode'] );
+		$this->assertFalse( $panel['backdrop'] );
+		$this->assertTrue( $panel['closeOnBackdrop'] );
+		$this->assertSame( 'slide', $panel['animation'] );
+		$this->assertSame( 220, $panel['animationMs'] );
+		$this->assertSame( 448, $panel['width'] );
+		$this->assertSame( 'auto', $panel['side'] );
+		$this->assertSame( 0, $panel['offset'] );
+	}
+
+	public function test_payload_carries_credit_from_the_plugin_header(): void {
+		Functions\when( 'get_file_data' )->justReturn(
+			array(
+				'name' => 'Jane Doe',
+				'url'  => 'https://example.test/jane',
+			)
+		);
+
+		$payload = ( new PanelData() )->payload( 'en_US' );
+
+		$this->assertSame(
+			array(
+				'name' => 'Jane Doe',
+				'url'  => 'https://example.test/jane',
+			),
+			$payload['panel']['credit']
+		);
+		$this->assertArrayHasKey( 'credit', $payload['strings'] );
+	}
+
+	public function test_credit_is_omitted_when_disabled_or_header_incomplete(): void {
+		Functions\when( 'get_file_data' )->justReturn(
+			array(
+				'name' => 'Jane Doe',
+				'url'  => 'https://example.test/jane',
+			)
+		);
+		$this->options['kotlinskidev_a11y_settings'] = array(
+			'schemaVersion' => 4,
+			'panel'         => array( 'credit' => false ),
+		);
+
+		$this->assertArrayNotHasKey( 'credit', ( new PanelData() )->payload( 'en_US' )['panel'] );
+
+		$this->options = array();
+		Functions\when( 'get_file_data' )->justReturn(
+			array(
+				'name' => 'Jane Doe',
+				'url'  => '',
+			)
+		);
+
+		$this->assertArrayNotHasKey( 'credit', ( new PanelData() )->payload( 'en_US' )['panel'] );
+	}
+
+	public function test_locales_with_identical_labels_are_deduplicated(): void {
+		if ( ! class_exists( \Locale::class ) ) {
+			$this->markTestSkipped( 'intl missing' );
+		}
+
+		Functions\when( 'pll_current_language' )->justReturn( 'pl_PL' );
+		Functions\when( 'get_available_languages' )->justReturn( array( 'pl', 'en_GB' ) );
+
+		$payload = ( new PanelData() )->payload( 'pl_PL' );
+
+		$this->assertSame( array( 'pl_PL', 'en_US' ), array_column( $payload['locales'], 'locale' ) );
+	}
+
+	public function test_panel_order_defaults_to_built_in_order_and_follows_saved_order(): void {
+		$default = ( new PanelData() )->payload( 'en_US' );
+
+		$this->assertSame( \Kotlinskidev\A11y\Settings\Schema::feature_keys(), $default['panel']['order'] );
+
+		$this->options['kotlinskidev_a11y_settings'] = array(
+			'schemaVersion' => 5,
+			'panel'         => array( 'order' => array( 'highContrast', 'bogus', 'biggerText', 'biggerText' ) ),
+		);
+		\Kotlinskidev\A11y\Settings\Repository::flush();
+
+		$this->assertSame( array( 'highContrast', 'biggerText' ), ( new PanelData() )->payload( 'en_US' )['panel']['order'] );
+	}
+
 	public function test_hash_changes_when_panel_layout_or_locales_change(): void {
 		$before = ( new PanelData() )->payload( 'en_US' )['hash'];
 

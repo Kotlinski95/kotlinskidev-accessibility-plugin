@@ -263,7 +263,16 @@ final class Schema {
 			);
 		}
 
+		foreach ( self::DEVICES as $device ) {
+			$defs[ "widget.sizes.$device" ] = self::def( 'string', 'enum', 'inherit', array( 'enum' => array( 'inherit', 'sm', 'md', 'lg' ) ) );
+		}
+
 		$defs['widget.size']       = self::def( 'string', 'enum', 'md', array( 'enum' => array( 'sm', 'md', 'lg' ) ) );
+		$defs['widget.shape']      = self::def( 'string', 'enum', 'circle', array( 'enum' => array( 'circle', 'rounded', 'square' ) ) );
+		$defs['widget.bg']         = self::def( 'string', 'color', '' );
+		$defs['widget.fg']         = self::def( 'string', 'color', '' );
+		$defs['widget.bgDark']     = self::def( 'string', 'color', '' );
+		$defs['widget.fgDark']     = self::def( 'string', 'color', '' );
 		$defs['widget.icon']       = self::def( 'string', 'icon', 'universal' );
 		$defs['widget.iconBorder'] = self::def( 'boolean', 'bool', false );
 		$defs['widget.launcher']   = self::def( 'string', 'enum', 'floating', array( 'enum' => self::LAUNCHERS ) );
@@ -363,7 +372,60 @@ final class Schema {
 		}
 
 		$defs['panel.languageSwitcher'] = self::def( 'boolean', 'bool', true );
+		$defs['panel.credit']           = self::def( 'boolean', 'bool', true );
+		$defs['panel.order']            = self::def( 'array', 'enum_list', self::FEATURE_KEYS, array( 'enum' => self::FEATURE_KEYS ) );
 		$defs['panel.preset']           = self::def( 'string', 'enum', 'classic', array( 'enum' => self::PANEL_PRESETS ) );
+		$defs['panel.languageMode']     = self::def( 'string', 'enum', 'choose', array( 'enum' => array( 'follow', 'choose' ) ) );
+		$defs['panel.backdrop']         = self::def( 'boolean', 'bool', false );
+		$defs['panel.backdropColor']    = self::def( 'string', 'color', '#000000' );
+		$defs['panel.backdropOpacity']  = self::def(
+			'integer',
+			'int',
+			40,
+			array(
+				'min' => 0,
+				'max' => 100,
+			)
+		);
+		$defs['panel.backdropBlur']     = self::def(
+			'integer',
+			'int',
+			0,
+			array(
+				'min' => 0,
+				'max' => 20,
+			)
+		);
+		$defs['panel.closeOnBackdrop']  = self::def( 'boolean', 'bool', true );
+		$defs['panel.animation']        = self::def( 'string', 'enum', 'slide', array( 'enum' => array( 'slide', 'fade', 'none' ) ) );
+		$defs['panel.animationMs']      = self::def(
+			'integer',
+			'int',
+			220,
+			array(
+				'min' => 0,
+				'max' => 1000,
+			)
+		);
+		$defs['panel.width']            = self::def(
+			'integer',
+			'int',
+			448,
+			array(
+				'min' => 280,
+				'max' => 640,
+			)
+		);
+		$defs['panel.side']             = self::def( 'string', 'enum', 'auto', array( 'enum' => array( 'auto', 'left', 'right' ) ) );
+		$defs['panel.offset']           = self::def(
+			'integer',
+			'int',
+			0,
+			array(
+				'min' => 0,
+				'max' => 200,
+			)
+		);
 
 		$defs['customCss'] = self::def( 'string', 'css', '' );
 

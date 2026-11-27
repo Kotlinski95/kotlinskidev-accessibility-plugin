@@ -10,14 +10,14 @@ namespace {
 	if ( ! class_exists( 'WP_CLI' ) ) {
 		class WP_CLI {
 
-			public static array $commands = array();
-			public static array $successes = array();
-			public static array $warnings = array();
-			public static array $lines = array();
-			public static array $printed = array();
-			public static array $tables = array();
+			public static array $commands      = array();
+			public static array $successes     = array();
+			public static array $warnings      = array();
+			public static array $lines         = array();
+			public static array $printed       = array();
+			public static array $tables        = array();
 			public static array $confirmations = array();
-			public static bool $decline = false;
+			public static bool $decline        = false;
 
 			public static function reset(): void {
 				self::$commands      = array();

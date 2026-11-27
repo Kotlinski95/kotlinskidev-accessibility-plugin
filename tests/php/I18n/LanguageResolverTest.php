@@ -89,9 +89,25 @@ final class LanguageResolverTest extends TestCase {
 
 		$known = ( new LanguageResolver() )->known_locales();
 
-		foreach ( array( 'en_US', 'de_DE', 'pl_PL', 'es_ES' ) as $locale ) {
+		foreach ( array( 'en_US', 'de_DE', 'fr_FR', 'es_ES' ) as $locale ) {
 			$this->assertContains( $locale, $known );
 		}
+
+		$this->assertNotContains( 'pl_PL', $known );
+	}
+
+	public function test_plugin_locales_replace_en_us_and_available_languages(): void {
+		Functions\when( 'pll_languages_list' )->justReturn( array( 'pl_PL', 'en_GB' ) );
+		Functions\when( 'get_available_languages' )->justReturn( array( 'de_DE' ) );
+		Functions\when( 'pll_current_language' )->justReturn( 'pl_PL' );
+
+		$this->assertSame( array( 'pl_PL', 'en_GB' ), ( new LanguageResolver() )->known_locales() );
+	}
+
+	public function test_without_plugins_uses_current_en_us_and_available_languages(): void {
+		Functions\when( 'get_available_languages' )->justReturn( array( 'de_DE', 'en_US' ) );
+
+		$this->assertSame( array( 'en_US', 'de_DE' ), ( new LanguageResolver() )->known_locales() );
 	}
 
 	public function test_known_locales_reject_unlisted_and_non_strings(): void {

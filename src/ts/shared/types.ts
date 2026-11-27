@@ -16,6 +16,16 @@ export type ThemeMode = 'auto' | 'light' | 'dark';
 
 export type WidgetSize = 'sm' | 'md' | 'lg';
 
+export type WidgetDeviceSize = WidgetSize | 'inherit';
+
+export type WidgetShape = 'circle' | 'rounded' | 'square';
+
+export type PanelLanguageMode = 'follow' | 'choose';
+
+export type PanelAnimation = 'slide' | 'fade' | 'none';
+
+export type PanelSidePreference = 'auto' | 'left' | 'right';
+
 export type FeatureLevel = boolean | number;
 
 export interface SavedState {
@@ -42,6 +52,12 @@ export interface WidgetConfig {
   offsetX: Record<Device, number>;
   offsetY: Record<Device, number>;
   size: WidgetSize;
+  sizes?: Record<Device, WidgetDeviceSize>;
+  shape?: WidgetShape;
+  bg?: string;
+  fg?: string;
+  bgDark?: string;
+  fgDark?: string;
   icon: string;
   iconBorder: boolean;
 }
@@ -185,10 +201,28 @@ export interface InlineConfig {
 
 export type PanelSectionName = 'profiles' | 'content' | 'color' | 'orientation' | 'skip';
 
+export interface PanelCredit {
+  name: string;
+  url: string;
+}
+
 export interface PanelConfig {
   columns: number;
+  credit?: PanelCredit;
   sections: Record<PanelSectionName, boolean>;
   languageSwitcher: boolean;
+  order?: string[];
+  languageMode?: PanelLanguageMode;
+  backdrop?: boolean;
+  backdropColor?: string;
+  backdropOpacity?: number;
+  backdropBlur?: number;
+  closeOnBackdrop?: boolean;
+  animation?: PanelAnimation;
+  animationMs?: number;
+  width?: number;
+  side?: PanelSidePreference;
+  offset?: number;
 }
 
 export interface PanelLayout {

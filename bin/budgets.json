@@ -3,16 +3,16 @@
     "inline.bootstrap": 1152,
     "scripts.loader": 4200,
     "scripts.kernel": 5632,
-    "scripts.panel": 8704,
+    "scripts.panel": 9520,
     "scripts.content": 4096,
     "scripts.color": 1536,
-    "scripts.orientation": 3584,
+    "scripts.orientation": 3840,
     "scripts.admin": 28541,
     "styles.page": 2048,
     "data.icons": 2048
   },
   "raw": {
-    "styles.launcher": 1400
+    "styles.launcher": 1510
   },
   "sum": {
     "everyPage": { "gzip": 5250, "of": ["inline.bootstrap", "scripts.loader"] }

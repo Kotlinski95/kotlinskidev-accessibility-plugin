@@ -89,7 +89,15 @@ final class AccessCommandTest extends CliTestCase {
 		( new AccessCommand() )->list_roles( array(), array( 'format' => 'json' ) );
 
 		$this->assertSame( 'json', WP_CLI::$tables[0]['format'] );
-		$this->assertSame( array( array( 'role' => 'author', 'capability' => 'kotlinskidev_a11y_customize' ) ), WP_CLI::$tables[0]['items'] );
+		$this->assertSame(
+			array(
+				array(
+					'role'       => 'author',
+					'capability' => 'kotlinskidev_a11y_customize',
+				),
+			),
+			WP_CLI::$tables[0]['items']
+		);
 	}
 
 	public function test_a_filtered_capability_is_the_one_shown_and_granted(): void {

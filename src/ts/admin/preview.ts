@@ -3,7 +3,11 @@ import { DEVICES, deviceLabel } from './labels';
 import { h, uid } from './dom';
 import type { FormState } from './state';
 
-export const PREVIEW_SIZES: Readonly<Record<string, number>> = { sm: 40, md: 52, lg: 64 };
+export const PREVIEW_SIZES: Readonly<Record<string, number>> = {
+  sm: 40,
+  md: 52,
+  lg: 64,
+};
 
 export const DEVICE_VIEWPORTS: Readonly<Record<string, { width: number; height: number }>> = {
   desktop: { width: 1280, height: 800 },
@@ -11,7 +15,11 @@ export const DEVICE_VIEWPORTS: Readonly<Record<string, { width: number; height: 
   mobile: { width: 390, height: 780 },
 };
 
-const FRAME_WIDTH: Readonly<Record<string, number>> = { desktop: 320, tablet: 205, mobile: 130 };
+const FRAME_WIDTH: Readonly<Record<string, number>> = {
+  desktop: 320,
+  tablet: 205,
+  mobile: 130,
+};
 
 const TOKEN_VARIABLES: Readonly<Record<string, string>> = {
   primary: '--ka11y-primary',
@@ -42,7 +50,13 @@ export const computePlacement = (position: string, offsetX: number, offsetY: num
   const horizontal = horizontalPart === 'left' ? 'left' : 'right';
   const vertical = verticalPart === 'top' || verticalPart === 'middle' ? verticalPart : 'bottom';
   const x = `${Math.round(offsetX * scale)}px`;
-  const style: Record<string, string> = { left: 'auto', right: 'auto', top: 'auto', bottom: 'auto', transform: 'none' };
+  const style: Record<string, string> = {
+    left: 'auto',
+    right: 'auto',
+    top: 'auto',
+    bottom: 'auto',
+    transform: 'none',
+  };
   style[horizontal] = x;
   if (vertical === 'middle') {
     style.top = '50%';
@@ -63,10 +77,18 @@ const stringAt = (state: FormState, path: string, fallback: string): string => {
   return typeof value === 'string' && value !== '' ? value : fallback;
 };
 
+const sizeFor = (state: FormState, device: string): string => {
+  const own = stringAt(state, `widget.sizes.${device}`, 'inherit');
+  return own === 'inherit' ? stringAt(state, 'widget.size', 'md') : own;
+};
+
 const createSample = (scheme: 'light' | 'dark', title: string): HTMLElement =>
   h(
     'div',
-    { class: `ka11y-preview__sample ka11y-preview__sample--${scheme}`, 'aria-hidden': 'true' },
+    {
+      class: `ka11y-preview__sample ka11y-preview__sample--${scheme}`,
+      'aria-hidden': 'true',
+    },
     h('div', { class: 'ka11y-preview__sample-head' }, h('span', { class: 'ka11y-preview__sample-title' }, title)),
     h(
       'div',
@@ -95,11 +117,17 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     option.selected = name === device;
     select.append(option);
   }
-  const launcher = h('div', { class: 'ka11y-preview__launcher', 'aria-hidden': 'true' });
+  const launcher = h('div', {
+    class: 'ka11y-preview__launcher',
+    'aria-hidden': 'true',
+  });
   const panelMock = h('div', { class: 'ka11y-preview__panel', 'aria-hidden': 'true' }, h('span', { class: 'ka11y-preview__bar' }), h('span', { class: 'ka11y-preview__bar' }));
   const frame = h('div', { class: 'ka11y-preview__frame' }, panelMock, launcher);
   const hidden = h('p', { class: 'ka11y-preview__hidden description' }, __('The widget is hidden on this device.', 'kotlinskidev-accessibility'));
-  const caption = h('p', { class: 'ka11y-preview__caption description', id: `${id}-caption` });
+  const caption = h('p', {
+    class: 'ka11y-preview__caption description',
+    id: `${id}-caption`,
+  });
   const element = h(
     'section',
     { class: 'ka11y-preview', 'aria-labelledby': `${id}-title` },
@@ -107,12 +135,7 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     h('label', { class: 'ka11y-field__label', for: `${id}-device` }, __('Preview device', 'kotlinskidev-accessibility')),
     select,
     h('div', { class: 'ka11y-preview__stage' }, frame),
-    h(
-      'div',
-      { class: 'ka11y-preview__samples' },
-      createSample('light', __('Light', 'kotlinskidev-accessibility')),
-      createSample('dark', __('Dark', 'kotlinskidev-accessibility'))
-    ),
+    h('div', { class: 'ka11y-preview__samples' }, createSample('light', __('Light', 'kotlinskidev-accessibility')), createSample('dark', __('Dark', 'kotlinskidev-accessibility'))),
     hidden,
     caption
   );
@@ -131,7 +154,7 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     const scale = width / viewport.width;
     frame.style.width = `${width}px`;
     frame.style.height = `${Math.round(viewport.height * scale)}px`;
-    const size = Math.max(14, Math.round((PREVIEW_SIZES[stringAt(state, 'widget.size', 'md')] ?? 52) * scale * 1.6));
+    const size = Math.max(14, Math.round((PREVIEW_SIZES[sizeFor(state, device)] ?? 52) * scale * 1.6));
     launcher.style.width = `${size}px`;
     launcher.style.height = `${size}px`;
     const placement = computePlacement(

@@ -1,7 +1,9 @@
 import { buildAppearancePanel } from '../../../src/ts/admin/panels/appearance';
 import { change, sampleContext } from './helpers';
 
-jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
+jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, {
+  virtual: true,
+});
 
 const mounted = (ctx = sampleContext()): { panel: HTMLElement; ctx: ReturnType<typeof sampleContext> } => {
   const panel = buildAppearancePanel(ctx);
@@ -22,10 +24,10 @@ afterEach(() => {
 });
 
 describe('appearance panel', () => {
-  it('renders the twelve color fields, columns, sections and language switcher', () => {
+  it('renders the twelve color fields, columns, sections, language switcher and credit', () => {
     const { panel } = mounted();
-    expect(panel.querySelectorAll('.ka11y-field--color')).toHaveLength(12);
-    expect(panel.querySelectorAll('.ka11y-panel-layout input[type="checkbox"]')).toHaveLength(6);
+    expect(panel.querySelectorAll('.ka11y-colors .ka11y-field--color')).toHaveLength(12);
+    expect(panel.querySelectorAll('.ka11y-panel-layout input[type="checkbox"]')).toHaveLength(7);
     expect(panel.querySelector('.ka11y-panel-layout select')).not.toBeNull();
   });
 
@@ -77,5 +79,39 @@ describe('appearance panel', () => {
     columns.value = '0';
     change(columns, 'change');
     expect(ctx.state.get('panel.columns')).toBe(2);
+  });
+
+  it('warns when matching a theme without a palette', () => {
+    const { panel, ctx } = mounted();
+    const match = [...panel.querySelectorAll('.ka11y-colors button')].find((item) => item.textContent === 'Match theme') as HTMLButtonElement;
+    match.click();
+    expect(ctx.notices.element.textContent).toContain('does not define a color palette');
+    expect(ctx.state.get('tokens.primary')).toBe('#0b57d0');
+  });
+
+  it('maps primary and primary-dark from the theme palette', () => {
+    const ctx = sampleContext();
+    ctx.config = {
+      ...ctx.config,
+      themePalette: [
+        {
+          slug: 'primary',
+          name: 'Primary',
+          color: '#0078c2',
+          var: '--wp--preset--color--primary',
+        },
+        {
+          slug: 'primary-dark',
+          name: 'Primary dark',
+          color: '#003a60',
+          var: '--wp--preset--color--primary-dark',
+        },
+      ],
+    };
+    const { panel } = mounted(ctx);
+    const match = [...panel.querySelectorAll('.ka11y-colors button')].find((item) => item.textContent === 'Match theme') as HTMLButtonElement;
+    match.click();
+    expect(ctx.state.get('tokens.primary')).toBe('var(--wp--preset--color--primary, #0078c2)');
+    expect(ctx.state.get('tokens.primaryDark')).toBe('var(--wp--preset--color--primary-dark, #003a60)');
   });
 });

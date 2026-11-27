@@ -17,13 +17,14 @@ final class LanguageResolver {
 	}
 
 	public function known_locales(): array {
-		$locales = array_merge(
-			array( $this->current_locale(), 'en_US' ),
-			$this->polylang_locales(),
-			$this->wpml_locales(),
-			$this->translatepress_locales(),
-			function_exists( 'get_available_languages' ) ? get_available_languages() : array()
-		);
+		$plugin_locales = array_merge( $this->polylang_locales(), $this->wpml_locales(), $this->translatepress_locales() );
+		$plugin_locales = array_filter( $plugin_locales, static fn ( mixed $locale ): bool => is_string( $locale ) && '' !== $locale );
+		$locales        = array() !== $plugin_locales
+			? array_merge( array( $this->current_locale() ), $plugin_locales )
+			: array_merge(
+				array( $this->current_locale(), 'en_US' ),
+				function_exists( 'get_available_languages' ) ? get_available_languages() : array()
+			);
 
 		$filtered = apply_filters( 'kotlinskidev_a11y_known_locales', $locales );
 		$strings  = array_filter( is_array( $filtered ) ? $filtered : array(), 'is_string' );

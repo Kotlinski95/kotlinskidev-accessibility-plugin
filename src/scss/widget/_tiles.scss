@@ -1,6 +1,7 @@
 .ka11y-tiles {
   display: grid;
   grid-template-columns: repeat(var(--ka11y-w-cols, 3), minmax(0, 1fr));
+  grid-auto-flow: dense;
   gap: 0.5rem;
 }
 

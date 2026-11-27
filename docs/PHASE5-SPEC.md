@@ -202,6 +202,8 @@ Set from settings (`tokens.*`), overridable by custom CSS. Existing tokens keep 
 | `tokens.textDark` | `--ka11y-text-dark` | `#f2f2f2` | no |
 | `tokens.radius` (tile) | `--ka11y-radius` | `12px` | no |
 
+Every color setting (`tokens.*` colors, `widget.bg`, `widget.fg`, `panel.backdropColor`) accepts a hex value or `var(--wp--preset--color--<slug>, #fallback)` where the slug matches `[a-z0-9-]+` and the fallback is hex. Anything else is rejected. The admin lists the theme palette from `wp_get_global_settings( array( 'color', 'palette' ) )` as `themePalette`; contrast checks use the fallback hex.
+
 ### 5.2 Internal tokens and contrast
 
 Internal properties are `--ka11y-w-*` in `_panel-tokens.scss`. Light and dark values swap on `:host([data-theme="dark"])`, as today.

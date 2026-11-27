@@ -25,6 +25,15 @@
     background: ButtonText;
   }
 
+  .ka11y-lang {
+    appearance: auto;
+    background: none;
+  }
+
+  .ka11y-credit__link {
+    color: LinkText;
+  }
+
   .ka11y-panel :focus-visible {
     outline-color: Highlight;
   }

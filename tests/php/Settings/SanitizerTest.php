@@ -282,6 +282,56 @@ final class SanitizerTest extends TestCase {
 		$this->assertSame( '#abc', $result['canvasDark'] );
 	}
 
+	public function test_theme_color_references_are_accepted_with_a_fallback(): void {
+		$result = $this->sanitizer->sanitize(
+			array(
+				'tokens' => array(
+					'primary'     => 'var(--wp--preset--color--primary, #0078C2)',
+					'primaryDark' => 'var(--wp--preset--color--primary-dark,#7aa7ff)',
+					'onPrimary'   => 'var(--wp--preset--color--base)',
+				),
+				'widget' => array(
+					'bg'     => 'var(--wp--preset--color--accent, #00f6ff)',
+					'bgDark' => 'var(--wp--preset--color--accent-dark,#7a7aff)',
+					'fgDark' => '#101114',
+				),
+				'panel'  => array( 'backdropColor' => 'var(--wp--preset--color--contrast, #101010)' ),
+			)
+		);
+
+		$this->assertSame( 'var(--wp--preset--color--primary, #0078c2)', $result['tokens']['primary'] );
+		$this->assertSame( 'var(--wp--preset--color--primary-dark, #7aa7ff)', $result['tokens']['primaryDark'] );
+		$this->assertSame( 'var(--wp--preset--color--base, #ffffff)', $result['tokens']['onPrimary'] );
+		$this->assertSame( 'var(--wp--preset--color--accent, #00f6ff)', $result['widget']['bg'] );
+		$this->assertSame( 'var(--wp--preset--color--accent-dark, #7a7aff)', $result['widget']['bgDark'] );
+		$this->assertSame( '#101114', $result['widget']['fgDark'] );
+		$this->assertSame( 'var(--wp--preset--color--contrast, #101010)', $result['panel']['backdropColor'] );
+	}
+
+	/**
+	 * @dataProvider injection_values
+	 */
+	public function test_theme_color_injection_is_rejected( string $value ): void {
+		$result = $this->sanitizer->sanitize( array( 'tokens' => array( 'primary' => $value ) ) );
+
+		$this->assertSame( '#0b57d0', $result['tokens']['primary'] );
+	}
+
+	public static function injection_values(): array {
+		return array(
+			array( 'var(--x);}body{display:none}' ),
+			array( 'var(--wp--preset--color--a);}body{display:none}' ),
+			array( 'var(--wp--preset--color--a, red)' ),
+			array( 'var(--wp--preset--color--a, #fff);}x{}' ),
+			array( 'var(--wp--preset--color--a b)' ),
+			array( 'var(--wp--preset--color--)' ),
+			array( 'var(--wp--preset--color--a, var(--b))' ),
+			array( 'calc(var(--wp--preset--color--a))' ),
+			array( 'var(--wp--preset--color--a, #fff) url(x)' ),
+			array( "var(--wp--preset--color--a)\n;color:red" ),
+		);
+	}
+
 	public function test_panel_preset_enum(): void {
 		$this->assertSame( 'soft', $this->sanitizer->sanitize( array( 'panel' => array( 'preset' => 'soft' ) ) )['panel']['preset'] );
 		$this->assertSame( 'classic', $this->sanitizer->sanitize( array( 'panel' => array( 'preset' => 'neon' ) ) )['panel']['preset'] );

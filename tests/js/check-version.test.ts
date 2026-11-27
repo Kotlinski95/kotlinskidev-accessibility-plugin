@@ -5,18 +5,18 @@ import { join, resolve } from 'node:path';
 
 const binDir = resolve(__dirname, '../../bin');
 
-const pluginSource = (version: string, constant = version): string =>
-  `<?php\n/**\n * Plugin Name: X\n * Version:           ${version}\n */\ndefine( 'KOTLINSKIDEV_A11Y_VERSION', '${constant}' );\n`;
+const pluginSource = (version: string, constant = version, author = 'Jane Doe'): string =>
+  `<?php\n/**\n * Plugin Name: X\n * Version:           ${version}\n * Author:            ${author}\n */\ndefine( 'KOTLINSKIDEV_A11Y_VERSION', '${constant}' );\n`;
 
 const changelogSource = (version: string): string =>
   `# Changelog\n\n## [Unreleased]\n\n### Added\n\n- Thing.\n\n## [${version}] - 2026-01-01\n\n- Old.\n`;
 
-const makeRoot = (options: { header?: string; constant?: string; pkg?: string; changelog?: string } = {}): string => {
+const makeRoot = (options: { header?: string; constant?: string; pkg?: string; changelog?: string; author?: string; pkgAuthor?: string | null } = {}): string => {
   const root = mkdtempSync(join(tmpdir(), 'ka11y-version-'));
   mkdirSync(join(root, 'bin'));
   cpSync(binDir, join(root, 'bin'), { recursive: true });
-  writeFileSync(join(root, 'kotlinskidev-accessibility.php'), pluginSource(options.header ?? '1.2.3', options.constant ?? options.header ?? '1.2.3'));
-  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'x', version: options.pkg ?? '1.2.3' }, null, 2));
+  writeFileSync(join(root, 'kotlinskidev-accessibility.php'), pluginSource(options.header ?? '1.2.3', options.constant ?? options.header ?? '1.2.3', options.author));
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'x', version: options.pkg ?? '1.2.3', ...(options.pkgAuthor === null ? {} : { author: options.pkgAuthor ?? 'Jane Doe' }) }, null, 2));
   writeFileSync(join(root, 'package-lock.json'), JSON.stringify({ version: options.pkg ?? '1.2.3', packages: { '': { version: options.pkg ?? '1.2.3' } } }));
   writeFileSync(join(root, 'CHANGELOG.md'), changelogSource(options.changelog ?? '1.2.3'));
   return root;
@@ -45,6 +45,19 @@ describe('check-version', () => {
 
   it('fails when the changelog heading differs', () => {
     expect(run(makeRoot({ changelog: '1.0.0' }), 'check-version.mjs').status).toBe(1);
+  });
+
+  it('fails when the author differs from package.json', () => {
+    const result = run(makeRoot({ author: 'John Roe' }), 'check-version.mjs');
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('plugin header=John Roe');
+    expect(result.stderr).toContain('package.json=Jane Doe');
+  });
+
+  it('fails when package.json has no author', () => {
+    const result = run(makeRoot({ pkgAuthor: null }), 'check-version.mjs');
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('Missing author in: package.json');
   });
 
   it('checks the tag when GITHUB_REF_NAME starts with v', () => {

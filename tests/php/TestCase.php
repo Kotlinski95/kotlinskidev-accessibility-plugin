@@ -23,6 +23,7 @@ abstract class TestCase extends PhpUnitTestCase {
 		Functions\stubs(
 			array(
 				'is_multisite'        => false,
+				'get_file_data'       => array(),
 				'sanitize_text_field' => static fn ( $value ): string => trim( strip_tags( (string) $value ) ),
 				'sanitize_key'        => static fn ( $value ): string => strtolower( (string) preg_replace( '/[^A-Za-z0-9_\-]/', '', (string) $value ) ),
 				'wp_strip_all_tags'   => static fn ( $value ): string => trim( strip_tags( (string) $value ) ),

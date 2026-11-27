@@ -2,10 +2,17 @@ import { panelSpecs, renderForm } from '../../../src/ts/admin/form-renderer';
 import { buildApp, mountAdmin } from '../../../src/ts/admin/app';
 import { change, fakeApi, previewOf, sampleConfig, sampleContext, sampleDefaults, sampleSchema } from './helpers';
 
-jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, { virtual: true });
+jest.mock('@wordpress/i18n', () => jest.requireActual('./wp-mocks').i18nMock, {
+  virtual: true,
+});
 jest.mock('@wordpress/api-fetch', () => jest.requireActual('./wp-mocks').apiFetchMock, { virtual: true });
 
-const CHANGE = { path: 'storage.key', from: 'changed', to: 'ka11y', source: 'default' };
+const CHANGE = {
+  path: 'storage.key',
+  from: 'changed',
+  to: 'ka11y',
+  source: 'default',
+};
 
 const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -30,7 +37,9 @@ describe('form renderer', () => {
     expect(general.querySelectorAll('tbody tr')).toHaveLength(3);
     expect(general.querySelector('legend')?.textContent).toBe('Widget position per device');
     expect(general.querySelector('.ka11y-field--media')).not.toBeNull();
-    expect(general.querySelectorAll('select').length).toBe(4);
+    const colorLabels = [...general.querySelectorAll('.ka11y-field--color label')].map((item) => item.textContent);
+    expect(colorLabels).toEqual(['Launcher background', 'Launcher icon color', 'Launcher background (dark mode)', 'Launcher icon color (dark mode)']);
+    expect(general.querySelectorAll('select').length).toBe(8);
   });
 
   it('features tab groups features and offers level defaults', () => {
@@ -58,7 +67,7 @@ describe('form renderer', () => {
     const form = renderForm(ctx);
     const root = form.element;
     expect(root.querySelectorAll('.ka11y-panel--visibility .ka11y-field--list')).toHaveLength(10);
-    expect(root.querySelectorAll('.ka11y-panel--appearance .ka11y-field--color')).toHaveLength(12);
+    expect(root.querySelectorAll('.ka11y-panel--appearance .ka11y-colors .ka11y-field--color')).toHaveLength(12);
     expect(root.querySelector('.ka11y-panel--appearance textarea')).not.toBeNull();
     expect(root.querySelectorAll('.ka11y-panel--languages .ka11y-field--locale-map')).toHaveLength(2);
     expect(root.querySelector('.ka11y-panel--behavior .ka11y-gdpr')).not.toBeNull();
@@ -66,7 +75,9 @@ describe('form renderer', () => {
   });
 
   it('import-export tab resets through an in-DOM confirm dialog', async () => {
-    const api = fakeApi({ previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])) });
+    const api = fakeApi({
+      previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])),
+    });
     const ctx = sampleContext(sampleDefaults(), api);
     ctx.state.set('storage.key', 'changed');
     const form = renderForm(ctx);
@@ -90,7 +101,9 @@ describe('form renderer', () => {
   });
 
   it('cancelling the dialog keeps settings', async () => {
-    const api = fakeApi({ previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])) });
+    const api = fakeApi({
+      previewReset: jest.fn().mockResolvedValue(previewOf(sampleDefaults(), [CHANGE])),
+    });
     const ctx = sampleContext(sampleDefaults(), api);
     const form = renderForm(ctx);
     document.body.replaceChildren(form.element);
@@ -144,7 +157,9 @@ describe('admin app', () => {
   });
 
   it('reports save failures', async () => {
-    const api = fakeApi({ saveSettings: jest.fn().mockRejectedValue({ message: 'Nope' }) });
+    const api = fakeApi({
+      saveSettings: jest.fn().mockRejectedValue({ message: 'Nope' }),
+    });
     const root = document.createElement('div');
     const app = buildApp(root, sampleConfig(), api, sampleSchema(), sampleDefaults());
     app.state.set('storage.key', 'x');

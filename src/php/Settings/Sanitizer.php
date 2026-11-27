@@ -6,6 +6,7 @@ namespace Kotlinskidev\A11y\Settings;
 final class Sanitizer {
 
 	private const COLOR_PATTERN       = '/^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i';
+	private const THEME_COLOR_PATTERN = '/^var\(--wp--preset--color--([a-z0-9-]+)(?:,\s?(#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})))?\)$/i';
 	private const LENGTH_PATTERN      = '/^-?\d+(?:\.\d+)?(?:px|rem|em|%|vh|vw|vmin|vmax|ch)?$/';
 	private const COMBO_PATTERN       = '/^(?:(?:Alt|Ctrl|Shift|Meta)\+)*[A-Za-z0-9]$/';
 	public const LOCALE_PATTERN       = '/^[A-Za-z]{2,3}(?:[_-][A-Za-z0-9]{2,8})*$/';
@@ -39,7 +40,7 @@ final class Sanitizer {
 			'enum'      => is_string( $value ) && in_array( $value, $definition['enum'], true ) ? $value : $fallback,
 			'text'      => $this->text( $value, $definition ),
 			'key'       => $this->key( $value, $fallback ),
-			'color'     => $this->matching( $value, self::COLOR_PATTERN, $fallback ),
+			'color'     => $this->color( $value, $fallback ),
 			'length'    => $this->matching( $value, self::LENGTH_PATTERN, $fallback ),
 			'combo'     => $this->matching( $value, self::COMBO_PATTERN, $fallback ),
 			'selector'  => $this->selector( $value, $fallback ),
@@ -108,6 +109,26 @@ final class Sanitizer {
 		$trimmed = trim( $value );
 
 		return 1 === preg_match( $pattern, $trimmed ) ? $trimmed : $fallback;
+	}
+
+	private function color( mixed $value, string $fallback ): string {
+		if ( ! is_string( $value ) ) {
+			return $fallback;
+		}
+
+		$trimmed = trim( $value );
+
+		if ( 1 === preg_match( self::COLOR_PATTERN, $trimmed ) ) {
+			return $trimmed;
+		}
+
+		if ( 1 === preg_match( self::THEME_COLOR_PATTERN, $trimmed, $match ) ) {
+			$hex = $match[2] ?? ( 1 === preg_match( self::COLOR_PATTERN, $fallback ) ? $fallback : '' );
+
+			return 'var(--wp--preset--color--' . strtolower( $match[1] ) . ( '' === $hex ? '' : ', ' . strtolower( $hex ) ) . ')';
+		}
+
+		return $fallback;
 	}
 
 	private function selector( mixed $value, string $fallback ): string {

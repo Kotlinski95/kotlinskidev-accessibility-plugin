@@ -5,184 +5,196 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-## [1.0.0-beta.1] - 2026-11-26
+## [1.0.0] - 2026-11-27
+
+First stable release. Adds full control over the panel and launcher look, theme colors and a reorderable feature list, on top of the settings management work from the beta.
 
 ### Added
 
-- Settings management: search, change preview before save, import and reset, per-tab reset, unsaved-changes counter, locked and inherited field states, a Maintenance tab and a session-expiry retry. Dry runs return `changes`, `dropped`, `adjusted` and `locked`.
-- Versioned export envelope with a version check on import. Files from a newer plugin version are refused with 409, older files are migrated.
-- Layered settings (schema v5): plugin defaults, network defaults, site values, locks. Locks come from `KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`, the `kotlinskidev_a11y_locked_settings` filter or network locks, and invalid locks are dropped and reported.
-- Customer capability `kotlinskidev_a11y_customize`: edits only labels, statement, color tokens, panel options and mode. Server-enforced, with the filters `kotlinskidev_a11y_customer_capability` and `kotlinskidev_a11y_customer_paths`.
-- WP-CLI: `wp ka11y settings get|set|import|export|reset`, `wp ka11y doctor` and `wp ka11y access grant|revoke|list`, with `--dry-run`, `--format` and `--network`. Nothing prints the update token.
-- Multisite network defaults: a Network Admin page, `/network/*` REST routes, a "Locked on all sites" list and a multisite e2e project.
-- Site Health checks (build files, update source, optimizer conflicts, page cache language, locked settings, panel data store, unverified package) and a debug section. `wp ka11y doctor` prints the same results.
-- Update channels (stable and beta) with `KOTLINSKIDEV_A11Y_UPDATE_CHANNEL` and the `kotlinskidev_a11y_update_channel` filter, and rollback to the 3 newest older releases (not below v0.4.0) with a settings backup. `KOTLINSKIDEV_A11Y_DISABLE_UPDATER` or `kotlinskidev_a11y_enable_updater` turn the updater off.
-- Privacy policy guide text for the WordPress privacy tool, and an uninstall choice, `maintenance.keepDataOnUninstall`, to keep data. Uninstall also removes the settings backup, hashes, update state, capability and user meta.
-- Release workflow writes `kotlinskidev-accessibility.zip.sha256`, attests build provenance, uses `CHANGELOG.md` as release notes and marks `-beta` and `-rc` tags as pre-releases. `npm run release` takes `--pre beta|rc`.
-- Golden tests prove the inline config, panel data, bootstrap prefix and token CSS are byte-identical to v0.4.0, and a CI guard fails pull requests that touch front-end source without the `frontend-change` label.
-- Upgrade tests from each of the six releases, a downgrade test to v0.4.0, a `visual-baselines` workflow for Linux baselines and a Skip card visual case.
-- Page caches purge when locks or network defaults change.
-- `SECURITY.md`, `docs/DEPRECATION.md` and a refreshed `docs/API.md` and README with a "Managing the plugin" overview.
-- Polish translations for every new string.
+- Feature order: reorder adjustments inside each section on the Features tab with up and down buttons (`panel.order`).
+- Language mode (`panel.languageMode`): let visitors choose a language, or follow the page language.
+- Panel layout: width (`panel.width`), side (`panel.side`) and offset (`panel.offset`).
+- Panel backdrop with color, opacity, blur and close on click (`panel.backdrop*`).
+- Panel animation: slide, fade or none, with a duration (`panel.animation`, `panel.animationMs`).
+- Launcher shape (circle, rounded, square), its own background and icon colors, and a size per device.
+- Dark-mode launcher colors (`widget.bgDark`, `widget.fgDark`). They apply on first paint without JavaScript and follow the dark-mode selector and the system color scheme.
+- Theme colors: every color field has a "From theme" choice and the Appearance tab has a Match theme button. Values are stored as `var(--wp--preset--color--<slug>, #fallback)`.
+- Panel footer credit line "Developed by Adrian Kotlinski", which can be turned off (`panel.credit`).
 
 ### Changed
 
-- The site option stores only values that differ from the defaults below it, so unchanged settings follow future default changes.
-- `/schema` lists `effectiveDefaults`, `locked` and `sources`, `/reset` takes `paths`, and bodies over 262144 B return 413.
-- Dependabot is split into groups with a major-version hold on the update checker.
+- Size budgets raised for the new panel and launcher options (panel 9520 B, orientation 3840 B, launcher CSS 1510 B). The loader, bootstrap and every-page total are unchanged.
+- Read page aloud picks the best installed voice for the page language, remembers it, and reads long text in short chunks.
+- The language select has a custom arrow, themed options and forced-colors support.
 
 ### Fixed
 
-- The panel data cache is purged when the plugin version changes. `VersionWatcher` fired the `update` invalidation before `PanelDataStore` listened, so an update from v0.2.0 or later kept the old panel data file and the panel failed to load.
-- Sparse storage no longer flips a site value that equals the plugin default but differs from a network default, saving keeps the stored value of locked paths, and `POST /import` of a version-less tree is no longer treated as v1.
-- `/reset` rejects empty `paths`, `dry_run` must be a boolean, and a real import with conflicting locked paths returns 409.
-- The language switcher returns the shipped translation for locales without an installed core language pack.
+- The language list shows each language once.
+- The tile grid has no gaps next to the Bigger text and Line height steppers.
+- Read page no longer drops its first sentence after a cancel and stops when you leave the page.
+
+## [1.0.0-beta.1] - 2026-11-26
+
+Settings management for sites and networks, plus update channels.
+
+### Added
+
+- Settings tools: search, change preview before save, import, reset (all or per tab), locked fields and a Maintenance tab.
+- Versioned export files. Files from a newer plugin are refused, older files are migrated.
+- Layered settings: plugin defaults, network defaults, site values and locks (`KOTLINSKIDEV_A11Y_LOCKED_SETTINGS`).
+- Customer capability `kotlinskidev_a11y_customize` for editing only labels, statement, colors, panel options and mode.
+- WP-CLI commands `wp ka11y settings`, `doctor` and `access`.
+- Multisite network defaults page and REST routes.
+- Site Health checks and a debug section.
+- Stable and beta update channels, rollback to the 3 newest older releases, and SHA-256 checks of update zips.
+- Privacy policy text and an uninstall choice to keep data.
+
+### Changed
+
+- The site option stores only values that differ from the defaults.
+- Release workflow publishes a checksum and build attestation, and marks beta tags as pre-releases.
+
+### Fixed
+
+- The panel data cache is cleared when the plugin version changes.
+- Saving keeps locked values, and importing a file without a version is handled correctly.
+- The language switcher shows shipped translations for locales without a language pack.
 
 ### Security
 
-- Plugin zips are checked against their `.sha256` before unzipping, and a mismatch aborts the update. A package installed without a checksum is flagged in the admin and in Site Health.
-- CodeQL for JavaScript, TypeScript and Actions, `composer audit` and `npm audit` in CI, and every GitHub Action pinned by commit SHA.
+- Update zips are verified before unzipping. A package without a checksum is flagged.
+
+## [0.4.1] - 2026-11-26
+
+Fixes the panel failing to load after an update.
+
+### Fixed
+
+- After a plugin update the panel could show "Accessibility tools could not load" because the old panel data file was kept. It is now refreshed.
 
 ## [0.4.0] - 2026-11-25
 
+Redesigned panel and an Appearance tab.
+
 ### Added
 
-- Appearance tab: style presets (`classic`, `brand`, `soft`, `contrast`), header, canvas and dark primary color tokens with a live contrast check, tile columns, section toggles and a language switcher toggle. Settings schema v4.
-- Panel language switcher that changes the widget language only and remembers the choice in `localStorage` under `<storage key>-locale`.
-- Inline SVG icon set built from path data, with the `kotlinskidev_a11y_icons` and `kotlinskidev_a11y_locale_label` filters.
-- `/panel-data` payload carries `panel`, `layout`, `locales` and `icons`.
-- Visual snapshot and panel UI e2e specs.
+- Appearance tab with style presets, color tokens with a live contrast check, tile columns and section toggles.
+- Panel language switcher that remembers the choice.
+- Built-in icon set.
 
 ### Changed
 
-- Panel redesign: header with language switcher, section cards, icon tiles, steppers and a skip-to-content select; the dialog is non-modal and uses a side panel on desktop and a bottom sheet on mobile. The panel chunk budget is 8704 B gzip (was 7168): the chunk loads only on first open and the redesign, icons and language switcher account for the growth.
-- Internal shadow classes `.ka11y-toggle`, `.ka11y-profile`, `.ka11y-grid`, `.ka11y-feature`, `.ka11y-section` and `.ka11y-group` are removed. Custom CSS that targets them must be updated, see the README.
+- New panel: header, section cards, icon tiles, steppers and a skip-to-content select. Side panel on desktop, bottom sheet on mobile.
 - Escape closes the panel only when focus is inside it or on the launcher.
+- Some internal shadow classes were removed. Update custom CSS that used them.
 
 ### Fixed
 
-- Dark mode pressed tiles and the focus ring on the dark header now meet the 3:1 non-text contrast minimum.
-- The panel host no longer carries a `transform`, which broke fixed positioning of the panel.
+- Dark mode pressed tiles and focus ring meet the 3:1 contrast minimum.
+- The panel host no longer breaks fixed positioning.
 
 ## [0.3.0] - 2026-11-25
 
+Triggers and a public API.
+
 ### Added
 
-- One action vocabulary: `open`, `close`, `toggle`, `reset`, `feature:<key>[:<level>]`, `profile:<key>`, `statement`, `hide`, `show`. See `docs/API.md`.
-- Triggers from `data-ka11y`, `#ka11y/<action>` links, the `.ka11y-open` class, custom selectors, `?ka11y=<action>` and landing hashes. URL actions are allowlisted, applied only to enabled features, never saved by themselves and removed from the address bar.
-- Public JavaScript API `kotlinskidevA11y.open()`, `close()`, `toggle()`, `set()`, `reset()`, `getState()` and `on()`, plus the events `ka11y:ready`, `ka11y:open`, `ka11y:close` and `ka11y:change`.
-- Trigger button renderer with the `[kotlinskidev_a11y_button]` shortcode, the `kotlinskidev-a11y/trigger` block, `kotlinskidev_a11y_button()` and `kotlinskidev_a11y_get_button()`. Default trigger labels are new strings.
-- Launcher modes `floating`, `inline` and `hidden`, and settings schema v3 for them.
-- Triggers tab in the admin with a snippet generator, a no-trigger check of the home page and URL action settings.
-- Filters `kotlinskidev_a11y_button_html`, `kotlinskidev_a11y_trigger_selectors` and `kotlinskidev_a11y_url_actions`, and the `GET kotlinskidev-a11y/v1/trigger-options` route.
-- `docs/API.md` with the versioned public API and the deprecation policy.
-- E2E trigger matrix across every load strategy.
+- Open the panel from `data-ka11y` attributes, `#ka11y/<action>` links, the `.ka11y-open` class, custom selectors and `?ka11y=` URLs.
+- JavaScript API `kotlinskidevA11y` with events.
+- Trigger button shortcode `[kotlinskidev_a11y_button]`, a block and PHP functions.
+- Launcher modes: floating, inline and hidden.
+- Triggers tab with a snippet generator and a check for sites without a trigger.
 
 ### Changed
 
-- Triggers get `role="button"`, `aria-haspopup`, `aria-controls`, `aria-expanded` or `aria-pressed` automatically, and focus returns to the opener, the previously focused element, the launcher or the page.
-- Custom trigger selectors are checked for balanced brackets, parentheses and quotes, and are emitted as one forgiving `:is()` list so one invalid selector no longer disables the others.
-- The trigger block wraps itself in a navigation list item inside the Navigation block and no longer narrows its allowed blocks.
-- Page footprint budgets raised for the trigger code. See `docs/PHASE4-SPEC.md`.
+- Triggers get the right ARIA attributes, and focus returns to the opener.
+- Custom trigger selectors are validated, and one bad selector no longer breaks the rest.
 
 ### Removed
 
-- The `kotlinskidev_a11y_legacy_config` filter and the front-end merge of `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` and the full `strings` into `window.kotlinskidevA11y`, deprecated in v0.2.0. Read them from the panel data (`GET kotlinskidev-a11y/v1/panel-data` or the per-locale JSON file) instead.
+- The v0.2 compatibility filter `kotlinskidev_a11y_legacy_config`.
 
 ### Fixed
 
-- A markup value such as `data-ka11y="constructor"` no longer aborts the loader.
-- Trigger buttons never render without an accessible name, and a statement button without a statement URL renders nothing.
-- The plugin text domain loads on WordPress 6.4.
-
-### Security
-
-- URL actions cannot reach disabled features, `close`, `toggle`, `reset`, `statement`, `hide` or `show`, and trigger markup is built with escaped values and filtered through `wp_kses`.
+- A value such as `data-ka11y="constructor"` no longer stops the loader.
+- Trigger buttons always have an accessible name.
+- The text domain loads on WordPress 6.4.
 
 ## [0.2.0] - 2026-11-25
 
+Faster pages. Only a small loader runs everywhere.
+
 ### Added
 
-- Performance tab with presets Recommended, Compatibility and Custom: load strategy, script position, fetch priority, panel prefetch, Page CSS mode (lazy, linked, inline), device skip and optimizer opt-out. The admin shows the estimated cost per page.
-- Where to load: everywhere, only on, or except on, by post, post type, template, role (including `__guest`) and URL pattern.
-- Panel data as a versioned JSON file per locale from uploads, with a REST fallback at `kotlinskidev-a11y/v1/panel-data` and a new `loadError` string.
-- `kotlinskidev_a11y_cache_invalidated` fires with `translations` after language packs update.
-- `kotlinskidev_a11y_legacy_config` filter keeps the moved config fields inline until v0.3.0.
-- Admin notice for sites migrated from v0.1 recommending the Recommended preset, dismissible per user.
-- Settings schema v2 with a v1 migration and `presets` in `GET /schema`.
-- Tests and CI: hostile fixture theme, loading, compat and perf E2E specs, PHPStan level 8, Plugin Check, nightly matrix and Lighthouse comparison. See `docs/TESTING.md`.
+- Performance tab with presets, load strategy and cost estimate.
+- Where to load rules by post, post type, template, role and URL.
+- Panel data as a cached JSON file per language.
 
 ### Changed
 
-- Only a loader of at most 2 KB gzip runs on every page. The panel, the features and the page CSS load on first use. Visitors with saved settings still get them before first paint.
-- The launcher is server-rendered in a declarative shadow root and shows a loading and an error state.
-- `window.kotlinskidevA11y` holds only what the loader needs. The rest arrives with the panel data.
-- Document-level custom CSS is printed in the page head. CSS that targets the launcher inside the shadow root applies after the first open.
-- The panel dialog returns focus to the opener passed with the open command, and the launcher by default.
-- Page footprint budget: bootstrap plus loader at most 3840 B gzip.
+- The panel, features and page CSS load on first use. Visitors with saved settings still get them before first paint.
+- The launcher is rendered on the server inside a shadow root.
 
 ### Deprecated
 
-- Reading `features`, `profiles`, `widget`, `theme`, `tokens`, `hideToolbar`, `statementUrl`, `customCss` or the full `strings` from `window.kotlinskidevA11y` at page load. Use `kotlinskidev_a11y_legacy_config` until v0.3.0.
+- Reading settings from `window.kotlinskidevA11y` at page load.
 
 ### Removed
 
-- `advanced.loadStrategy`. Existing values migrate to the Custom preset.
-- `build/frontend.js` and `frontend.asset.php`.
+- The `advanced.loadStrategy` setting.
 
 ### Fixed
 
-- Visibility: post ID and post type rules match singular views only, the decision is made once per request, and non-ASCII URL patterns match percent-encoded requests.
-- Panel data: invalid locales stay REST-only, the file is written atomically, malformed cache entries are rebuilt, and upload errors fall back to REST.
-- Uninstall cleans every site of a multisite network. A missing `build/bootstrap.js` or `build/launcher.css` is reported.
-- Bootstrap keeps the early click handler when stored state is corrupt, and the loader shows a built-in message when the load error string is empty.
+- Visibility rules match correctly for posts, post types and non-ASCII URLs.
+- Uninstall cleans every site of a multisite network.
 
 ### Security
 
-- Visibility URL patterns use a linear wildcard matcher with a length cap (no ReDoS).
-- `GET /panel-data` returns 404 for locales the site does not use.
-- Bootstrap rejects unsafe stored CSS variable values, builds the page CSS link with DOM APIs, and clears the hidden toolbar key on `?ka11y=reset`.
-- Loader lookups ignore inherited keys such as `constructor` and `__proto__`. A failed JSON encoding no longer prints a broken inline script.
+- URL patterns are matched without ReDoS risk, and unsafe stored values are rejected.
 
 ## [0.1.3] - 2026-11-24
 
+Page cache support.
+
 ### Added
 
-- `kotlinskidev_a11y_cache_invalidated` action with a `$reason` argument: `settings` after settings are saved, imported or reset (once per request), `update` once after the plugin version changes.
-
-### Docs
-
-- README Installation and Page caches sections, with purge snippets for common cache plugins.
+- Action `kotlinskidev_a11y_cache_invalidated` for page cache purging.
+- README install and page cache sections.
 
 ## [0.1.2] - 2026-11-24
 
-### Fixed
-
-- Reading mask, reading line and the ADHD profile no longer freeze the page: overlay classes no longer collide with the state classes on `<html>`. A build check now rejects unscoped state-class selectors.
-- The reading mask appears only after the first pointer move instead of darkening the page on load.
+Fixes freezing overlays and adds recovery URLs.
 
 ### Added
 
-- Recovery URLs: `?ka11y=reset` clears saved state, `?ka11y=off` disables the widget for that page view.
-- Admin notice when `vendor/` or `build/` is missing, pointing to the release zip, instead of a silent stop.
-- Playwright invariants test for every feature, level and profile, plus the roadmap in `docs/ROADMAP.md`.
+- Recovery URLs `?ka11y=reset` and `?ka11y=off`.
+- Admin notice when `vendor/` or `build/` is missing.
+
+### Fixed
+
+- Reading mask, reading line and the ADHD profile no longer freeze the page.
+- The reading mask appears only after the first pointer move.
 
 ## [0.1.1] - 2026-11-24
 
-### Added
-
-- Settings schema, sanitizer and repository with a REST controller and import/export round-trip.
-- Page-language aware strings (Polylang, WPML, TranslatePress, `determine_locale()`) with `pl_PL` shipped beyond English.
-- Front end: device-aware visibility, asset loading, Shadow DOM widget markup and a pre-paint head bootstrap.
-- Widget core: store, storage modes (local, cookie, none), theme handling, accessible dialog, `Alt+Shift+A` shortcut, `#kotlinskidev-a11y` hash open, reset and hide toolbar.
-- Content, color and orientation features, plus profiles with provenance.
-- Admin settings page rendered from the REST schema, with alt-text tools, accessibility statement and dashboard widget.
-- Updates through Plugin Update Checker v5 and GitHub Releases, swappable via `kotlinskidev_a11y_update_source` and `kotlinskidev_a11y_update_token`.
-- `npm run check-version` and `npm run release` keep the plugin header, PHP constant, `package.json`, CHANGELOG and git tag in sync.
-- GitHub Actions: CI (PHPCS, PHPUnit on PHP 8.1 and 8.3, ESLint, tsc, Jest, build, version check) and a tag-triggered release that builds `kotlinskidev-accessibility.zip`.
-
-## [0.1.0] - 2026-11-24
+First usable release.
 
 ### Added
 
-- Plugin scaffold: header, bootstrap class, esbuild and dart-sass pipeline, PHPUnit, Jest, ESLint, PHPCS tooling.
+- Settings schema, REST controller and import and export.
+- Page-language aware strings for Polylang, WPML and TranslatePress, with Polish included.
+- Widget with content, color and orientation features, profiles, shortcut `Alt+Shift+A` and hide toolbar.
+- Admin settings page with alt-text tools and an accessibility statement.
+- Updates from GitHub Releases.
+- CI and a tag-triggered release workflow.
+
+[Unreleased]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v1.0.0-beta.1...v1.0.0
+[1.0.0-beta.1]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.4.1...v1.0.0-beta.1
+[0.4.1]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.4.0...v0.4.1
+[0.4.0]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.1.3...v0.2.0
+[0.1.3]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/Kotlinski95/kotlinskidev-accessibility-plugin/releases/tag/v0.1.1

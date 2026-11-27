@@ -26,3 +26,9 @@
   padding-block-end: var(--ka11y-a-gap);
   border-block-end: 1px solid var(--ka11y-a-border);
 }
+
+.ka11y-order {
+  display: flex;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
