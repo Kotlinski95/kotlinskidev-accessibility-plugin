@@ -55,7 +55,7 @@ Updates arrive through the Plugins screen like any other plugin. The "Check for 
 ## Quick start
 
 1. Activate the plugin. The launcher appears at the bottom right of every page with sensible defaults.
-2. General tab: choose launcher position, size, shape and colors.
+2. General tab: show or hide the floating button, choose its corner per device, size (small, medium, large or an exact rem value), shape and colors.
 3. Appearance tab: pick a preset, or press Match theme to take colors from the active theme palette, and set the dark-mode selector if your theme uses one.
 4. Languages tab: edit widget labels and set the accessibility statement page.
 5. Performance tab: keep the Recommended preset.
@@ -71,10 +71,13 @@ Every setting is a dot path in the `kotlinskidev_a11y_settings` option, defined 
 
 | Key | Type | Default | Effect |
 | --- | --- | --- | --- |
+| `widget.launcher` | enum | `floating` | `floating`, `inline` or `hidden`. The General tab checkbox "Show the floating accessibility button" switches between `floating` and `hidden`; `inline` is chosen on the Triggers tab. Hidden removes only the button: every trigger, the shortcut and the API still open the panel. |
 | `widget.position.<device>` | enum | `bottom-right` | Launcher corner for `desktop`, `tablet`, `mobile`: `bottom-right`, `bottom-left`, `top-right`, `top-left`, `middle-right`, `middle-left`. |
 | `widget.offsetX.<device>`, `widget.offsetY.<device>` | int 0-500 | `20` | Distance from the screen edge in pixels, per device. |
 | `widget.size` | enum | `md` | Launcher size `sm`, `md`, `lg` (40, 52, 64 px). |
 | `widget.sizes.<device>` | enum | `inherit` | Size per device: `inherit`, `sm`, `md`, `lg`. |
+| `widget.sizeRem` | number 1.5-5 or empty | empty | Exact launcher size in rem (2.5 matches the cookie banner button). Overrides `widget.size` when set; the icon scales with it and the 2.75rem minimum no longer applies. |
+| `widget.sizesRem.<device>` | number 1.5-5 or empty | empty | Exact size per device. Wins over `widget.sizes.<device>` and `widget.sizeRem`. |
 | `widget.shape` | enum | `circle` | `circle`, `rounded` or `square`. |
 | `widget.bg`, `widget.fg` | color | empty | Launcher background and icon color. Empty uses the primary tokens from Appearance. |
 | `widget.bgDark`, `widget.fgDark` | color | empty | Launcher colors in dark mode. Empty keeps the light-mode value. |
@@ -88,6 +91,8 @@ Every setting is a dot path in the `kotlinskidev_a11y_settings` option, defined 
 | `features.<key>.enabled` | bool | `true` | Shows the adjustment in the panel. Hidden ones stay reachable by triggers and the API. |
 | `features.<key>.default` | level 0-10 or `false` | `false` | Level applied for new visitors. `false` and `0` are off. |
 | `panel.order` | list | built-in order | Order of adjustments inside each section, set with the up and down buttons. |
+| `readPage.voice` | text | empty | Voice for Read page. Empty is automatic; otherwise the exact voice name (the Features tab lists the voices installed on the admin's device). A name the visitor does not have falls back to automatic. |
+| `readPage.rate` | number 0.5-2 | `1` | Speaking speed for Read page. |
 
 The 26 keys are: `biggerText`, `lineHeight`, `letterSpacing`, `fontWeight`, `readableFont`, `dyslexicFont`, `textAlign`, `highlightLinks`, `bigCursor`, `textMagnifier`, `cognitiveReading`, `darkContrast`, `lightContrast`, `highContrast`, `monochrome`, `saturation`, `readingLine`, `readingMask`, `readPage`, `keyboardNavigation`, `hideImages`, `muteSounds`, `highlightTitles`, `highlightAll`, `stopAnimations`, `skipToContent`.
 
@@ -222,7 +227,7 @@ Each adjustment is a tile or stepper in the panel, grouped into Content, Color a
 
 Read page (feature `readPage`) uses the browser speech synthesis. It reads in the language of the clicked element (nearest `lang` attribute, then the page language). It strictly prefers voices installed on the device (`localService`) in that language over remote or Google voices, then names that look enhanced, premium, natural or neural, then known natural system voices, and avoids macOS novelty voices such as Albert, Zarvox or Fred. Local voices read long text in large chunks, queued up front so there are no gaps; remote voices use short chunks with a pause and resume keep-alive for Chrome's 15 second limit. Rate, pitch and volume are set explicitly. Nothing is sent to a server and the automatically picked voice is not stored.
 
-Site owners can override the choice before the widget loads:
+Set the voice and speed on the Features tab (`readPage.voice`, `readPage.rate`). They travel in the panel data, not the always-loaded inline config. A site owner can still override both before the widget loads, and the override wins over the settings:
 
 ```js
 window.kotlinskidevA11yReadPage = { voice: 'Zosia (Enhanced)', rate: 0.95 };
@@ -606,15 +611,15 @@ Namespace `kotlinskidev-a11y/v1`. Admin routes need the manage capability and th
 | --- | --- | --- |
 | `inline.bootstrap` | 1152 | 1040 |
 | `scripts.loader` | 4200 | 4198 |
-| `scripts.kernel` | 5632 | 5276 |
-| `scripts.panel` | 9520 | 9500 |
-| `scripts.content` | 4096 | 3947 |
+| `scripts.kernel` | 5632 | 5287 |
+| `scripts.panel` | 9520 | 9506 |
+| `scripts.content` | 4096 | 3992 |
 | `scripts.color` | 1536 | 1401 |
-| `scripts.orientation` | 4736 | 4631 |
-| `scripts.admin` (admin only) | 28541 | 25360 |
-| `styles.page` | 2048 | 1569 |
+| `scripts.orientation` | 4800 | 4736 |
+| `scripts.admin` (admin only) | 28541 | 26543 |
+| `styles.page` | 2048 | 1522 |
 | `data.icons` | 2048 | 1216 |
-| `styles.launcher` (raw) | 1510 | 1504 |
+| `styles.launcher` (raw) | 1530 | 1526 |
 | `sum.everyPage` (bootstrap plus loader) | 5250 | 5238 |
 
 The dark-mode launcher colors add no JavaScript and no bytes to the loader or bootstrap: they are a few declarations in the existing inline token style.

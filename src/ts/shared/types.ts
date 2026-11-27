@@ -53,6 +53,8 @@ export interface WidgetConfig {
   offsetY: Record<Device, number>;
   size: WidgetSize;
   sizes?: Record<Device, WidgetDeviceSize>;
+  sizeRem?: number | '';
+  sizesRem?: Record<Device, number | ''>;
   shape?: WidgetShape;
   bg?: string;
   fg?: string;
@@ -235,6 +237,11 @@ export interface PanelLocale {
   rtl: boolean;
 }
 
+export interface ReadPageConfig {
+  voice: string;
+  rate: number;
+}
+
 export interface PanelData {
   hash: string;
   locale: string;
@@ -244,6 +251,7 @@ export interface PanelData {
   theme: ThemeConfig;
   tokens: TokensConfig;
   hideToolbar: HideToolbarConfig;
+  readPage?: ReadPageConfig;
   statementUrl: string;
   customCss: string;
   strings: Record<string, string>;

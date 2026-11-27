@@ -79,6 +79,14 @@ final class Schema {
 
 	private const DEVICES = array( 'desktop', 'tablet', 'mobile' );
 
+	public const SIZE_REM_MIN = 1.5;
+
+	public const SIZE_REM_MAX = 5;
+
+	public const READ_RATE_MIN = 0.5;
+
+	public const READ_RATE_MAX = 2;
+
 	private const LAUNCHERS = array( 'floating', 'inline', 'hidden' );
 
 	private const POSITIONS = array( 'bottom-right', 'bottom-left', 'top-right', 'top-left', 'middle-right', 'middle-left' );
@@ -314,6 +322,29 @@ final class Schema {
 			$defs[ "widget.sizes.$device" ] = self::def( 'string', 'enum', 'inherit', array( 'enum' => array( 'inherit', 'sm', 'md', 'lg' ) ) );
 		}
 
+		foreach ( self::DEVICES as $device ) {
+			$defs[ "widget.sizesRem.$device" ] = self::def(
+				'number',
+				'decimal',
+				'',
+				array(
+					'min'      => self::SIZE_REM_MIN,
+					'max'      => self::SIZE_REM_MAX,
+					'nullable' => true,
+				)
+			);
+		}
+
+		$defs['widget.sizeRem']    = self::def(
+			'number',
+			'decimal',
+			'',
+			array(
+				'min'      => self::SIZE_REM_MIN,
+				'max'      => self::SIZE_REM_MAX,
+				'nullable' => true,
+			)
+		);
 		$defs['widget.size']       = self::def( 'string', 'enum', 'md', array( 'enum' => array( 'sm', 'md', 'lg' ) ) );
 		$defs['widget.shape']      = self::def( 'string', 'enum', 'circle', array( 'enum' => array( 'circle', 'rounded', 'square' ) ) );
 		$defs['widget.bg']         = self::def( 'string', 'color', '' );
@@ -471,6 +502,17 @@ final class Schema {
 			array(
 				'min' => 0,
 				'max' => 200,
+			)
+		);
+
+		$defs['readPage.voice'] = self::def( 'string', 'text', '' );
+		$defs['readPage.rate']  = self::def(
+			'number',
+			'decimal',
+			1,
+			array(
+				'min' => self::READ_RATE_MIN,
+				'max' => self::READ_RATE_MAX,
 			)
 		);
 

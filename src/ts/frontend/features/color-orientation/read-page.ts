@@ -2,7 +2,7 @@ import type { FeatureModule } from '../../apply';
 import { featureClassBase } from '../../feature-utils';
 import { HOST_ID } from './overlay';
 import { addRootClass, removeRootClass } from './root-class';
-import { clampRate, normalizeLang, pickVoice, readPreference } from './read-voice';
+import { clampRate, ensureReadPreference, normalizeLang, pickVoice, readPreference } from './read-voice';
 
 export { pickVoice };
 
@@ -139,6 +139,7 @@ const on = (): void => {
   addRootClass(CLASS_NAME);
   if (listening || !hasSpeech()) return;
   warmVoices();
+  ensureReadPreference();
   document.addEventListener('click', onDocumentClick, true);
   window.addEventListener('pagehide', onPageHide);
   listening = true;

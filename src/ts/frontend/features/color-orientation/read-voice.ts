@@ -39,7 +39,30 @@ const readStoredPreference = (): string => {
   }
 };
 
-export const readPreference = (): ReadPagePreference => window.kotlinskidevA11yReadPage ?? {};
+export interface ReadPreferenceSource {
+  current(): ReadPagePreference | undefined;
+  ensure(): Promise<unknown>;
+}
+
+let source: ReadPreferenceSource | null = null;
+
+export const bindReadPreferenceSource = (next: ReadPreferenceSource | null): void => {
+  source = next;
+};
+
+export const ensureReadPreference = (): void => {
+  source?.ensure().catch(() => undefined);
+};
+
+export const readPreference = (): ReadPagePreference => {
+  const configured = source?.current();
+  const override = window.kotlinskidevA11yReadPage ?? {};
+  const voice = configured?.voice?.trim();
+  return {
+    voice: override.voice ?? (voice ? voice : undefined),
+    rate: override.rate ?? configured?.rate,
+  };
+};
 
 export const clampRate = (rate: unknown): number =>
   typeof rate === 'number' && Number.isFinite(rate) ? Math.min(Math.max(rate, RATE_MIN), RATE_MAX) : 1;

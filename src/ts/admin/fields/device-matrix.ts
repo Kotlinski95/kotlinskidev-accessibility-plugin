@@ -8,7 +8,7 @@ import { createToggleField } from './toggle';
 export interface MatrixColumn {
   basePath: string;
   label: string;
-  kind: 'select' | 'number' | 'toggle';
+  kind: 'select' | 'number' | 'decimal' | 'toggle';
   choices?: readonly Choice[];
 }
 
@@ -24,6 +24,7 @@ const createCell = (ctx: FieldContext, column: MatrixColumn, device: string, lab
   const options = { path: `${column.basePath}.${device}`, label, bare: true };
   if (column.kind === 'select') return createSelectField(ctx, { ...options, choices: column.choices ?? [] });
   if (column.kind === 'number') return createNumberField(ctx, options);
+  if (column.kind === 'decimal') return createNumberField(ctx, { ...options, decimal: true, step: 0.1 });
   return createToggleField(ctx, options);
 };
 

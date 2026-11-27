@@ -1,4 +1,5 @@
 import { chunkText, pickVoice, readPage } from '../../../../src/ts/frontend/features/color-orientation/read-page';
+import { bindReadPreferenceSource } from '../../../../src/ts/frontend/features/color-orientation/read-voice';
 import { resetDocument } from './helpers';
 
 interface FakeUtterance {
@@ -184,6 +185,59 @@ describe('readPage', () => {
     expect(first.volume).toBe(1);
     (speak.mock.calls.map((call) => call[0] as FakeUtterance)).forEach((item) => expect(item.text.length).toBeLessThanOrEqual(180));
     delete window.kotlinskidevA11yReadPage;
+  });
+
+  describe('admin settings', () => {
+    const bind = (current: { voice?: string; rate?: number } | undefined, ensure = jest.fn(() => Promise.resolve())): jest.Mock => {
+      bindReadPreferenceSource({ current: () => current, ensure });
+      return ensure;
+    };
+
+    afterEach(() => {
+      bindReadPreferenceSource(null);
+      delete window.kotlinskidevA11yReadPage;
+    });
+
+    it('uses the voice from the settings and keeps automatic for an empty name', () => {
+      voiceList.current = [enhanced, makeVoice('Ewa', 'pl-PL', true)];
+      bind({ voice: 'Ewa', rate: 1 });
+      expect(pickVoice('pl-PL')?.name).toBe('Ewa');
+      bind({ voice: '', rate: 1 });
+      expect(pickVoice('pl-PL')).toBe(enhanced);
+    });
+
+    it('lets the window override win over the settings', () => {
+      voiceList.current = [enhanced, makeVoice('Ewa', 'pl-PL', true)];
+      bind({ voice: 'Ewa' });
+      window.kotlinskidevA11yReadPage = { voice: 'zosia' };
+      expect(pickVoice('pl-PL')).toBe(enhanced);
+    });
+
+    it('uses the speaking speed from the settings and the override beats it', async () => {
+      bind({ voice: '', rate: 1.4 });
+      readPage.on(true);
+      document.getElementById('p')?.click();
+      await flush();
+      expect((speak.mock.calls[0]?.[0] as FakeUtterance).rate).toBe(1.4);
+      readPage.off();
+      speak.mockClear();
+      window.kotlinskidevA11yReadPage = { rate: 0.7 };
+      readPage.on(true);
+      document.getElementById('p')?.click();
+      await flush();
+      expect((speak.mock.calls[0]?.[0] as FakeUtterance).rate).toBe(0.7);
+    });
+
+    it('asks for the panel data when the feature turns on', () => {
+      const ensure = bind(undefined);
+      readPage.on(true);
+      expect(ensure).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not fail when the panel data cannot load', () => {
+      bind(undefined, jest.fn(() => Promise.reject(new Error('offline'))));
+      expect(() => readPage.on(true)).not.toThrow();
+    });
   });
 
   it('reads long text in a few big chunks with a local voice', async () => {

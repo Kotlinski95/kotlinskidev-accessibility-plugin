@@ -145,7 +145,9 @@ For a `requestAnimationFrame` canvas, cancel the frame and draw the final static
 
 ## Read page options
 
-`window.kotlinskidevA11yReadPage = { voice?: string, rate?: number }`, set before the widget loads. `voice` is a name fragment or `voiceURI` (`auto` keeps the automatic choice) and `rate` is clamped to 0.5 to 2.
+The Features tab stores `readPage.voice` (empty is automatic, otherwise the exact voice name) and `readPage.rate` (0.5 to 2, default 1). They are delivered in the lazy panel data, not the inline config, and are fetched when Read page turns on.
+
+`window.kotlinskidevA11yReadPage = { voice?: string, rate?: number }`, set before the widget loads, stays supported as an override and wins over the settings. `voice` is a name fragment or `voiceURI` (`auto` keeps the automatic choice) and `rate` is clamped to 0.5 to 2.
 
 ## Events
 
@@ -200,7 +202,7 @@ $html = kotlinskidev_a11y_get_button( array( 'action' => 'feature:biggerText:2' 
 | --- | --- |
 | `floating` | Fixed launcher, the default. |
 | `inline` | The launcher moves into the element matched by the mount selector. When nothing matches it stays floating. Reserve about 48 px in the mount to avoid layout shift. |
-| `hidden` | No launcher button. Use triggers or the keyboard shortcut. |
+| `hidden` | No launcher button (the General tab checkbox "Show the floating accessibility button" is off). The panel host and the loader stay active, so every `data-ka11y` trigger, link, the keyboard shortcut and `kotlinskidevA11y.open()` still open the panel. |
 
 The keyboard shortcut is configurable and works in every mode when enabled. The admin warns when `hidden` is chosen and the home page has no trigger.
 

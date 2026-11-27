@@ -2,7 +2,9 @@ import { __ } from '@wordpress/i18n';
 import type { FormContext } from '../context';
 import { h } from '../dom';
 import { createDeviceMatrixField } from '../fields/device-matrix';
+import { createLauncherVisibilityField } from '../fields/launcher-visibility';
 import { createMediaField } from '../fields/media';
+import { createNumberField } from '../fields/number';
 import { createSelectField, enumChoices } from '../fields/select';
 import { createToggleField } from '../fields/toggle';
 import { createColorField } from '../fields/color';
@@ -12,15 +14,21 @@ export const buildGeneralPanel = (ctx: FormContext): HTMLElement =>
   h(
     'div',
     { class: 'ka11y-panel ka11y-panel--general' },
+    createLauncherVisibilityField(ctx, {
+      path: 'widget.launcher',
+      label: __('Show the floating accessibility button', 'kotlinskidev-accessibility'),
+      help: __('Turn off to hide the button. The panel still opens from your own triggers and the keyboard shortcut.', 'kotlinskidev-accessibility'),
+      inlineHelp: __('The button is currently placed inside a page element. Change this in the Triggers tab, or tick the box to float it again.', 'kotlinskidev-accessibility'),
+    }),
     createDeviceMatrixField(ctx, {
-      label: __('Widget position per device', 'kotlinskidev-accessibility'),
+      label: __('Button corner, offset and size per device', 'kotlinskidev-accessibility'),
       deviceHeader: __('Device', 'kotlinskidev-accessibility'),
       devices: DEVICES,
       deviceLabel,
       columns: [
         {
           basePath: 'widget.position',
-          label: __('Position', 'kotlinskidev-accessibility'),
+          label: __('Corner', 'kotlinskidev-accessibility'),
           kind: 'select',
           choices: enumChoices(ctx, 'widget.position.desktop', positionLabel),
         },
@@ -40,12 +48,25 @@ export const buildGeneralPanel = (ctx: FormContext): HTMLElement =>
           kind: 'select',
           choices: enumChoices(ctx, 'widget.sizes.desktop', sizeLabel),
         },
+        {
+          basePath: 'widget.sizesRem',
+          label: __('Launcher size (rem)', 'kotlinskidev-accessibility'),
+          kind: 'decimal',
+        },
       ],
     }),
     createSelectField(ctx, {
       path: 'widget.size',
       label: __('Launcher size', 'kotlinskidev-accessibility'),
       choices: enumChoices(ctx, 'widget.size', sizeLabel),
+    }),
+    createNumberField(ctx, {
+      path: 'widget.sizeRem',
+      label: __('Launcher size (rem)', 'kotlinskidev-accessibility'),
+      help: __('Leave empty to use the size above. A value from 1.5 to 5 overrides it; 2.5 matches the cookie banner button. The icon scales with the button.', 'kotlinskidev-accessibility'),
+      decimal: true,
+      step: 0.1,
+      placeholder: __('Automatic', 'kotlinskidev-accessibility'),
     }),
     createSelectField(ctx, {
       path: 'widget.shape',

@@ -6,13 +6,13 @@
     "scripts.panel": 9520,
     "scripts.content": 4096,
     "scripts.color": 1536,
-    "scripts.orientation": 4736,
+    "scripts.orientation": 4800,
     "scripts.admin": 28541,
     "styles.page": 2048,
     "data.icons": 2048
   },
   "raw": {
-    "styles.launcher": 1510
+    "styles.launcher": 1530
   },
   "sum": {
     "everyPage": { "gzip": 5250, "of": ["inline.bootstrap", "scripts.loader"] }

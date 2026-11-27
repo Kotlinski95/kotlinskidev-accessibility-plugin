@@ -24,6 +24,8 @@ export interface KernelApi {
   store: Store;
   addFeatures(chunk: FeatureChunk): void;
   attachData(data: PanelData): void;
+  data(): PanelData | null;
+  ensureData(): Promise<void>;
   profiles(): Profiles | null;
   ensurePageCss(): void;
   run(command: KA11yCommand): Promise<void>;
@@ -124,6 +126,8 @@ export const bootKernel = ({ config, groupOf, loadGroup, getData }: KernelBootOp
     store,
     addFeatures,
     attachData,
+    data: () => data,
+    ensureData: loadData,
     profiles: currentProfiles,
     ensurePageCss,
     run,

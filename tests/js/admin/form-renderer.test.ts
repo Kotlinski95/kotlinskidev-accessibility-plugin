@@ -35,11 +35,56 @@ describe('form renderer', () => {
     const form = renderForm(sampleContext());
     const general = form.element.querySelector('.ka11y-panel--general') as HTMLElement;
     expect(general.querySelectorAll('tbody tr')).toHaveLength(3);
-    expect(general.querySelector('legend')?.textContent).toBe('Widget position per device');
+    expect(general.querySelector('legend')?.textContent).toBe('Button corner, offset and size per device');
     expect(general.querySelector('.ka11y-field--media')).not.toBeNull();
     const colorLabels = [...general.querySelectorAll('.ka11y-field--color label')].map((item) => item.textContent);
     expect(colorLabels).toEqual(['Launcher background', 'Launcher icon color', 'Launcher background (dark mode)', 'Launcher icon color (dark mode)']);
     expect(general.querySelectorAll('select').length).toBe(8);
+  });
+
+  it('general tab starts with the floating button checkbox and numeric rem sizes', () => {
+    const ctx = sampleContext();
+    const form = renderForm(ctx);
+    const general = form.element.querySelector('.ka11y-panel--general') as HTMLElement;
+    const visible = general.querySelector('[data-ka11y-path="widget.launcher"] input') as HTMLInputElement;
+    expect(visible.checked).toBe(true);
+    expect(general.querySelector('[data-ka11y-path="widget.launcher"]')?.textContent).toContain('Show the floating accessibility button');
+    visible.checked = false;
+    change(visible, 'change');
+    expect(ctx.state.get('widget.launcher')).toBe('hidden');
+    visible.checked = true;
+    change(visible, 'change');
+    expect(ctx.state.get('widget.launcher')).toBe('floating');
+    ctx.state.set('widget.launcher', 'inline');
+    expect(visible.checked).toBe(false);
+    expect(general.querySelector('[data-ka11y-path="widget.launcher"]')?.textContent).toContain('Triggers tab');
+    const rem = general.querySelector('[data-ka11y-path="widget.sizeRem"] input') as HTMLInputElement;
+    expect(rem.value).toBe('');
+    rem.value = '2.5';
+    change(rem);
+    expect(ctx.state.get('widget.sizeRem')).toBe(2.5);
+    rem.value = '';
+    change(rem);
+    expect(ctx.state.get('widget.sizeRem')).toBe('');
+    const device = general.querySelector('input[data-ka11y-path="widget.sizesRem.tablet"]') as HTMLInputElement;
+    device.value = '3.2';
+    change(device);
+    expect(ctx.state.get('widget.sizesRem.tablet')).toBe(3.2);
+  });
+
+  it('features tab has Read page voice and speed settings', () => {
+    const ctx = sampleContext();
+    const form = renderForm(ctx);
+    const features = form.element.querySelector('.ka11y-panel--features') as HTMLElement;
+    const voice = features.querySelector('[data-ka11y-path="readPage.voice"] input') as HTMLInputElement;
+    voice.value = 'Zosia';
+    change(voice);
+    expect(ctx.state.get('readPage.voice')).toBe('Zosia');
+    const rate = features.querySelector('[data-ka11y-path="readPage.rate"] input') as HTMLInputElement;
+    expect(rate.value).toBe('1');
+    rate.value = '0.8';
+    change(rate);
+    expect(ctx.state.get('readPage.rate')).toBe(0.8);
   });
 
   it('features tab groups features and offers level defaults', () => {

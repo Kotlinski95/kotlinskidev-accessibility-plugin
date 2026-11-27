@@ -185,4 +185,13 @@ describe('kernel commands', () => {
     kernel.store.set({ open: true });
     expect(kernel.state()).toEqual({ api: 1, open: true, profile: null, features: { highlightLinks: 1, biggerText: 3 } });
   });
+
+  it('exposes the panel data after ensureData and fetches it only once', async () => {
+    const { kernel, getData } = boot();
+    expect(kernel.data()).toBeNull();
+    await kernel.ensureData();
+    await kernel.ensureData();
+    expect(kernel.data()?.hash).toBe(panelData().hash);
+    expect(getData).toHaveBeenCalledTimes(1);
+  });
 });

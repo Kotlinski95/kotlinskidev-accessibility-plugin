@@ -33,10 +33,30 @@ final class PanelDataTest extends TestCase {
 		$payload = ( new PanelData() )->payload( 'en_US' );
 
 		$this->assertSame(
-			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'statementUrl', 'customCss', 'strings', 'panel', 'layout', 'locales', 'icons' ),
+			array( 'hash', 'locale', 'features', 'profiles', 'widget', 'theme', 'tokens', 'hideToolbar', 'readPage', 'statementUrl', 'customCss', 'strings', 'panel', 'layout', 'locales', 'icons' ),
 			array_keys( $payload )
 		);
 		$this->assertSame( 'en_US', $payload['locale'] );
+	}
+
+	public function test_payload_carries_read_page_voice_and_rate(): void {
+		$this->options['kotlinskidev_a11y_settings'] = array(
+			'schemaVersion' => 4,
+			'readPage'      => array(
+				'voice' => 'Ewa',
+				'rate'  => 0.9,
+			),
+		);
+
+		$payload = ( new PanelData() )->payload( 'en_US' );
+
+		$this->assertSame(
+			array(
+				'voice' => 'Ewa',
+				'rate'  => 0.9,
+			),
+			$payload['readPage']
+		);
 	}
 
 	public function test_payload_carries_panel_layout_locales_and_icons(): void {

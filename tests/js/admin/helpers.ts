@@ -111,6 +111,11 @@ export const sampleDefinitions = (): DefinitionMap => {
     defs[`widget.sizes.${device}`] = definition('string', 'enum', 'inherit', {
       enum: ['inherit', 'sm', 'md', 'lg'],
     });
+  for (const device of ['desktop', 'tablet', 'mobile'])
+    defs[`widget.sizesRem.${device}`] = definition('number', 'decimal', '', { min: 1.5, max: 5, nullable: true });
+  defs['widget.sizeRem'] = definition('number', 'decimal', '', { min: 1.5, max: 5, nullable: true });
+  defs['readPage.voice'] = definition('string', 'text', '');
+  defs['readPage.rate'] = definition('number', 'decimal', 1, { min: 0.5, max: 2 });
   defs['widget.shape'] = definition('string', 'enum', 'circle', {
     enum: ['circle', 'rounded', 'square'],
   });

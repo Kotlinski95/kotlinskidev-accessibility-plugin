@@ -1,11 +1,13 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { FieldContext, FormContext } from '../context';
-import { button, h } from '../dom';
+import { button, fieldset, h } from '../dom';
 import type { AdminFeatureGroup } from '../feature-groups';
 import { featureGroups, levelLabelKeys } from '../feature-groups';
 import type { Choice } from '../fields/select';
 import { createSelectField } from '../fields/select';
+import { createNumberField } from '../fields/number';
 import { createToggleField } from '../fields/toggle';
+import { createVoiceField } from '../fields/voice';
 
 export const featureLabel = (ctx: FieldContext, feature: string): string => ctx.config.strings[`features.${feature}.label`] ?? feature;
 
@@ -153,6 +155,24 @@ const buildGroup = (ctx: FormContext, groups: readonly AdminFeatureGroup[], grou
   );
 };
 
+const buildReadPageSettings = (ctx: FormContext): HTMLElement =>
+  fieldset(
+    sprintf(__('%s settings', 'kotlinskidev-accessibility'), featureLabel(ctx, 'readPage')),
+    'ka11y-read-page',
+    createVoiceField(ctx, {
+      path: 'readPage.voice',
+      label: __('Voice', 'kotlinskidev-accessibility'),
+      help: __('Automatic picks the best voice for the page language. The list shows the voices installed on this device; visitors have their own voices, so a name that is missing for them falls back to automatic.', 'kotlinskidev-accessibility'),
+    }),
+    createNumberField(ctx, {
+      path: 'readPage.rate',
+      label: __('Speaking speed', 'kotlinskidev-accessibility'),
+      help: __('From 0.5 (slow) to 2 (fast). 1 is the normal speed.', 'kotlinskidev-accessibility'),
+      decimal: true,
+      step: 0.1,
+    })
+  );
+
 export const buildFeaturesPanel = (ctx: FormContext): HTMLElement => {
   const groups = featureGroups(ctx.schema.features);
   const announcer = h('p', {
@@ -170,6 +190,7 @@ export const buildFeaturesPanel = (ctx: FormContext): HTMLElement => {
       __('Choose which adjustments visitors can use, which ones start active, and the order they appear in within each section.', 'kotlinskidev-accessibility')
     ),
     announcer,
-    ...groups.map((group) => buildGroup(ctx, groups, group, announcer))
+    ...groups.map((group) => buildGroup(ctx, groups, group, announcer)),
+    buildReadPageSettings(ctx)
   );
 };

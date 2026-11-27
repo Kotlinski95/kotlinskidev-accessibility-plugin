@@ -10,6 +10,7 @@ export interface FieldDefinition {
   min?: number;
   max?: number;
   required?: boolean;
+  nullable?: boolean;
 }
 
 export type DefinitionMap = Record<string, FieldDefinition>;

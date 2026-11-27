@@ -457,4 +457,41 @@ final class SanitizerTest extends TestCase {
 		$this->assertSame( 'hidden', $this->sanitizer->sanitize( array( 'widget' => array( 'launcher' => 'hidden' ) ) )['widget']['launcher'] );
 		$this->assertSame( 'floating', $this->sanitizer->sanitize( array( 'widget' => array( 'launcher' => 'tray' ) ) )['widget']['launcher'] );
 	}
+
+	public function test_read_page_voice_and_rate(): void {
+		$default = $this->sanitizer->sanitize( array() )['readPage'];
+
+		$this->assertSame(
+			array(
+				'voice' => '',
+				'rate'  => 1,
+			),
+			$default
+		);
+		$this->assertSame( 'Zosia (Enhanced)', $this->sanitizer->sanitize( array( 'readPage' => array( 'voice' => ' Zosia (Enhanced) ' ) ) )['readPage']['voice'] );
+		$this->assertSame( 0.95, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => 0.95 ) ) )['readPage']['rate'] );
+		$this->assertSame( 2, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => 9 ) ) )['readPage']['rate'] );
+		$this->assertSame( 0.5, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => '0.1' ) ) )['readPage']['rate'] );
+		$this->assertSame( 1, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => 'fast' ) ) )['readPage']['rate'] );
+	}
+
+	public function test_launcher_size_in_rem_is_optional_and_clamped(): void {
+		$default = $this->sanitizer->sanitize( array() )['widget'];
+
+		$this->assertSame( '', $default['sizeRem'] );
+		$this->assertSame(
+			array(
+				'desktop' => '',
+				'tablet'  => '',
+				'mobile'  => '',
+			),
+			$default['sizesRem']
+		);
+		$this->assertSame( 2.5, $this->sanitizer->sanitize( array( 'widget' => array( 'sizeRem' => '2.5' ) ) )['widget']['sizeRem'] );
+		$this->assertSame( 5, $this->sanitizer->sanitize( array( 'widget' => array( 'sizeRem' => 40 ) ) )['widget']['sizeRem'] );
+		$this->assertSame( 1.5, $this->sanitizer->sanitize( array( 'widget' => array( 'sizeRem' => 0.2 ) ) )['widget']['sizeRem'] );
+		$this->assertSame( '', $this->sanitizer->sanitize( array( 'widget' => array( 'sizeRem' => '' ) ) )['widget']['sizeRem'] );
+		$this->assertSame( '', $this->sanitizer->sanitize( array( 'widget' => array( 'sizeRem' => 'big' ) ) )['widget']['sizeRem'] );
+		$this->assertSame( 3, $this->sanitizer->sanitize( array( 'widget' => array( 'sizesRem' => array( 'mobile' => 3 ) ) ) )['widget']['sizesRem']['mobile'] );
+	}
 }

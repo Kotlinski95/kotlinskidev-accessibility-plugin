@@ -177,7 +177,12 @@ final class Assets {
 			$rules[] = '--ka11y-' . $this->kebab( (string) $name ) . ':' . $this->css_value( (string) $value );
 		}
 
-		$rules[] = '--ka11y-size:' . ( self::SIZES[ $size ] ?? self::SIZES['md'] ) . 'px';
+		$rem     = $this->size_value( $settings['widget']['sizeRem'] ?? '', '' );
+		$rules[] = '--ka11y-size:' . ( '' !== $rem ? $rem : ( self::SIZES[ $size ] ?? self::SIZES['md'] ) . 'px' );
+
+		if ( '' !== $rem ) {
+			$rules[] = '--ka11y-size-min:0px';
+		}
 
 		$shape = (string) ( $settings['widget']['shape'] ?? 'circle' );
 
@@ -254,6 +259,8 @@ final class Assets {
 		$queries = InlineConfig::device_queries( $settings );
 		$css     = '';
 
+		$global_rem = '' !== $this->size_value( $widget['sizeRem'] ?? '', '' );
+
 		foreach ( self::DEVICES as $device ) {
 			$declarations = $this->placement(
 				(string) ( $widget['position'][ $device ] ?? 'bottom-right' ),
@@ -263,9 +270,12 @@ final class Assets {
 
 			$triggers = '';
 			$sized    = (string) ( $widget['sizes'][ $device ] ?? 'inherit' );
+			$rem      = $this->size_value( $widget['sizesRem'][ $device ] ?? '', '' );
 
-			if ( isset( self::SIZES[ $sized ] ) ) {
-				$declarations .= '--ka11y-size:' . self::SIZES[ $sized ] . 'px;';
+			if ( '' !== $rem ) {
+				$declarations .= '--ka11y-size:' . $rem . ';--ka11y-size-min:0px;';
+			} elseif ( isset( self::SIZES[ $sized ] ) ) {
+				$declarations .= '--ka11y-size:' . self::SIZES[ $sized ] . 'px;' . ( $global_rem ? '--ka11y-size-min:2.75rem;' : '' );
 			}
 
 			if ( false === ( $settings['visibility']['devices'][ $device ] ?? true ) ) {
@@ -277,6 +287,14 @@ final class Assets {
 		}
 
 		return $css;
+	}
+
+	private function size_value( mixed $rem, string $fallback ): string {
+		if ( ( ! is_int( $rem ) && ! is_float( $rem ) ) || $rem < Schema::SIZE_REM_MIN || $rem > Schema::SIZE_REM_MAX ) {
+			return $fallback;
+		}
+
+		return rtrim( rtrim( number_format( (float) $rem, 2, '.', '' ), '0' ), '.' ) . 'rem';
 	}
 
 	private function placement( string $position, int $offset_x, int $offset_y ): string {

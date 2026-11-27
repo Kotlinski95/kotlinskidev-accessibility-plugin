@@ -35,4 +35,23 @@ describe('preview', () => {
     expect((preview.element.querySelector('.ka11y-preview__frame') as HTMLElement).hidden).toBe(true);
     expect((preview.element.querySelector('.ka11y-preview__hidden') as HTMLElement).hidden).toBe(false);
   });
+
+  it('scales the launcher from the numeric rem size and hides it when the launcher is hidden', () => {
+    const state = createFormState(sampleDefaults());
+    const preview = createPreview(state);
+    document.body.replaceChildren(preview.element);
+    const launcher = preview.element.querySelector('.ka11y-preview__launcher') as HTMLElement;
+    const medium = launcher.style.width;
+    state.set('widget.sizeRem', 5);
+    expect(parseInt(launcher.style.width, 10)).toBeGreaterThan(parseInt(medium, 10));
+    state.set('widget.sizeRem', '');
+    expect(launcher.style.width).toBe(medium);
+    state.set('widget.sizesRem.desktop', 1.5);
+    expect(parseInt(launcher.style.width, 10)).toBeLessThan(parseInt(medium, 10));
+    state.set('widget.sizesRem.desktop', '');
+    expect(launcher.hidden).toBe(false);
+    state.set('widget.launcher', 'hidden');
+    expect(launcher.hidden).toBe(true);
+    expect(preview.element.querySelector('.ka11y-preview__launcher-note')?.hasAttribute('hidden')).toBe(false);
+  });
 });

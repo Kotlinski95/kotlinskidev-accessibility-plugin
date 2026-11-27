@@ -34,6 +34,7 @@ final class PanelData {
 			'theme'        => $settings['theme'] ?? array(),
 			'tokens'       => $settings['tokens'] ?? array(),
 			'hideToolbar'  => $settings['hideToolbar'] ?? array(),
+			'readPage'     => $this->read_page( $settings ),
 			'statementUrl' => $this->statement_url( $settings ),
 			'customCss'    => (string) ( $settings['customCss'] ?? '' ),
 			'strings'      => $this->strings->for_locale( $locale ),
@@ -44,6 +45,15 @@ final class PanelData {
 		);
 
 		return array( 'hash' => $this->hash( $this->encode( $body ) ) ) + $body;
+	}
+
+	private function read_page( array $settings ): array {
+		$read_page = $settings['readPage'] ?? array();
+
+		return array(
+			'voice' => (string) ( $read_page['voice'] ?? '' ),
+			'rate'  => $read_page['rate'] ?? 1,
+		);
 	}
 
 	private function icons(): array|\stdClass {

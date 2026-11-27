@@ -36,6 +36,8 @@ export const panelSpecs = (): PanelSpec[] => [
       'widget.offsetY',
       'widget.size',
       'widget.sizes',
+      'widget.sizeRem',
+      'widget.sizesRem',
       'widget.shape',
       'widget.bg',
       'widget.fg',
@@ -49,7 +51,7 @@ export const panelSpecs = (): PanelSpec[] => [
     id: 'features',
     label: __('Features', 'kotlinskidev-accessibility'),
     build: buildFeaturesPanel,
-    resetPaths: ['features', 'panel.order'],
+    resetPaths: ['features', 'panel.order', 'readPage'],
   },
   {
     id: 'profiles',

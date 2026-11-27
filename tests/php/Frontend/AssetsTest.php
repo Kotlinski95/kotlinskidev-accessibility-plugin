@@ -336,6 +336,35 @@ final class AssetsTest extends TestCase {
 		$this->assertStringContainsString( '--ka11y-size:40px;', $css );
 	}
 
+	public function test_numeric_launcher_size_is_emitted_in_rem_and_lifts_the_minimum_target(): void {
+		$settings                       = Schema::defaults();
+		$settings['widget']['sizeRem']  = 2.5;
+		$settings['widget']['sizesRem'] = array(
+			'desktop' => '',
+			'tablet'  => 3,
+			'mobile'  => '',
+		);
+		$settings['widget']['sizes']    = array(
+			'desktop' => 'inherit',
+			'tablet'  => 'inherit',
+			'mobile'  => 'lg',
+		);
+		$css                            = $this->assets()->tokens_css( $settings );
+
+		$this->assertStringContainsString( '--ka11y-size:2.5rem;--ka11y-size-min:0px', $css );
+		$this->assertStringContainsString( '--ka11y-size:3rem;--ka11y-size-min:0px;', $css );
+		$this->assertStringContainsString( '--ka11y-size:64px;--ka11y-size-min:2.75rem;', $css );
+		$this->assertStringNotContainsString( '--ka11y-size:52px', $css );
+	}
+
+	public function test_numeric_launcher_size_is_silent_when_unset(): void {
+		$css = $this->assets()->tokens_css( Schema::defaults() );
+
+		$this->assertStringContainsString( '--ka11y-size:52px', $css );
+		$this->assertStringNotContainsString( '--ka11y-size-min', $css );
+		$this->assertStringNotContainsString( 'rem;', $css );
+	}
+
 	public function test_theme_color_references_are_emitted_with_their_fallback(): void {
 		$settings                      = Schema::defaults();
 		$settings['tokens']['primary'] = 'var(--wp--preset--color--primary, #0078c2)';

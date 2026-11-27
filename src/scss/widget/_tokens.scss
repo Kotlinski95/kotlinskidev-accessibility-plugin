@@ -5,7 +5,7 @@ $on-primary: string.unquote('var(--ka11y-launcher-fg,var(--ka11y-on-primary,#fff
 $radius: string.unquote('var(--ka11y-launcher-radius,50%)');
 $shadow: string.unquote('0 .5rem 2rem #0005');
 $size: string.unquote('var(--ka11y-size,52px)');
-$target: 2.75rem;
+$target: string.unquote('var(--ka11y-size-min,2.75rem)');
 $focus-light: #0b3fa8;
 $focus-dark: #8fb4ff;
 $z-index: string.unquote('var(--ka11y-z-index,2147483000)');

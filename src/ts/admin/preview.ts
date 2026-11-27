@@ -77,6 +77,23 @@ const stringAt = (state: FormState, path: string, fallback: string): string => {
   return typeof value === 'string' && value !== '' ? value : fallback;
 };
 
+const REM_PX = 16;
+
+const remAt = (state: FormState, path: string): number | null => {
+  const value = state.get(path);
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
+};
+
+const sizePxFor = (state: FormState, device: string): number => {
+  const preset = sizeFor(state, device);
+  const own = remAt(state, `widget.sizesRem.${device}`);
+  if (own !== null) return own * REM_PX;
+  const hasOwnPreset = stringAt(state, `widget.sizes.${device}`, 'inherit') !== 'inherit';
+  const global = remAt(state, 'widget.sizeRem');
+  if (global !== null && !hasOwnPreset) return global * REM_PX;
+  return PREVIEW_SIZES[preset] ?? 52;
+};
+
 const sizeFor = (state: FormState, device: string): string => {
   const own = stringAt(state, `widget.sizes.${device}`, 'inherit');
   return own === 'inherit' ? stringAt(state, 'widget.size', 'md') : own;
@@ -124,6 +141,7 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
   const panelMock = h('div', { class: 'ka11y-preview__panel', 'aria-hidden': 'true' }, h('span', { class: 'ka11y-preview__bar' }), h('span', { class: 'ka11y-preview__bar' }));
   const frame = h('div', { class: 'ka11y-preview__frame' }, panelMock, launcher);
   const hidden = h('p', { class: 'ka11y-preview__hidden description' }, __('The widget is hidden on this device.', 'kotlinskidev-accessibility'));
+  const launcherNote = h('p', { class: 'ka11y-preview__hidden ka11y-preview__launcher-note description' }, __('The floating button is hidden. The panel opens from your own triggers and the keyboard shortcut.', 'kotlinskidev-accessibility'));
   const caption = h('p', {
     class: 'ka11y-preview__caption description',
     id: `${id}-caption`,
@@ -137,6 +155,7 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     h('div', { class: 'ka11y-preview__stage' }, frame),
     h('div', { class: 'ka11y-preview__samples' }, createSample('light', __('Light', 'kotlinskidev-accessibility')), createSample('dark', __('Dark', 'kotlinskidev-accessibility'))),
     hidden,
+    launcherNote,
     caption
   );
 
@@ -154,7 +173,7 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     const scale = width / viewport.width;
     frame.style.width = `${width}px`;
     frame.style.height = `${Math.round(viewport.height * scale)}px`;
-    const size = Math.max(14, Math.round((PREVIEW_SIZES[sizeFor(state, device)] ?? 52) * scale * 1.6));
+    const size = Math.max(14, Math.round(sizePxFor(state, device) * scale * 1.6));
     launcher.style.width = `${size}px`;
     launcher.style.height = `${size}px`;
     const placement = computePlacement(
@@ -166,8 +185,11 @@ export const createPreview = (state: FormState, initialDevice = 'desktop'): Prev
     for (const [property, value] of Object.entries(placement.style)) launcher.style.setProperty(property, value);
     launcher.classList.toggle('has-border', state.get('widget.iconBorder') === true);
     const visible = state.get(`visibility.devices.${device}`) !== false;
+    const launcherHidden = state.get('widget.launcher') === 'hidden';
     frame.hidden = !visible;
     hidden.hidden = visible;
+    launcher.hidden = launcherHidden;
+    launcherNote.hidden = launcherHidden === false || !visible;
     caption.textContent = `${deviceLabel(device)}: ${viewport.width}px`;
   };
 

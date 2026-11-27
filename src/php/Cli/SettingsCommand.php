@@ -452,6 +452,7 @@ final class SettingsCommand {
 		return match ( $definition['type'] ) {
 			'boolean' => $this->parse_boolean( $raw ),
 			'integer' => $this->parse_integer( $raw, $definition ),
+			'number'  => $this->parse_number( $raw, $definition ),
 			'string'  => $this->parse_string( $raw, $definition ),
 			default   => WP_CLI::error( __( 'This setting holds a list or a map. Pass the value as JSON with --as-json.', 'kotlinskidev-accessibility' ) ),
 		};
@@ -479,6 +480,24 @@ final class SettingsCommand {
 		}
 
 		WP_CLI::error( __( 'Use one of: true, false, 1, 0, on, off, yes, no.', 'kotlinskidev-accessibility' ) );
+	}
+
+	private function parse_number( string $raw, array $definition ): int|float|string {
+		if ( '' === $raw && ! empty( $definition['nullable'] ) ) {
+			return '';
+		}
+
+		if ( 1 !== preg_match( '/^-?\d{1,6}(?:\.\d{1,6})?$/', $raw ) ) {
+			WP_CLI::error( __( 'The value must be a number.', 'kotlinskidev-accessibility' ) );
+		}
+
+		$number = (float) $raw;
+
+		if ( $number < $definition['min'] || $number > $definition['max'] ) {
+			WP_CLI::error( __( 'The value must be between', 'kotlinskidev-accessibility' ) . ' ' . $definition['min'] . ' ' . __( 'and', 'kotlinskidev-accessibility' ) . ' ' . $definition['max'] . '.' );
+		}
+
+		return floor( $number ) === $number ? (int) $number : $number;
 	}
 
 	private function parse_integer( string $raw, array $definition ): bool|int {

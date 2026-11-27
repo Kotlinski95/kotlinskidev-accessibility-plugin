@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-27
+
+### Added
+
+- Read page voice and speaking speed settings (`readPage.voice`, `readPage.rate`) on the Features tab, with a list of the voices installed on the admin's device. They load with the panel data; `window.kotlinskidevA11yReadPage` still overrides them.
+- General tab checkbox "Show the floating accessibility button" and exact launcher sizes in rem (`widget.sizeRem`, `widget.sizesRem.<device>`, 1.5 to 5). The admin preview follows both. Default size and look are unchanged.
+
+### Changed
+
+- Size budgets raised: launcher styles 1510 to 1530 B raw, orientation chunk 4736 to 4800 B gzip. Loader, bootstrap and every-page total are unchanged.
+- Regression tests cover opening the panel from `data-ka11y` triggers, the public API and a visitor-hidden toolbar while the launcher is hidden.
+
 ## [1.0.1] - 2026-11-27
 
 ### Added

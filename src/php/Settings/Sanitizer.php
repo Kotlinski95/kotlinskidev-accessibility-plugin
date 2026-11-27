@@ -37,6 +37,7 @@ final class Sanitizer {
 			'bool'      => is_bool( $value ) ? $value : $fallback,
 			'int'       => $this->clamp_int( $value, $definition ) ?? $fallback,
 			'level'     => $this->level( $value, $definition ),
+			'decimal'   => $this->decimal( $value, $definition ),
 			'enum'      => is_string( $value ) && in_array( $value, $definition['enum'], true ) ? $value : $fallback,
 			'text'      => $this->text( $value, $definition ),
 			'key'       => $this->key( $value, $fallback ),
@@ -67,6 +68,32 @@ final class Sanitizer {
 		}
 
 		return max( $definition['min'], min( $definition['max'], $value ) );
+	}
+
+	private function decimal( mixed $value, array $definition ): int|float|string {
+		$fallback = $definition['default'];
+
+		if ( ! empty( $definition['nullable'] ) && ( null === $value || '' === $value ) ) {
+			return '';
+		}
+
+		if ( is_string( $value ) ) {
+			$value = trim( $value );
+		}
+
+		if ( ! is_int( $value ) && ! is_float( $value ) && ! ( is_string( $value ) && 1 === preg_match( '/^-?\d{1,6}(?:\.\d{1,6})?$/', $value ) ) ) {
+			return $fallback;
+		}
+
+		$number = (float) $value;
+
+		if ( ! is_finite( $number ) ) {
+			return $fallback;
+		}
+
+		$clamped = round( max( (float) $definition['min'], min( (float) $definition['max'], $number ) ), 2 );
+
+		return floor( $clamped ) === $clamped ? (int) $clamped : $clamped;
 	}
 
 	private function level( mixed $value, array $definition ): bool|int {
