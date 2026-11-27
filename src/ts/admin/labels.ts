@@ -269,3 +269,13 @@ export const panelSideLabel = (side: string): string =>
     },
     side
   );
+
+export const readTriggerLabel = (trigger: string): string =>
+  lookup(
+    {
+      hover: __('Hover and keyboard focus', 'kotlinskidev-accessibility'),
+      click: __('Click', 'kotlinskidev-accessibility'),
+      both: __('Hover, focus and click', 'kotlinskidev-accessibility'),
+    },
+    trigger
+  );

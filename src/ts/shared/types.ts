@@ -240,7 +240,11 @@ export interface PanelLocale {
 export interface ReadPageConfig {
   voice: string;
   rate: number;
+  trigger?: ReadTrigger;
+  hoverDelay?: number;
 }
+
+export type ReadTrigger = 'hover' | 'click' | 'both';
 
 export interface PanelData {
   hash: string;
@@ -314,7 +318,7 @@ declare global {
   interface Window {
     kotlinskidevA11y?: KotlinskidevA11yConfig;
     kotlinskidevA11yOff?: boolean;
-    kotlinskidevA11yReadPage?: { voice?: string; rate?: number };
+    kotlinskidevA11yReadPage?: { voice?: string; rate?: number; trigger?: ReadTrigger; hoverDelay?: number };
     kotlinskidevA11yMotion?: { stopped: boolean };
     kotlinskidevA11yRuntime?: RuntimeHandoff;
     kotlinskidevA11yQueue?: KA11yCommand[] | KA11yQueue;

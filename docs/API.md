@@ -145,9 +145,9 @@ For a `requestAnimationFrame` canvas, cancel the frame and draw the final static
 
 ## Read page options
 
-The Features tab stores `readPage.voice` (empty is automatic, otherwise the exact voice name) and `readPage.rate` (0.5 to 2, default 1). They are delivered in the lazy panel data, not the inline config, and are fetched when Read page turns on.
+The Features tab stores `readPage.voice` (empty is automatic, otherwise the exact voice name) `readPage.rate` (0.5 to 2, default 1), `readPage.trigger` (`hover`, `click` or `both`, default `hover`) and `readPage.hoverDelay` (0 to 2000 ms, default 300). With `hover`, text is read after the pointer rests on it for the delay and on keyboard focus; clicking never speaks and links navigate normally; on touch, a tap on non-interactive text reads it. They are delivered in the lazy panel data, not the inline config, and are fetched when Read page turns on.
 
-`window.kotlinskidevA11yReadPage = { voice?: string, rate?: number }`, set before the widget loads, stays supported as an override and wins over the settings. `voice` is a name fragment or `voiceURI` (`auto` keeps the automatic choice) and `rate` is clamped to 0.5 to 2.
+`window.kotlinskidevA11yReadPage = { voice?: string, rate?: number, trigger?: 'hover' | 'click' | 'both', hoverDelay?: number }`, set before the widget loads, stays supported as an override and wins over the settings. `voice` is a name fragment or `voiceURI` (`auto` keeps the automatic choice) and `rate` is clamped to 0.5 to 2.
 
 ## Events
 

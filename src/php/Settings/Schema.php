@@ -505,8 +505,18 @@ final class Schema {
 			)
 		);
 
-		$defs['readPage.voice'] = self::def( 'string', 'text', '' );
-		$defs['readPage.rate']  = self::def(
+		$defs['readPage.voice']      = self::def( 'string', 'text', '' );
+		$defs['readPage.trigger']    = self::def( 'string', 'enum', 'hover', array( 'enum' => array( 'hover', 'click', 'both' ) ) );
+		$defs['readPage.hoverDelay'] = self::def(
+			'integer',
+			'int',
+			300,
+			array(
+				'min' => 0,
+				'max' => 2000,
+			)
+		);
+		$defs['readPage.rate']       = self::def(
 			'number',
 			'decimal',
 			1,

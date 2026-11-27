@@ -26,14 +26,35 @@ html.ka11y-dyslexic-font body *:not(i, [class*='icon' i], [class*='fa-' i], [cla
   }
 }
 
-html.ka11y-highlight-links {
-  body a[href] {
-    background: #ff0 !important;
-    color: #000 !important;
-    text-decoration: underline !important;
-    outline: 2px solid #000 !important;
-    outline-offset: 1px;
-  }
+$highlight-link: ':is(a[href], [role="link"]):not(#ka11y-root *)';
+
+html.ka11y-highlight-links body #{$highlight-link} {
+  background: var(--ka11y-link-highlight-bg, #ff0) !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
+  text-decoration: underline !important;
+  outline: 2px solid var(--ka11y-link-highlight-fg, #111) !important;
+  outline-offset: 1px;
+}
+
+html.ka11y-highlight-links body #{$highlight-link},
+html.ka11y-highlight-links body #{$highlight-link} *,
+html.ka11y-highlight-links body #{$highlight-link}::before,
+html.ka11y-highlight-links body #{$highlight-link}::after,
+html.ka11y-highlight-links body #{$highlight-link} *::before,
+html.ka11y-highlight-links body #{$highlight-link} *::after {
+  color: var(--ka11y-link-highlight-fg, #111) !important;
+  -webkit-text-fill-color: var(--ka11y-link-highlight-fg, #111) !important;
+  text-shadow: none !important;
+  mix-blend-mode: normal !important;
+}
+
+html.ka11y-highlight-links body #{$highlight-link} *,
+html.ka11y-highlight-links body #{$highlight-link} *::before,
+html.ka11y-highlight-links body #{$highlight-link} *::after {
+  background: none !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
 }
 
 html.ka11y-big-cursor {

@@ -5,6 +5,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-27
+
+### Changed
+
+- Read page now reads on hover (after a 300 ms pause) and on keyboard focus instead of on click, so links and buttons navigate normally. New settings `readPage.trigger` (`hover`, `click`, `both`) and `readPage.hoverDelay` (0 to 2000 ms) on the Features tab; `click` keeps the old behavior. On touch, a tap on plain text reads it.
+
+- Size budget raised: orientation chunk 4800 to 5760 B gzip for the hover, focus and touch Read page triggers. Loader, bootstrap and every-page total are unchanged.
+
+### Fixed
+
+- Highlight links now forces dark text, no text shadow and no gradient background on every link and everything inside it, so gradient or white link text and text inside the theme's protected content block stays readable on the yellow highlight. Colors are tunable with `--ka11y-link-highlight-bg` and `--ka11y-link-highlight-fg`.
+
 ## [1.0.2] - 2026-11-27
 
 ### Added

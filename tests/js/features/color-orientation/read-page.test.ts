@@ -38,7 +38,7 @@ describe('readPage', () => {
   };
 
   const flush = async (): Promise<void> => {
-    jest.advanceTimersByTime(0);
+    jest.advanceTimersByTime(1);
     await Promise.resolve();
     await Promise.resolve();
   };
@@ -69,12 +69,14 @@ describe('readPage', () => {
         constructor(public text: string) {}
       },
     });
+    window.kotlinskidevA11yReadPage = { trigger: 'click' };
     document.documentElement.lang = 'pl_PL';
     document.body.innerHTML = '<p id="p">Hello <b id="b">brave</b>  world</p><div id="ka11y-root"><button id="x">skip</button></div>';
   });
 
   afterEach(() => {
     readPage.off();
+    delete window.kotlinskidevA11yReadPage;
     jest.useRealTimers();
     document.documentElement.removeAttribute('lang');
   });
@@ -174,7 +176,7 @@ describe('readPage', () => {
     voiceList.current = [makeVoice('Daniel', 'pl-PL', false), makeVoice('Remote2', 'pl-PL', false)];
     const sentence = `${'word '.repeat(30).trim()}. `;
     document.body.innerHTML = `<p id="p">${sentence.repeat(4)}</p>`;
-    window.kotlinskidevA11yReadPage = { rate: 5 };
+    window.kotlinskidevA11yReadPage = { rate: 5, trigger: 'click' };
     readPage.on(true);
     document.getElementById('p')?.click();
     await flush();
@@ -221,7 +223,7 @@ describe('readPage', () => {
       expect((speak.mock.calls[0]?.[0] as FakeUtterance).rate).toBe(1.4);
       readPage.off();
       speak.mockClear();
-      window.kotlinskidevA11yReadPage = { rate: 0.7 };
+      window.kotlinskidevA11yReadPage = { rate: 0.7, trigger: 'click' };
       readPage.on(true);
       document.getElementById('p')?.click();
       await flush();
@@ -326,5 +328,198 @@ describe('readPage', () => {
       readPage.on(true);
       readPage.off();
     }).not.toThrow();
+  });
+
+  describe('hover, focus and touch triggers', () => {
+    const fire = (target: Element | null, type: string, init: EventInit = {}): void => {
+      target?.dispatchEvent(new Event(type, { bubbles: true, ...init }));
+    };
+    const spoken = (): string[] => speak.mock.calls.map((call) => (call[0] as FakeUtterance).text);
+
+    beforeEach(() => {
+      window.kotlinskidevA11yReadPage = { trigger: 'hover', hoverDelay: 300 };
+      document.body.innerHTML =
+        '<p id="p">Hello <b id="b">brave</b> world</p><h2 id="h">Second heading</h2>' +
+        '<a id="a" href="#x" aria-label="Go home">Home</a><img id="i" alt="A cat" src="x.png">' +
+        '<label for="n">Your name</label><input id="n" type="text"><button id="btn">Save</button>' +
+        '<div id="ka11y-root"><button id="x">skip</button></div>';
+      readPage.on(true);
+    });
+
+    it('reads after the intent delay only', async () => {
+      fire(document.getElementById('b'), 'pointerover');
+      jest.advanceTimersByTime(299);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(1);
+      await flush();
+      expect(spoken()).toEqual(['Hello brave world']);
+    });
+
+    it('uses the configured hover delay', async () => {
+      window.kotlinskidevA11yReadPage = { trigger: 'hover', hoverDelay: 0 };
+      fire(document.getElementById('p'), 'pointerover');
+      await flush();
+      expect(spoken()).toEqual(['Hello brave world']);
+    });
+
+    it('cancels the intent when the pointer moves on or leaves', async () => {
+      fire(document.getElementById('p'), 'pointerover');
+      jest.advanceTimersByTime(200);
+      fire(document.getElementById('h'), 'pointerover');
+      jest.advanceTimersByTime(299);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+      jest.advanceTimersByTime(1);
+      await flush();
+      expect(spoken()).toEqual(['Second heading']);
+      fire(document.getElementById('p'), 'pointerover');
+      fire(document.body, 'pointerover');
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(spoken()).toEqual(['Second heading']);
+    });
+
+    it('does not restart while the pointer stays inside the same block', async () => {
+      fire(document.getElementById('b'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      fire(document.getElementById('p'), 'pointerover');
+      fire(document.getElementById('b'), 'pointerover');
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(speak).toHaveBeenCalledTimes(1);
+    });
+
+    it('cancels the previous utterance when another element is read', async () => {
+      fire(document.getElementById('p'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      synth.speaking = true;
+      fire(document.getElementById('h'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      expect(cancel).toHaveBeenCalled();
+      expect(spoken()).toEqual(['Hello brave world', 'Second heading']);
+    });
+
+    it('prefers aria-label on links and alt text on images', async () => {
+      fire(document.getElementById('a'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      fire(document.getElementById('i'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      expect(spoken()).toEqual(['Go home', 'A cat']);
+    });
+
+    it('ignores the widget host and empty text', async () => {
+      document.body.insertAdjacentHTML('beforeend', '<p id="e">   </p>');
+      fire(document.getElementById('x'), 'pointerover');
+      fire(document.getElementById('e'), 'pointerover');
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+    });
+
+    it('stops on Escape and when the pointer leaves the page', async () => {
+      fire(document.getElementById('p'), 'pointerover');
+      jest.advanceTimersByTime(300);
+      await flush();
+      synth.speaking = true;
+      cancel.mockClear();
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      expect(cancel).toHaveBeenCalledTimes(1);
+      cancel.mockClear();
+      fire(document.documentElement, 'pointerleave', { bubbles: false });
+      expect(cancel).toHaveBeenCalledTimes(1);
+    });
+
+    it('reads the accessible name of a focused form control and the text of a focused button', async () => {
+      fire(document.getElementById('n'), 'focusin');
+      await flush();
+      jest.advanceTimersByTime(2500);
+      fire(document.getElementById('btn'), 'focusin');
+      await flush();
+      expect(spoken()).toEqual(['Your name', 'Save']);
+    });
+
+    it('does not read on focus caused by a mouse press', async () => {
+      fire(document.getElementById('btn'), 'pointerdown');
+      fire(document.getElementById('btn'), 'focusin');
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+      fire(document.getElementById('btn'), 'focusin');
+      await flush();
+      expect(spoken()).toEqual(['Save']);
+    });
+
+    it('does not read the same focused element twice in a row', async () => {
+      fire(document.getElementById('btn'), 'focusin');
+      fire(document.getElementById('btn'), 'focusin');
+      await flush();
+      expect(speak).toHaveBeenCalledTimes(1);
+    });
+
+    it('never speaks on click and never blocks navigation', async () => {
+      const link = document.getElementById('a') as HTMLAnchorElement;
+      const click = new MouseEvent('click', { bubbles: true, cancelable: true });
+      link.dispatchEvent(click);
+      await flush();
+      expect(click.defaultPrevented).toBe(false);
+      expect(speak).not.toHaveBeenCalled();
+    });
+
+    it('reads non-interactive text on touchstart and leaves links alone', async () => {
+      fire(document.getElementById('p'), 'touchstart');
+      await flush();
+      fire(document.getElementById('a'), 'touchstart');
+      await flush();
+      expect(spoken()).toEqual(['Hello brave world']);
+    });
+
+    it('ignores touch pointers on pointerover', async () => {
+      const event = new Event('pointerover', { bubbles: true });
+      Object.defineProperty(event, 'pointerType', { value: 'touch' });
+      document.getElementById('p')?.dispatchEvent(event);
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+    });
+
+    it('click mode keeps the old click behavior and ignores hover', async () => {
+      window.kotlinskidevA11yReadPage = { trigger: 'click' };
+      fire(document.getElementById('p'), 'pointerover');
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+      document.getElementById('p')?.click();
+      await flush();
+      expect(spoken()).toEqual(['Hello brave world']);
+    });
+
+    it('both mode reads on hover and click without repeating the same element', async () => {
+      window.kotlinskidevA11yReadPage = { trigger: 'both', hoverDelay: 0 };
+      fire(document.getElementById('p'), 'pointerover');
+      await flush();
+      document.getElementById('p')?.click();
+      await flush();
+      expect(speak).toHaveBeenCalledTimes(1);
+      jest.advanceTimersByTime(3000);
+      document.getElementById('h')?.click();
+      await flush();
+      expect(spoken()).toEqual(['Hello brave world', 'Second heading']);
+    });
+
+    it('removes every listener on off', async () => {
+      readPage.off();
+      fire(document.getElementById('p'), 'pointerover');
+      fire(document.getElementById('btn'), 'focusin');
+      fire(document.getElementById('p'), 'touchstart');
+      jest.advanceTimersByTime(1000);
+      await flush();
+      expect(speak).not.toHaveBeenCalled();
+    });
   });
 });

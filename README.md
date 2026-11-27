@@ -93,6 +93,8 @@ Every setting is a dot path in the `kotlinskidev_a11y_settings` option, defined 
 | `panel.order` | list | built-in order | Order of adjustments inside each section, set with the up and down buttons. |
 | `readPage.voice` | text | empty | Voice for Read page. Empty is automatic; otherwise the exact voice name (the Features tab lists the voices installed on the admin's device). A name the visitor does not have falls back to automatic. |
 | `readPage.rate` | number 0.5-2 | `1` | Speaking speed for Read page. |
+| `readPage.trigger` | enum | `hover` | `hover` reads on hover and keyboard focus, `click` is the old click-to-read behavior, `both` does all. |
+| `readPage.hoverDelay` | integer 0-2000 | `300` | Milliseconds the pointer must rest on text before it is read. |
 
 The 26 keys are: `biggerText`, `lineHeight`, `letterSpacing`, `fontWeight`, `readableFont`, `dyslexicFont`, `textAlign`, `highlightLinks`, `bigCursor`, `textMagnifier`, `cognitiveReading`, `darkContrast`, `lightContrast`, `highContrast`, `monochrome`, `saturation`, `readingLine`, `readingMask`, `readPage`, `keyboardNavigation`, `hideImages`, `muteSounds`, `highlightTitles`, `highlightAll`, `stopAnimations`, `skipToContent`.
 
@@ -225,12 +227,12 @@ Example, a champagne gold launcher that stays readable on a dark site:
 
 Each adjustment is a tile or stepper in the panel, grouped into Content, Color and Orientation. Features exclude each other where they would conflict, for example the contrast modes. Saved choices are restored before first paint.
 
-Read page (feature `readPage`) uses the browser speech synthesis. It reads in the language of the clicked element (nearest `lang` attribute, then the page language). It strictly prefers voices installed on the device (`localService`) in that language over remote or Google voices, then names that look enhanced, premium, natural or neural, then known natural system voices, and avoids macOS novelty voices such as Albert, Zarvox or Fred. Local voices read long text in large chunks, queued up front so there are no gaps; remote voices use short chunks with a pause and resume keep-alive for Chrome's 15 second limit. Rate, pitch and volume are set explicitly. Nothing is sent to a server and the automatically picked voice is not stored.
+Read page (feature `readPage`) uses the browser speech synthesis. By default it reads before the visitor clicks: after the pointer rests on a readable element for the hover delay (300 ms), and on keyboard focus (links, buttons, form controls read their accessible name). Clicking never speaks and never delays or blocks a link. On touch screens a tap on plain text reads it and links navigate normally. Escape or leaving the page stops it. It reads in the language of the element (nearest `lang` attribute, then the page language). It strictly prefers voices installed on the device (`localService`) in that language over remote or Google voices, then names that look enhanced, premium, natural or neural, then known natural system voices, and avoids macOS novelty voices such as Albert, Zarvox or Fred. Local voices read long text in large chunks, queued up front so there are no gaps; remote voices use short chunks with a pause and resume keep-alive for Chrome's 15 second limit. Rate, pitch and volume are set explicitly. Nothing is sent to a server and the automatically picked voice is not stored.
 
-Set the voice and speed on the Features tab (`readPage.voice`, `readPage.rate`). They travel in the panel data, not the always-loaded inline config. A site owner can still override both before the widget loads, and the override wins over the settings:
+Set the voice, speed, trigger and hover delay on the Features tab (`readPage.voice`, `readPage.rate`, `readPage.trigger`, `readPage.hoverDelay`). They travel in the panel data, not the always-loaded inline config. A site owner can still override both before the widget loads, and the override wins over the settings:
 
 ```js
-window.kotlinskidevA11yReadPage = { voice: 'Zosia (Enhanced)', rate: 0.95 };
+window.kotlinskidevA11yReadPage = { voice: 'Zosia (Enhanced)', rate: 0.95, trigger: 'hover', hoverDelay: 300 };
 ```
 
 `voice` is a voice name fragment or `voiceURI` (`auto` or empty keeps the automatic choice). `rate` is clamped to 0.5 to 2. A visitor can pin a voice with `localStorage.setItem('ka11y-voice-pref', 'Zosia')`. On macOS, install the enhanced or premium voice for the language in System Settings, Accessibility, Spoken Content, System Voice, Manage Voices, then restart the browser. Siri voices are not exposed to web pages. Google voices are online and sound robotic, so the plugin skips them whenever a local voice exists.

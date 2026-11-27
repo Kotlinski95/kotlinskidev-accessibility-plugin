@@ -463,8 +463,10 @@ final class SanitizerTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'voice' => '',
-				'rate'  => 1,
+				'voice'      => '',
+				'trigger'    => 'hover',
+				'hoverDelay' => 300,
+				'rate'       => 1,
 			),
 			$default
 		);
@@ -473,6 +475,15 @@ final class SanitizerTest extends TestCase {
 		$this->assertSame( 2, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => 9 ) ) )['readPage']['rate'] );
 		$this->assertSame( 0.5, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => '0.1' ) ) )['readPage']['rate'] );
 		$this->assertSame( 1, $this->sanitizer->sanitize( array( 'readPage' => array( 'rate' => 'fast' ) ) )['readPage']['rate'] );
+	}
+
+	public function test_read_page_trigger_and_hover_delay(): void {
+		$this->assertSame( 'click', $this->sanitizer->sanitize( array( 'readPage' => array( 'trigger' => 'click' ) ) )['readPage']['trigger'] );
+		$this->assertSame( 'both', $this->sanitizer->sanitize( array( 'readPage' => array( 'trigger' => 'both' ) ) )['readPage']['trigger'] );
+		$this->assertSame( 'hover', $this->sanitizer->sanitize( array( 'readPage' => array( 'trigger' => 'tap' ) ) )['readPage']['trigger'] );
+		$this->assertSame( 0, $this->sanitizer->sanitize( array( 'readPage' => array( 'hoverDelay' => -5 ) ) )['readPage']['hoverDelay'] );
+		$this->assertSame( 2000, $this->sanitizer->sanitize( array( 'readPage' => array( 'hoverDelay' => 99999 ) ) )['readPage']['hoverDelay'] );
+		$this->assertSame( 450, $this->sanitizer->sanitize( array( 'readPage' => array( 'hoverDelay' => '450' ) ) )['readPage']['hoverDelay'] );
 	}
 
 	public function test_launcher_size_in_rem_is_optional_and_clamped(): void {

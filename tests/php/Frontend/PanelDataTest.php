@@ -52,8 +52,10 @@ final class PanelDataTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'voice' => 'Ewa',
-				'rate'  => 0.9,
+				'voice'      => 'Ewa',
+				'rate'       => 0.9,
+				'trigger'    => 'hover',
+				'hoverDelay' => 300,
 			),
 			$payload['readPage']
 		);

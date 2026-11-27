@@ -115,6 +115,8 @@ export const sampleDefinitions = (): DefinitionMap => {
     defs[`widget.sizesRem.${device}`] = definition('number', 'decimal', '', { min: 1.5, max: 5, nullable: true });
   defs['widget.sizeRem'] = definition('number', 'decimal', '', { min: 1.5, max: 5, nullable: true });
   defs['readPage.voice'] = definition('string', 'text', '');
+  defs['readPage.trigger'] = definition('string', 'enum', 'hover', { enum: ['hover', 'click', 'both'] });
+  defs['readPage.hoverDelay'] = definition('integer', 'int', 300, { min: 0, max: 2000 });
   defs['readPage.rate'] = definition('number', 'decimal', 1, { min: 0.5, max: 2 });
   defs['widget.shape'] = definition('string', 'enum', 'circle', {
     enum: ['circle', 'rounded', 'square'],

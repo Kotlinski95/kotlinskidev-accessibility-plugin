@@ -1,3 +1,5 @@
+import type { ReadTrigger } from '../../../shared/types';
+
 const PREFERENCE_KEY = 'ka11y-voice-pref';
 const PREMIUM_NAME = /premium|siri/i;
 const ENHANCED_NAME = /enhanced|natural|neural/i;
@@ -9,7 +11,12 @@ const ROBOTIC_VENDOR = /google|microsoft online|\(online\)|espeak|festival/i;
 export interface ReadPagePreference {
   voice?: string;
   rate?: number;
+  trigger?: ReadTrigger;
+  hoverDelay?: number;
 }
+
+export const HOVER_DELAY_DEFAULT = 300;
+export const HOVER_DELAY_MAX = 2000;
 
 export const RATE_MIN = 0.5;
 export const RATE_MAX = 2;
@@ -61,6 +68,8 @@ export const readPreference = (): ReadPagePreference => {
   return {
     voice: override.voice ?? (voice ? voice : undefined),
     rate: override.rate ?? configured?.rate,
+    trigger: override.trigger ?? configured?.trigger,
+    hoverDelay: override.hoverDelay ?? configured?.hoverDelay,
   };
 };
 
@@ -90,4 +99,14 @@ export const pickVoice = (lang: string): SpeechSynthesisVoice | null => {
   ];
   const tier = tiers.find((group) => group.length > 0);
   return tier ? bestOf(tier) : null;
+};
+
+export const readTrigger = (): ReadTrigger => {
+  const trigger = readPreference().trigger;
+  return trigger === 'click' || trigger === 'both' ? trigger : 'hover';
+};
+
+export const hoverDelay = (): number => {
+  const delay = readPreference().hoverDelay;
+  return typeof delay === 'number' && Number.isFinite(delay) ? Math.min(Math.max(delay, 0), HOVER_DELAY_MAX) : HOVER_DELAY_DEFAULT;
 };

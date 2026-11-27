@@ -19,4 +19,31 @@ describe('page css', () => {
       expect(css).toMatch(new RegExp(`html\\.ka11y-${name} body \\*[^{]*:not\\(#ka11y-root\\):not\\(#ka11y-root \\*\\) \\{`));
     });
   });
+
+  describe('highlight links', () => {
+    const links = ':is(a[href], [role=link]):not(#ka11y-root *)';
+    const rules = [...css.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+      .filter((match) => (match[1] ?? '').includes('html.ka11y-highlight-links'))
+      .map((match) => match[2] ?? '')
+      .join('\n');
+
+    it('covers links, every descendant and their pseudo-elements outside the widget', () => {
+      expect(css).toContain(`html.ka11y-highlight-links body ${links} {`);
+      expect(css).toContain(`html.ka11y-highlight-links body ${links} *,`);
+      expect(css).toContain(`html.ka11y-highlight-links body ${links} *::before`);
+    });
+
+    it('forces solid dark text over gradient and transparent text fills', () => {
+      expect(rules).toContain('-webkit-text-fill-color: var(--ka11y-link-highlight-fg, #111) !important');
+      expect(rules).toContain('color: var(--ka11y-link-highlight-fg, #111) !important');
+      expect(rules).toContain('text-shadow: none !important');
+    });
+
+    it('drops descendant backgrounds, restores border-box clipping and paints yellow', () => {
+      expect(rules).toContain('background: none !important');
+      expect(rules).toContain('background-clip: border-box !important');
+      expect(rules).toContain('background: var(--ka11y-link-highlight-bg, #ff0) !important');
+      expect(rules).toContain('outline: 2px solid var(--ka11y-link-highlight-fg, #111) !important');
+    });
+  });
 });

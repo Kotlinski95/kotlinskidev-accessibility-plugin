@@ -4,10 +4,11 @@ import { button, fieldset, h } from '../dom';
 import type { AdminFeatureGroup } from '../feature-groups';
 import { featureGroups, levelLabelKeys } from '../feature-groups';
 import type { Choice } from '../fields/select';
-import { createSelectField } from '../fields/select';
+import { createSelectField, enumChoices } from '../fields/select';
 import { createNumberField } from '../fields/number';
 import { createToggleField } from '../fields/toggle';
 import { createVoiceField } from '../fields/voice';
+import { readTriggerLabel } from '../labels';
 
 export const featureLabel = (ctx: FieldContext, feature: string): string => ctx.config.strings[`features.${feature}.label`] ?? feature;
 
@@ -170,6 +171,17 @@ const buildReadPageSettings = (ctx: FormContext): HTMLElement =>
       help: __('From 0.5 (slow) to 2 (fast). 1 is the normal speed.', 'kotlinskidev-accessibility'),
       decimal: true,
       step: 0.1,
+    }),
+    createSelectField(ctx, {
+      path: 'readPage.trigger',
+      label: __('Read aloud on', 'kotlinskidev-accessibility'),
+      help: __('Hover and keyboard focus read before the visitor clicks, and links keep working normally. Click is the older behavior.', 'kotlinskidev-accessibility'),
+      choices: enumChoices(ctx, 'readPage.trigger', readTriggerLabel),
+    }),
+    createNumberField(ctx, {
+      path: 'readPage.hoverDelay',
+      label: __('Hover delay (ms)', 'kotlinskidev-accessibility'),
+      help: __('How long the pointer must rest on text before it is read. From 0 to 2000.', 'kotlinskidev-accessibility'),
     })
   );
 

@@ -51,8 +51,10 @@ final class PanelData {
 		$read_page = $settings['readPage'] ?? array();
 
 		return array(
-			'voice' => (string) ( $read_page['voice'] ?? '' ),
-			'rate'  => $read_page['rate'] ?? 1,
+			'voice'      => (string) ( $read_page['voice'] ?? '' ),
+			'rate'       => $read_page['rate'] ?? 1,
+			'trigger'    => (string) ( $read_page['trigger'] ?? 'hover' ),
+			'hoverDelay' => (int) ( $read_page['hoverDelay'] ?? 300 ),
 		);
 	}
 

@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: Kotlinskidev Accessibility 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/kotlinskidev-"
 "accessibility\n"
-"POT-Creation-Date: 2026-11-27T08:55:49+00:00\n"
+"POT-Creation-Date: 2026-11-27T09:25:12+00:00\n"
 "PO-Revision-Date: 2026-11-26 12:00+0000\n"
 "Last-Translator: Adrian Kotlinski\n"
 "Language-Team: Polish\n"
@@ -18,82 +18,6 @@ msgstr ""
 "X-Domain: kotlinskidev-accessibility\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-
-msgid "The value must be a number."
-msgstr "Wartość musi być liczbą."
-
-msgid "%s (not installed on this device)"
-msgstr "%s (niezainstalowany na tym urządzeniu)"
-
-msgid "%s settings"
-msgstr "Ustawienia: %s"
-
-msgid "Voice"
-msgstr "Głos"
-
-msgid ""
-"Automatic picks the best voice for the page language. The list shows the "
-"voices installed on this device; visitors have their own voices, so a name "
-"that is missing for them falls back to automatic."
-msgstr ""
-"Automatyczny wybiera najlepszy głos dla języka strony. Lista pokazuje głosy "
-"zainstalowane na tym urządzeniu; odwiedzający mają własne głosy, więc nazwa, "
-"której u nich brakuje, wraca do trybu automatycznego."
-
-msgid "Speaking speed"
-msgstr "Szybkość mówienia"
-
-msgid "From 0.5 (slow) to 2 (fast). 1 is the normal speed."
-msgstr "Od 0,5 (wolno) do 2 (szybko). 1 to normalna szybkość."
-
-msgid ""
-"Choose which adjustments visitors can use, which ones start active, and the "
-"order they appear in within each section."
-msgstr ""
-"Wybierz, z których dostosowań mogą korzystać odwiedzający, które mają być "
-"domyślnie aktywne i w jakiej kolejności pojawiają się w każdej sekcji."
-
-msgid "Show the floating accessibility button"
-msgstr "Pokaż pływający przycisk dostępności"
-
-msgid ""
-"Turn off to hide the button. The panel still opens from your own triggers "
-"and the keyboard shortcut."
-msgstr ""
-"Wyłącz, aby ukryć przycisk. Panel nadal otwiera się z Twoich wyzwalaczy i "
-"skrótu klawiaturowego."
-
-msgid ""
-"The button is currently placed inside a page element. Change this in the "
-"Triggers tab, or tick the box to float it again."
-msgstr ""
-"Przycisk jest obecnie umieszczony wewnątrz elementu strony. Zmień to na "
-"karcie Wyzwalacze albo zaznacz pole, aby znów go unosić."
-
-msgid "Button corner, offset and size per device"
-msgstr ""
-"Narożnik, odsunięcie i rozmiar przycisku na poszczególnych urządzeniach"
-
-msgid "Corner"
-msgstr "Narożnik"
-
-msgid "Launcher size (rem)"
-msgstr "Rozmiar przycisku (rem)"
-
-msgid ""
-"Leave empty to use the size above. A value from 1.5 to 5 overrides it; 2.5 "
-"matches the cookie banner button. The icon scales with the button."
-msgstr ""
-"Zostaw puste, aby użyć rozmiaru powyżej. Wartość od 1,5 do 5 go zastępuje; "
-"2,5 odpowiada przyciskowi banera cookie. Ikona skaluje się razem z "
-"przyciskiem."
-
-msgid ""
-"The floating button is hidden. The panel opens from your own triggers and "
-"the keyboard shortcut."
-msgstr ""
-"Pływający przycisk jest ukryty. Panel otwiera się z Twoich wyzwalaczy i "
-"skrótu klawiaturowego."
 
 #. Plugin Name of the plugin
 #: kotlinskidev-accessibility.php src/php/Health/SiteHealth.php:61
@@ -432,6 +356,10 @@ msgstr ""
 #: src/php/Cli/SettingsCommand.php:482
 msgid "Use one of: true, false, 1, 0, on, off, yes, no."
 msgstr "Użyj jednej z wartości: true, false, 1, 0, on, off, yes, no."
+
+#: src/php/Cli/SettingsCommand.php:491
+msgid "The value must be a number."
+msgstr "Wartość musi być liczbą."
 
 #: src/php/Cli/SettingsCommand.php:497 src/php/Cli/SettingsCommand.php:515
 msgid "The value must be between"
@@ -1865,6 +1793,18 @@ msgid "Next to the launcher"
 msgstr "Obok przycisku"
 
 #: build/admin.js:1
+msgid "Hover and keyboard focus"
+msgstr "Najechanie i fokus z klawiatury"
+
+#: build/admin.js:1
+msgid "Click"
+msgstr "Kliknięcie"
+
+#: build/admin.js:1
+msgid "Hover, focus and click"
+msgstr "Najechanie, fokus i kliknięcie"
+
+#: build/admin.js:1
 msgid "passes"
 msgstr "spełnia"
 
@@ -2171,6 +2111,10 @@ msgstr ""
 "Elementy pasujące do tych selektorów nie są zmieniane przez dostosowania."
 
 #: build/admin.js:1
+msgid "%s (not installed on this device)"
+msgstr "%s (niezainstalowany na tym urządzeniu)"
+
+#: build/admin.js:1
 msgid "Level %1$d: %2$s"
 msgstr "Poziom %1$d: %2$s"
 
@@ -2207,6 +2151,63 @@ msgid "Order"
 msgstr "Kolejność"
 
 #: build/admin.js:1
+msgid "%s settings"
+msgstr "Ustawienia: %s"
+
+#: build/admin.js:1
+msgid "Voice"
+msgstr "Głos"
+
+#: build/admin.js:1
+msgid ""
+"Automatic picks the best voice for the page language. The list shows the "
+"voices installed on this device; visitors have their own voices, so a name "
+"that is missing for them falls back to automatic."
+msgstr ""
+"Automatyczny wybiera najlepszy głos dla języka strony. Lista pokazuje głosy "
+"zainstalowane na tym urządzeniu; odwiedzający mają własne głosy, więc nazwa, "
+"której u nich brakuje, wraca do trybu automatycznego."
+
+#: build/admin.js:1
+msgid "Speaking speed"
+msgstr "Szybkość mówienia"
+
+#: build/admin.js:1
+msgid "From 0.5 (slow) to 2 (fast). 1 is the normal speed."
+msgstr "Od 0,5 (wolno) do 2 (szybko). 1 to normalna szybkość."
+
+#: build/admin.js:1
+msgid "Read aloud on"
+msgstr "Czytaj po"
+
+#: build/admin.js:1
+msgid ""
+"Hover and keyboard focus read before the visitor clicks, and links keep "
+"working normally. Click is the older behavior."
+msgstr ""
+"Najechanie i fokus z klawiatury czytają zanim odwiedzający kliknie, a linki "
+"działają normalnie. Kliknięcie to starsze zachowanie."
+
+#: build/admin.js:1
+msgid "Hover delay (ms)"
+msgstr "Opóźnienie po najechaniu (ms)"
+
+#: build/admin.js:1
+msgid ""
+"How long the pointer must rest on text before it is read. From 0 to 2000."
+msgstr ""
+"Jak długo wskaźnik musi spoczywać na tekście, zanim zostanie odczytany. Od "
+"0 do 2000."
+
+#: build/admin.js:1
+msgid ""
+"Choose which adjustments visitors can use, which ones start active, and the "
+"order they appear in within each section."
+msgstr ""
+"Wybierz, z których dostosowań mogą korzystać odwiedzający, które mają być "
+"domyślnie aktywne i w jakiej kolejności pojawiają się w każdej sekcji."
+
+#: build/admin.js:1
 msgid "Attachment #%d"
 msgstr "Załącznik nr %d"
 
@@ -2230,9 +2231,38 @@ msgstr "Wybierz ikonę"
 msgid "Use default icon"
 msgstr "Użyj ikony domyślnej"
 
+#: build/admin.js:1
+msgid "Show the floating accessibility button"
+msgstr "Pokaż pływający przycisk dostępności"
+
+#: build/admin.js:1
+msgid ""
+"Turn off to hide the button. The panel still opens from your own triggers "
+"and the keyboard shortcut."
+msgstr ""
+"Wyłącz, aby ukryć przycisk. Panel nadal otwiera się z Twoich wyzwalaczy i "
+"skrótu klawiaturowego."
+
+#: build/admin.js:1
+msgid ""
+"The button is currently placed inside a page element. Change this in the "
+"Triggers tab, or tick the box to float it again."
+msgstr ""
+"Przycisk jest obecnie umieszczony wewnątrz elementu strony. Zmień to na "
+"karcie Wyzwalacze albo zaznacz pole, aby znów go unosić."
+
+#: build/admin.js:1
+msgid "Button corner, offset and size per device"
+msgstr ""
+"Narożnik, odsunięcie i rozmiar przycisku na poszczególnych urządzeniach"
+
 #: build/admin.js:1 build/admin.js:2
 msgid "Device"
 msgstr "Urządzenie"
+
+#: build/admin.js:1
+msgid "Corner"
+msgstr "Narożnik"
 
 #: build/admin.js:1
 msgid "Horizontal offset (px)"
@@ -2245,6 +2275,19 @@ msgstr "Odsunięcie w pionie (px)"
 #: build/admin.js:1
 msgid "Launcher size"
 msgstr "Rozmiar przycisku"
+
+#: build/admin.js:1
+msgid "Launcher size (rem)"
+msgstr "Rozmiar przycisku (rem)"
+
+#: build/admin.js:1
+msgid ""
+"Leave empty to use the size above. A value from 1.5 to 5 overrides it; 2.5 "
+"matches the cookie banner button. The icon scales with the button."
+msgstr ""
+"Zostaw puste, aby użyć rozmiaru powyżej. Wartość od 1,5 do 5 go zastępuje; "
+"2,5 odpowiada przyciskowi banera cookie. Ikona skaluje się razem z "
+"przyciskiem."
 
 #: build/admin.js:1
 msgid "Launcher shape"
@@ -2950,6 +2993,14 @@ msgstr "Sekcje ustawień dostępności"
 #: build/admin.js:2
 msgid "The widget is hidden on this device."
 msgstr "Widżet jest ukryty na tym urządzeniu."
+
+#: build/admin.js:2
+msgid ""
+"The floating button is hidden. The panel opens from your own triggers and "
+"the keyboard shortcut."
+msgstr ""
+"Pływający przycisk jest ukryty. Panel otwiera się z Twoich wyzwalaczy i "
+"skrótu klawiaturowego."
 
 #: build/admin.js:2
 msgid "Live preview"
